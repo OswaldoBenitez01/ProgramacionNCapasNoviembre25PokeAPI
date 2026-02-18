@@ -25,7 +25,6 @@ public class PruebaController {
 
             Result result = usuarioService.GetAll();
             model.addAttribute("Usuarios", result != null ? result.Objects : new ArrayList<>());
-
 //            Result resultRoles = rolService.GetAll();
 //            model.addAttribute("Roles", resultRoles != null ? resultRoles.Objects : new ArrayList<>());
         } catch (Exception ex) {
