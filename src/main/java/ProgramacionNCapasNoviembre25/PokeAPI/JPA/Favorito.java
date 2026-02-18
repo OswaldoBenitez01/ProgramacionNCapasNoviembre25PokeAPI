@@ -17,16 +17,15 @@ public class Favorito {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "idfavorito")
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idUsuario", nullable = false)
+    @JoinColumn(name = "idusuario", nullable = false)
     private Usuario usuario;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idPokemon", nullable = false)
-    public Pokemon pokemon;
+    
+    @Column(name = "idpokemon", nullable = false)
+    public String pokemon;
 
     public Integer getId() {
         return id;
@@ -44,14 +43,15 @@ public class Favorito {
         this.usuario = usuario;
     }
 
-    public Pokemon getPokemon() {
+    public String getPokemon() {
         return pokemon;
     }
 
-    public void setPokemon(Pokemon pokemon) {
+    public void setPokemon(String pokemon) {
         this.pokemon = pokemon;
     }
-    
+
+   
     
 }
 
