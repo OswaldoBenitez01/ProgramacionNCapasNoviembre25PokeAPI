@@ -1,12 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package ProgramacionNCapasNoviembre25.PokeAPI.JPA;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -20,32 +16,32 @@ public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idUsuario")
+    @Column(name = "idusuario")
     private Integer idUsuario;
 
     @Column(name = "nombre", length = 100)
     private String nombre;
 
-    @Column(name = "apellidoPaterno", length = 100)
+    @Column(name = "apellidopaterno", length = 100)
     private String apellidoPaterno;
 
-    @Column(name = "apellidoMaterno", length = 100)
+    @Column(name = "apellidomaterno", length = 100)
     private String apellidoMaterno;
 
-    @Column(name = "username", length = 50, unique = true, nullable = false)
+    @Column(name = "username", length = 50)
     private String username;
 
-    @Column(name = "correo", length = 150, unique = true, nullable = false)
+    @Column(name = "correoelectronico", length = 150)
     private String correo;
 
-    @Column(name = "contrasena", length = 255, nullable = false)
+    @Column(name = "contrasena", length = 255)
     private String contrasena;
 
-    @Column(name = "estatus", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 1")
-    private Boolean estatus = true;
+    @Column(name = "estatus")
+    private int estatus;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idRol", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "idrol")
     public Rol rol;
 
     public Integer getIdUsuario() {
@@ -104,11 +100,11 @@ public class Usuario {
         this.contrasena = contrasena;
     }
 
-    public Boolean getEstatus() {
+    public int getEstatus() {
         return estatus;
     }
 
-    public void setEstatus(Boolean estatus) {
+    public void setEstatus(int estatus) {
         this.estatus = estatus;
     }
 
