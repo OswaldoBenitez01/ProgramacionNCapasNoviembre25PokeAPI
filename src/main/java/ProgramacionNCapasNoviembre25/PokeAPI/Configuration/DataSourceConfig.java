@@ -1,5 +1,5 @@
 
-package OBenitez.ProgramacionNCapasNoviembre25.Configuration;
+package ProgramacionNCapasNoviembre25.PokeAPI.Configuration;
 
 import javax.sql.DataSource;
 import org.springframework.context.annotation.Bean;
