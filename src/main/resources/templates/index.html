@@ -1,16 +1,33 @@
 <!DOCTYPE html>
-
 <html xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
+    <head><title>Pokémon completos</title></head>
     <body>
-        <div th:each="usuario : ${Usuarios}">
-            <p th:text="${usuario.nombre}"></p>
-            <p th:text="${usuario.rol.nombre}"></p>
+        <h1>Listado completo (Página <span th:text="${currentOffset / limit + 1}"></span>)</h1>
+
+        <div th:if="${result.Correct == false}" style="color:red">
+            <p th:text="${result.ErrorMessage}"></p>
+            <a th:href="@{/pokemon/full(limit=${limit})}">Volver al inicio</a>
         </div>
-        <p th:text="${pokemon.name}"></p>
+
+        <div th:if="${result.Correct == true}">
+            <!-- Lista de Pokémon  -->
+            <div th:each="pokemon : ${result.Objects}">
+                <div style="border:1px solid #ccc; margin:10px; padding:10px; display:inline-block;">
+                    <h3 th:text="${pokemon.name}"></h3>
+                    <img th:src="${pokemon.sprites.frontDefault}" width="80">
+                    <p>Altura: <span th:text="${pokemon.height}"></span></p>
+                </div>
+            </div>
+
+            <!-- Paginación -->
+            <div>
+                <a th:href="@{/pokemonlist/full(limit=${limit}, offset=0)}">Primera</a>
+
+                <a th:href="@{/pokemonlist/full(limit=${limit}, offset=${currentOffset - limit})}"
+                   th:if="${currentOffset > 0}">Anterior</a>
+
+                <a th:href="@{/pokemonlist/full(limit=${limit}, offset=${currentOffset + limit})}">Siguiente</a>
+            </div>
+        </div>
     </body>
 </html>

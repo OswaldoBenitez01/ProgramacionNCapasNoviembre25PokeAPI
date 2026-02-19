@@ -1,3 +1,4 @@
+// Service/PokemonService.java
 package ProgramacionNCapasNoviembre25.PokeAPI.Service;
 
 import ProgramacionNCapasNoviembre25.PokeAPI.ML.Pokemon;
@@ -23,7 +24,7 @@ public class PokemonService {
             PokemonListResponse response = restTemplate.getForObject(url, PokemonListResponse.class);
             
             Result result = new Result();
-            result.setCorrect(true);
+            result.Correct = true;
             result.setObject(response);
             return result;
             
