@@ -1,15 +1,20 @@
 <!DOCTYPE html>
-<!--
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
--->
-<html>
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-        <div>TODO write content</div>
-    </body>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Pokémon</title></head>
+<body>
+    <h1>Lista de Pokémon</h1>
+    
+    <div th:if="${result.correct == false}" style="color:red">
+        <p th:text="${result.errorMessage}"></p>
+    </div>
+    
+    <div th:if="${result.correct == true}">
+        <ul>
+            <li th:each="pokemon : ${result.object.results}"
+                th:text="${pokemon.name}"
+                th:href="@{/pokemon/{id}(id=${pokemon.name})}"></li>
+        </ul>
+        <a th:href="@{/pokemon/list(offset=${nextOffset})}">Siguiente</a>
+    </div>
+</body>
 </html>
