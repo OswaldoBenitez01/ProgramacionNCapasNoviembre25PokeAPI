@@ -18,7 +18,7 @@ public class PokeApiController {
         this.pokemonService = pokemonService;
     }
 
-    @GetMapping("/")
+    @GetMapping
     public String listFull(
             @RequestParam(defaultValue = "12") int limit,
             @RequestParam(defaultValue = "0") int offset,

@@ -21,12 +21,12 @@
 
             <!-- Paginación -->
             <div>
-                <a th:href="@{/pokemon/(limit=${limit}, offset=0)}">Primera</a>
+                <a th:href="@{/pokemon(limit=${limit}, offset=0)}">Primera</a>
 
-                <a th:href="@{/pokemon/(limit=${limit}, offset=${currentOffset - limit})}"
+                <a th:href="@{/pokemon(limit=${limit}, offset=${currentOffset - limit})}"
                    th:if="${currentOffset > 0}">Anterior</a>
 
-                <a th:href="@{/pokemon/(limit=${limit}, offset=${currentOffset + limit})}">Siguiente</a>
+                <a th:href="@{/pokemon(limit=${limit}, offset=${currentOffset + limit})}">Siguiente</a>
             </div>
         </div>
     </body>
