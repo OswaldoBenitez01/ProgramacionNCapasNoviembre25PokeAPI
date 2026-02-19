@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div th:each="usuario : ${Usuarios}">
+            <p th:text="${usuario.nombre}"></p>
+            <p th:text="${usuario.rol.nombre}"></p>
+        </div>
+        <p th:text="${pokemon.name}"></p>
+    </body>
+</html>
