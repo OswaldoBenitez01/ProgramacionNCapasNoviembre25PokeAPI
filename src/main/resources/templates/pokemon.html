@@ -26,9 +26,21 @@
 
                         <!-- Imagen -->
                         <div class="text-center p-3">
-                            <img th:src="${pokemon.sprites.frontDefault}"
+                            <img id="pokemonImg"
+                                 th:src="${pokemon.sprites.frontDefault}"
                                  class="img-fluid"
-                                 style="max-height:150px;">
+                                 style="max-height:150px; cursor:pointer;"
+                                 onclick="cambiarSprite()">
+
+                            <br> <i id="iconoShiny" class="bi bi-stars" 
+                                    onclick="toggleShiny()" 
+                                    style="cursor:pointer; font-size: 1.5rem;" 
+                                    title="Modo Shiny"></i>
+
+                            <i id="iconoGenero" class="bi bi-gender-male" 
+                               onclick="toggleGenero()" 
+                               style="cursor:pointer; font-size: 1.5rem; color: #3498db;" 
+                               title="Cambiar Género"></i>
                         </div>
 
                         <!-- Información -->
@@ -71,7 +83,7 @@
                                         static
                                     </li>
                                 </ul>
-                            </li>
+                            </li>                                                        
 
                         </ul>
 
@@ -82,4 +94,90 @@
         </div>
 
     </body>
+
+    <script th:inline="javascript">
+        // Esto es para tener los sprites del pokemon en shiny o normal,de espalda, de frente y es hembra o macho
+        const sprites = {
+            front: /*[[${pokemon.sprites.frontDefault}]]*/ '',
+            back: /*[[${pokemon.sprites.backDefault}]]*/ '',
+            frontShiny: /*[[${pokemon.sprites.frontShiny}]]*/ '',
+            backShiny: /*[[${pokemon.sprites.backShiny}]]*/ '',
+            frontFem: /*[[${pokemon.sprites.frontFemale}]]*/ '',
+            backFem: /*[[${pokemon.sprites.backFemale}]]*/ '',
+            frontShinyFem: /*[[${pokemon.sprites.frontShinyFemale}]]*/ '',
+            backShinyFem: /*[[${pokemon.sprites.backShinyFemale}]]*/ ''
+        };
+
+        let esShiny = false;
+        let mostrandoFront = true;
+        let esFemenino = false;
+
+        // Función para ocultar el icono de género si no hay sprites femeninos
+        function checkGeneroHabilitado() {
+            const iconoG = document.getElementById('iconoGenero');
+            if (!sprites.frontFem) {
+                iconoG.style.display = 'none';
+            }
+        }
+
+        function actualizarImagen() {
+            const img = document.getElementById('pokemonImg');
+            let seleccionada = '';
+
+            if (esFemenino && sprites.frontFem) {
+                // Lógica Femenina
+                if (esShiny && sprites.frontShinyFem) {
+                    seleccionada = mostrandoFront ? sprites.frontShinyFem : (sprites.backShinyFem || sprites.frontShinyFem);
+                } else {
+                    seleccionada = mostrandoFront ? sprites.frontFem : (sprites.backFem || sprites.frontFem);
+                }
+            } else {
+                // Lógica Masculina / Default
+                if (esShiny) {
+                    seleccionada = mostrandoFront ? sprites.frontShiny : (sprites.backShiny || sprites.frontShiny);
+                } else {
+                    seleccionada = mostrandoFront ? sprites.front : (sprites.back || sprites.front);
+                }
+            }
+
+            if (seleccionada)
+                img.src = seleccionada;
+        }
+
+        // Esta es la funcion para que el pokemon se de vuelta
+        function cambiarSprite() {
+            mostrandoFront = !mostrandoFront;
+            actualizarImagen();
+        }
+
+        //Esta funcion es para hacer que sea shiny o regrese al normal y cambia el diesño del botom
+        function toggleShiny() {
+            if (esShiny || sprites.frontShiny) { // Verificar si existe versión shiny
+                esShiny = !esShiny;
+                actualizarImagen();
+                const icono = document.getElementById('iconoShiny');
+                icono.style.color = esShiny ? '#f1c40f' : 'inherit';
+            }
+        }
+
+        function toggleGenero() {
+            if (sprites.frontFem) {
+                esFemenino = !esFemenino;
+                actualizarImagen();
+
+                const icono = document.getElementById('iconoGenero');
+                if (esFemenino) {
+                    icono.className = 'bi bi-gender-female';
+                    icono.style.color = '#e84393'; // Rosado
+                } else {
+                    icono.className = 'bi bi-gender-male';
+                    icono.style.color = '#3498db'; // Azul
+                }
+            }
+        }
+
+        // Ejecutar al cargar
+        checkGeneroHabilitado();
+    </script>
+
 </html>
