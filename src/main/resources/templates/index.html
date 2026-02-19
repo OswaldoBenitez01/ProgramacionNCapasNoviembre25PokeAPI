@@ -6,7 +6,7 @@
 
         <div th:if="${result.Correct == false}" style="color:red">
             <p th:text="${result.ErrorMessage}"></p>
-            <a th:href="@{/pokemon/(limit=${limit})}">Volver al inicio</a>
+            <a th:href="@{/pokemon(limit=${limit})}">Volver al inicio</a>
         </div>
 
         <div th:if="${result.Correct == true}">
