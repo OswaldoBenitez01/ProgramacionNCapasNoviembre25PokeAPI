@@ -1,7 +1,9 @@
 package ProgramacionNCapasNoviembre25.PokeAPI.Controller;
 
+import ProgramacionNCapasNoviembre25.PokeAPI.ML.Pokemon;
 import ProgramacionNCapasNoviembre25.PokeAPI.ML.Result;
 import ProgramacionNCapasNoviembre25.PokeAPI.Service.PokemonService;
+import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,19 +26,91 @@ public class PokeApiController {
             Model model) {
 
         Result result = pokemonService.getPokemonList(limit, offset);
-        
+
         model.addAttribute("result", result);
         model.addAttribute("nextOffset", offset + limit);
-        
-        return "pokemon"; // templates/pokemon/list.html
+
+        return "pokemon";
     }
 
     @GetMapping("/{idOrName}")
     public String pokemonDetail(@PathVariable String idOrName, Model model) {
         
-        Result result = pokemonService.getPokemonByIdOrName(idOrName);
-        model.addAttribute("result", result);
-        
+        Pokemon pokemon = obtenerPokemon(idOrName);
+
+        model.addAttribute("pokemon", pokemon);
+
+        model.addAttribute("Color", obtenerTipo(pokemon));
+
+        model.addAttribute("coloresTipos", obtenerColoresTipos(pokemon));
+
         return "pokemon";
+    }
+
+    public Pokemon obtenerPokemon(String idOrName) {
+        Result result = pokemonService.getPokemonByIdOrName(idOrName);
+        return (Pokemon) result.Object;
+    }
+
+    public List<String> obtenerColoresTipos(Pokemon pokemon) {
+        return pokemon.getTypes()
+                .stream()
+                .map(t -> obtenerColorPorTipo(t.getType().getName()))
+                .toList();
+    }
+
+    public String obtenerTipo(Pokemon pokemon) {
+        List<String> colores = pokemon.getTypes()
+                .stream()
+                .map(t -> obtenerColorPorTipo(t.getType().getName()))
+                .toList();
+
+        if (colores.size() == 1) {
+            return colores.get(0);
+        }
+        return "linear-gradient(135deg, " + colores.get(0) + ", " + colores.get(1) + ")";
+    }
+
+    public String obtenerColorPorTipo(String tipo) {
+        switch (tipo.toLowerCase()) {
+            case "fire":
+                return "#F08030";
+            case "water":
+                return "#6890F0";
+            case "grass":
+                return "#78C850";
+            case "electric":
+                return "#F8D030";
+            case "ice":
+                return "#98D8D8";
+            case "fighting":
+                return "#C03028";
+            case "poison":
+                return "#A040A0";
+            case "ground":
+                return "#E0C068";
+            case "flying":
+                return "#A890F0";
+            case "psychic":
+                return "#F85888";
+            case "bug":
+                return "#A8B820";
+            case "rock":
+                return "#B8A038";
+            case "ghost":
+                return "#705898";
+            case "dragon":
+                return "#7038F8";
+            case "steel":
+                return "#B8B8D0";
+            case "fairy":
+                return "#EE99AC";
+            case "dark":
+                return "#705848";
+            case "normal":
+                return "#A8A878";
+            default:
+                return "#A8A77A";
+        }
     }
 }
