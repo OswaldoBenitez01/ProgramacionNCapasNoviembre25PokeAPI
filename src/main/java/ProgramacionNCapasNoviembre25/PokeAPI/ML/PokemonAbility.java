@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PokemonAbility {
     @JsonProperty("is_hidden")
-    private Boolean isHidden;   // elimínalo si no lo necesitas
+    private Boolean isHidden;
     private Integer slot;
     private NamedResource ability;
 
