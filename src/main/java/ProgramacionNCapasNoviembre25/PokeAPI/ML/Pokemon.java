@@ -23,6 +23,11 @@ public class Pokemon {
     private PokemonSprites sprites;
     private List<PokemonType> types;
     private List<PokemonAbility> abilities;
+    private PokemonCries cries;    
+    private PokemonStatSlot[] stats;
+    private PokemonMoveSlot[] moves;
+    @JsonProperty("held_items")
+    private PokemonHeldItemSlot[] heldItems;
 
     public Integer getId() {
         return id;
@@ -103,7 +108,37 @@ public class Pokemon {
     public void setAbilities(List<PokemonAbility> abilities) {
         this.abilities = abilities;
     }
-    
-    
+
+    public PokemonCries getCries() {
+        return cries;
+    }
+
+    public void setCries(PokemonCries cries) {
+        this.cries = cries;
+    }
+
+    public PokemonStatSlot[] getStats() {
+        return stats;
+    }
+
+    public void setStats(PokemonStatSlot[] stats) {
+        this.stats = stats;
+    }
+
+    public PokemonMoveSlot[] getMoves() {
+        return moves;
+    }
+
+    public void setMoves(PokemonMoveSlot[] moves) {
+        this.moves = moves;
+    }
+
+    public PokemonHeldItemSlot[] getHeldItems() {
+        return heldItems;
+    }
+
+    public void setHeldItems(PokemonHeldItemSlot[] heldItems) {
+        this.heldItems = heldItems;
+    }
 }
 
