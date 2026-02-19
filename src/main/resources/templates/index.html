@@ -6,7 +6,7 @@
 
         <div th:if="${result.Correct == false}" style="color:red">
             <p th:text="${result.ErrorMessage}"></p>
-            <a th:href="@{/pokemon/full(limit=${limit})}">Volver al inicio</a>
+            <a th:href="@{/pokemon/(limit=${limit})}">Volver al inicio</a>
         </div>
 
         <div th:if="${result.Correct == true}">
@@ -21,12 +21,12 @@
 
             <!-- Paginación -->
             <div>
-                <a th:href="@{/pokemonlist/full(limit=${limit}, offset=0)}">Primera</a>
+                <a th:href="@{/pokemon/(limit=${limit}, offset=0)}">Primera</a>
 
-                <a th:href="@{/pokemonlist/full(limit=${limit}, offset=${currentOffset - limit})}"
+                <a th:href="@{/pokemon/(limit=${limit}, offset=${currentOffset - limit})}"
                    th:if="${currentOffset > 0}">Anterior</a>
 
-                <a th:href="@{/pokemonlist/full(limit=${limit}, offset=${currentOffset + limit})}">Siguiente</a>
+                <a th:href="@{/pokemon/(limit=${limit}, offset=${currentOffset + limit})}">Siguiente</a>
             </div>
         </div>
     </body>

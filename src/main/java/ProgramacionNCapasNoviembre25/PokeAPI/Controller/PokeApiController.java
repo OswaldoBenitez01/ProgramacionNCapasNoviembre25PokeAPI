@@ -8,7 +8,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-// Controller/PokemonController.java
 @Controller
 @RequestMapping("/pokemon")
 public class PokeApiController {
@@ -19,18 +18,18 @@ public class PokeApiController {
         this.pokemonService = pokemonService;
     }
 
-    @GetMapping("/list")
-    public String pokemonList(
-            @RequestParam(defaultValue = "20") int limit,
+    @GetMapping("/")
+    public String listFull(
+            @RequestParam(defaultValue = "12") int limit,
             @RequestParam(defaultValue = "0") int offset,
             Model model) {
-
+        
         Result result = pokemonService.getPokemonList(limit, offset);
-
         model.addAttribute("result", result);
-        model.addAttribute("nextOffset", offset + limit);
-
-        return "pokemon";
+        model.addAttribute("currentOffset", offset);
+        model.addAttribute("limit", limit);
+        
+        return "index";
     }
 
     @GetMapping("/{idOrName}")
