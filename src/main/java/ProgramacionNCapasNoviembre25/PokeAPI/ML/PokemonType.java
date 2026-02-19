@@ -1,10 +1,12 @@
 
 package ProgramacionNCapasNoviembre25.PokeAPI.ML;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PokemonType {
-    
     private Integer slot;
-    private NamedApiResource type;
+    private NamedResource type;
 
     public Integer getSlot() {
         return slot;
@@ -14,11 +16,14 @@ public class PokemonType {
         this.slot = slot;
     }
 
-    public NamedApiResource getType() {
+    public NamedResource getType() {
         return type;
     }
 
-    public void setType(NamedApiResource type) {
+    public void setType(NamedResource type) {
         this.type = type;
     }
+    
+    
 }
+

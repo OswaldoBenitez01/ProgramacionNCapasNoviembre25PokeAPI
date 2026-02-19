@@ -1,7 +1,10 @@
 
 package ProgramacionNCapasNoviembre25.PokeAPI.ML;
 
-public class NamedApiResource {
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class NamedResource {
     private String name;
     private String url;
 
@@ -20,4 +23,6 @@ public class NamedApiResource {
     public void setUrl(String url) {
         this.url = url;
     }
+    
+    
 }

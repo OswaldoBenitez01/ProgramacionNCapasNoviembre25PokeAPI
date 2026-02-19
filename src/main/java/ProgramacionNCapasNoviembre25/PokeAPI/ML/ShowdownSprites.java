@@ -5,20 +5,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PokemonSprites {
-
-    // Sprites clásicos
+public class ShowdownSprites {
     @JsonProperty("front_default")
     private String frontDefault;
 
     @JsonProperty("front_shiny")
     private String frontShiny;
-
-    @JsonProperty("front_female")
-    private String frontFemale;
-
-    @JsonProperty("front_shiny_female")
-    private String frontShinyFemale;
 
     @JsonProperty("back_default")
     private String backDefault;
@@ -26,15 +18,17 @@ public class PokemonSprites {
     @JsonProperty("back_shiny")
     private String backShiny;
 
+    @JsonProperty("front_female")
+    private String frontFemale;
+
+    @JsonProperty("front_shiny_female")
+    private String frontShinyFemale;
+
     @JsonProperty("back_female")
     private String backFemale;
 
     @JsonProperty("back_shiny_female")
     private String backShinyFemale;
-
-    // Otros grupos de sprites útiles
-    @JsonProperty("other")
-    private OtherSprites other;
 
     public String getFrontDefault() {
         return frontDefault;
@@ -50,22 +44,6 @@ public class PokemonSprites {
 
     public void setFrontShiny(String frontShiny) {
         this.frontShiny = frontShiny;
-    }
-
-    public String getFrontFemale() {
-        return frontFemale;
-    }
-
-    public void setFrontFemale(String frontFemale) {
-        this.frontFemale = frontFemale;
-    }
-
-    public String getFrontShinyFemale() {
-        return frontShinyFemale;
-    }
-
-    public void setFrontShinyFemale(String frontShinyFemale) {
-        this.frontShinyFemale = frontShinyFemale;
     }
 
     public String getBackDefault() {
@@ -84,6 +62,22 @@ public class PokemonSprites {
         this.backShiny = backShiny;
     }
 
+    public String getFrontFemale() {
+        return frontFemale;
+    }
+
+    public void setFrontFemale(String frontFemale) {
+        this.frontFemale = frontFemale;
+    }
+
+    public String getFrontShinyFemale() {
+        return frontShinyFemale;
+    }
+
+    public void setFrontShinyFemale(String frontShinyFemale) {
+        this.frontShinyFemale = frontShinyFemale;
+    }
+
     public String getBackFemale() {
         return backFemale;
     }
@@ -98,14 +92,6 @@ public class PokemonSprites {
 
     public void setBackShinyFemale(String backShinyFemale) {
         this.backShinyFemale = backShinyFemale;
-    }
-
-    public OtherSprites getOther() {
-        return other;
-    }
-
-    public void setOther(OtherSprites other) {
-        this.other = other;
     }
     
     
