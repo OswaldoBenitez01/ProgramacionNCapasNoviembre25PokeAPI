@@ -11,4 +11,22 @@ public class PokemonMoveSlot {
     
     @JsonProperty("version_group_details")
     private NamedResource[] versionGroupDetails;
+
+    public NamedResource getMove() {
+        return move;
+    }
+
+    public void setMove(NamedResource move) {
+        this.move = move;
+    }
+
+    public NamedResource[] getVersionGroupDetails() {
+        return versionGroupDetails;
+    }
+
+    public void setVersionGroupDetails(NamedResource[] versionGroupDetails) {
+        this.versionGroupDetails = versionGroupDetails;
+    }
+    
+    
 }

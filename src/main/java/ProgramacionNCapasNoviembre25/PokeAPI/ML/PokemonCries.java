@@ -11,4 +11,22 @@ public class PokemonCries {
     
     @JsonProperty("latest")
     private String latest;
+
+    public String getLegacy() {
+        return legacy;
+    }
+
+    public void setLegacy(String legacy) {
+        this.legacy = legacy;
+    }
+
+    public String getLatest() {
+        return latest;
+    }
+
+    public void setLatest(String latest) {
+        this.latest = latest;
+    }
+    
+    
 }

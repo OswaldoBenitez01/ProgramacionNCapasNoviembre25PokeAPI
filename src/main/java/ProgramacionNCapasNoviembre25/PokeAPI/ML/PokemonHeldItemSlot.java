@@ -11,4 +11,22 @@ public class PokemonHeldItemSlot {
     
     @JsonProperty("version_details")
     private NamedResource[] versionDetails;
+
+    public NamedResource getItem() {
+        return item;
+    }
+
+    public void setItem(NamedResource item) {
+        this.item = item;
+    }
+
+    public NamedResource[] getVersionDetails() {
+        return versionDetails;
+    }
+
+    public void setVersionDetails(NamedResource[] versionDetails) {
+        this.versionDetails = versionDetails;
+    }
+    
+    
 }

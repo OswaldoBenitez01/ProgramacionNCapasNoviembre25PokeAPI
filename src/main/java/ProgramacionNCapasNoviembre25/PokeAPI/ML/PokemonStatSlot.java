@@ -14,4 +14,30 @@ public class PokemonStatSlot {
     
     @JsonProperty("stat")
     private NamedResource stat;
+
+    public int getBaseStat() {
+        return baseStat;
+    }
+
+    public void setBaseStat(int baseStat) {
+        this.baseStat = baseStat;
+    }
+
+    public int getEffort() {
+        return effort;
+    }
+
+    public void setEffort(int effort) {
+        this.effort = effort;
+    }
+
+    public NamedResource getStat() {
+        return stat;
+    }
+
+    public void setStat(NamedResource stat) {
+        this.stat = stat;
+    }
+    
+    
 }
