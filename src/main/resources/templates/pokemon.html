@@ -41,6 +41,11 @@
                                onclick="toggleGenero()" 
                                style="cursor:pointer; font-size: 1.5rem; color: #3498db;" 
                                title="Cambiar Género"></i>
+
+                            <i id="iconoSonido" class="bi bi-volume-up-fill" 
+                               onclick="Sonido()" 
+                               style="cursor:pointer; font-size: 1.5rem; color: #3498db;" 
+                               title="Escuchar sonido"></i>
                         </div>
 
                         <!-- Información -->
@@ -95,7 +100,19 @@
 
     </body>
 
+
     <script th:inline="javascript">
+
+        const audio = /*[[${pokemon.cries.latest}]]*/ ''
+        const pokemonAudio = new Audio(audio);
+        function Sonido() {
+            pokemonAudio.currentTime = 0;
+            pokemonAudio.play().catch(error => {
+                console.error("Error al reproducir el audio:", error);
+            });
+
+        }
+
         // Esto es para tener los sprites del pokemon en shiny o normal,de espalda, de frente y es hembra o macho
         const sprites = {
             front: /*[[${pokemon.sprites.frontDefault}]]*/ '',
