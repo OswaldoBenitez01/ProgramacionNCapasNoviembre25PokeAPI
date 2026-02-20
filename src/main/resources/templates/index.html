@@ -1,71 +1,71 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
     <head>
-        <title>Pokédex Retro</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <title>Pokédex</title>
         <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
             * {
                 box-sizing: border-box;
+                margin: 0;
+                padding: 0;
             }
 
             body {
-                background: linear-gradient(135deg,
-                    #0f0f23 0%,
-                    #1a1a2e 50%,
-                    #16213e 100%);
-                min-height: 100vh;
                 font-family: 'Press Start 2P', monospace;
+                background-color: #1b1b2f;
+                background-image:
+                    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+                background-size: 40px 40px;
+                min-height: 100vh;
+                padding: 30px 20px;
                 color: #fff;
-                padding: 20px;
-                margin: 0;
             }
 
-            .pokedex-header {
+            .header {
                 text-align: center;
                 margin-bottom: 40px;
             }
 
-            .pokedex-title {
-                font-size: clamp(1.5rem, 4vw, 2.5rem);
-                margin: 0;
-                text-shadow: 2px 2px 0px #000;
+            .header h1 {
+                font-size: clamp(1.2rem, 4vw, 2rem);
+                color: #fff;
+                text-shadow:
+                    0 0 10px #ff0,
+                    0 0 20px #ff0,
+                    0 0 40px #f80;
+                letter-spacing: 4px;
+            }
+
+            .header p {
+                font-size: 0.5rem;
+                color: #aaa;
+                margin-top: 10px;
                 letter-spacing: 2px;
             }
 
-            .pokedex-subtitle {
-                font-size: 0.6rem;
-                color: #ccc;
-                margin-top: 8px;
-                letter-spacing: 1px;
-            }
-
-            .pokemon-grid {
+            .grid {
                 display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-                gap: 24px;
-                justify-content: center;
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                gap: 30px;
                 max-width: 1400px;
-                margin: 0 auto 40px auto;
+                margin: 0 auto;
             }
 
             .card-container {
-                perspective: 1200px;
-                height: 320px;
+                height: 300px;
+                perspective: 1000px;
             }
 
-            .poke-card {
+            .card-inner {
                 position: relative;
                 width: 100%;
                 height: 100%;
                 transform-style: preserve-3d;
-                transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                transition: transform 0.7s ease;
             }
 
-            .card-container.flipped .poke-card {
+            .card-container:hover .card-inner {
                 transform: rotateY(180deg);
             }
 
@@ -74,327 +74,416 @@
                 width: 100%;
                 height: 100%;
                 backface-visibility: hidden;
-                border-radius: 16px;
-                border: 3px solid #333;
-                box-shadow:
-                    0 8px 16px rgba(0,0,0,0.6),
-                    inset 0 2px 4px rgba(255,255,255,0.1);
+                border-radius: 12px;
                 padding: 16px;
                 display: flex;
                 flex-direction: column;
-                cursor: pointer;
             }
 
             .card-front {
-                /* COLOR DINÁMICO POR TIPO */
+                border: 3px solid rgba(255,255,255,0.15);
+                box-shadow:
+                    0 0 10px rgba(255,255,255,0.05),
+                    inset 0 0 20px rgba(0,0,0,0.3);
             }
 
-            .card-back {
-                transform: rotateY(180deg);
-                background: linear-gradient(145deg, #1a1a2e, #16213e);
-            }
-
-            .card-header {
+            .card-front .poke-header {
                 display: flex;
                 justify-content: space-between;
-                align-items: center;
-                margin-bottom: 12px;
+                align-items: flex-start;
+                margin-bottom: 8px;
             }
 
-            .pokemon-name {
-                font-size: 0.85rem;
-                font-weight: bold;
+            .card-front .poke-name {
+                font-size: 0.7rem;
                 text-transform: uppercase;
-                letter-spacing: 1px;
-                text-shadow: 1px 1px 0px rgba(0,0,0,0.8);
+                text-shadow: 1px 1px 0 rgba(0,0,0,0.8);
+                max-width: 120px;
+                word-break: break-word;
+                line-height: 1.5;
             }
 
-            .pokemon-id {
-                background: rgba(0,0,0,0.6);
-                color: #fff;
-                padding: 4px 8px;
-                border-radius: 8px;
-                font-size: 0.65rem;
+            .card-front .poke-id {
+                font-size: 0.55rem;
+                background: rgba(0,0,0,0.5);
+                padding: 4px 6px;
+                border-radius: 6px;
+                white-space: nowrap;
             }
 
-            .pokemon-sprite {
+            .card-front .poke-sprite {
                 flex: 1;
                 display: flex;
                 align-items: center;
                 justify-content: center;
             }
 
-            .pokemon-sprite img {
-                width: 96px;
-                height: 96px;
+            .card-front .poke-sprite img {
+                width: 100px;
+                height: 100px;
                 image-rendering: pixelated;
-                filter: drop-shadow(2px 2px 0px rgba(0,0,0,0.8));
+                filter: drop-shadow(3px 3px 0px rgba(0,0,0,0.7));
             }
 
-            .pokemon-types {
+            .card-front .poke-types {
                 display: flex;
                 gap: 6px;
-                justify-content: center;
                 flex-wrap: wrap;
+                justify-content: center;
             }
 
             .type-badge {
-                background: rgba(255,255,255,0.2);
-                border: 1px solid rgba(255,255,255,0.4);
+                font-size: 0.5rem;
                 padding: 4px 8px;
-                border-radius: 8px;
-                font-size: 0.6rem;
+                border-radius: 6px;
                 text-transform: uppercase;
-                letter-spacing: 0.5px;
+                background: rgba(0,0,0,0.4);
+                border: 1px solid rgba(255,255,255,0.3);
             }
 
-            .back-content {
+            .card-back {
+                transform: rotateY(180deg);
+                background: #12122a;
+                border: 3px solid rgba(255,255,255,0.1);
                 display: flex;
                 flex-direction: column;
-                height: 100%;
                 justify-content: space-between;
             }
 
-            .back-stats {
+            .back-title {
                 font-size: 0.55rem;
-                line-height: 1.3;
+                color: #aaa;
+                text-align: center;
+                letter-spacing: 2px;
+                margin-bottom: 10px;
+                text-transform: uppercase;
             }
 
-            .back-stats p {
-                margin: 2px 0;
+            .stats-list {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                justify-content: center;
+            }
+
+            .stat-row {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .stat-label {
+                font-size: 0.4rem;
+                color: #ccc;
+                text-transform: uppercase;
+                width: 42px;
+                flex-shrink: 0;
+                text-align: right;
+            }
+
+            .stat-bar-bg {
+                flex: 1;
+                height: 8px;
+                background: rgba(255,255,255,0.1);
+                border-radius: 4px;
+                overflow: hidden;
+            }
+
+            .stat-bar-fill {
+                height: 100%;
+                border-radius: 4px;
+                transition: width 0.5s ease;
+            }
+
+            .stat-value {
+                font-size: 0.4rem;
+                color: #fff;
+                width: 22px;
+                text-align: right;
+                flex-shrink: 0;
             }
 
             .detail-btn {
-                background: linear-gradient(145deg, #ff6b6b, #ee5a52);
-                border: 2px solid #fff;
-                color: #fff;
-                padding: 8px 16px;
-                border-radius: 12px;
-                font-size: 0.7rem;
-                font-weight: bold;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
+                display: block;
+                text-align: center;
+                margin-top: 10px;
+                padding: 8px 0;
+                background: transparent;
+                border: 2px solid #ff0;
+                color: #ff0;
+                font-family: 'Press Start 2P', monospace;
+                font-size: 0.5rem;
+                border-radius: 8px;
                 text-decoration: none;
+                letter-spacing: 1px;
+                text-shadow: 0 0 6px #ff0;
+                box-shadow: 0 0 8px rgba(255,255,0,0.3);
                 transition: all 0.2s ease;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.3);
             }
 
             .detail-btn:hover {
-                background: linear-gradient(145deg, #ee5a52, #ff6b6b);
-                transform: translateY(-2px);
-                box-shadow: 0 6px 12px rgba(0,0,0,0.4);
-                color: #fff;
+                background: #ff0;
+                color: #000;
+                text-shadow: none;
+                box-shadow: 0 0 16px rgba(255,255,0,0.7);
             }
 
-            .pagination-container {
+            .pagination-wrapper {
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                gap: 12px;
                 flex-wrap: wrap;
+                gap: 14px;
                 margin-top: 40px;
             }
 
             .page-btn {
-                background: linear-gradient(145deg, #2a2a4a, #1a1a2e);
-                border: 2px solid #444;
-                color: #fff;
+                font-family: 'Press Start 2P', monospace;
+                font-size: 0.6rem;
                 padding: 10px 16px;
-                border-radius: 12px;
-                font-size: 0.75rem;
-                font-weight: bold;
-                text-transform: uppercase;
-                letter-spacing: 1px;
-                text-decoration: none;
-                transition: all 0.2s ease;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-            }
-
-            .page-btn:hover:not(:disabled) {
-                background: linear-gradient(145deg, #3a3a6a, #2a2a4a);
-                border-color: #666;
-                transform: translateY(-2px);
-                box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+                background: transparent;
+                border: 2px solid #fff;
                 color: #fff;
+                border-radius: 8px;
+                text-decoration: none;
+                letter-spacing: 1px;
+                transition: all 0.2s ease;
             }
 
-            .page-btn:disabled {
-                opacity: 0.4;
-                cursor: not-allowed;
+            .page-btn:hover {
+                background: #fff;
+                color: #000;
+                box-shadow: 0 0 12px rgba(255,255,255,0.5);
+            }
+
+            .page-btn.disabled {
+                opacity: 0.3;
+                pointer-events: none;
             }
 
             .page-info {
-                background: linear-gradient(145deg, #1a1a2e, #16213e);
-                border: 2px solid #444;
-                color: #fff;
+                font-size: 0.6rem;
+                color: #aaa;
                 padding: 10px 16px;
-                border-radius: 12px;
-                font-size: 0.8rem;
-                font-weight: bold;
+                border: 2px solid #333;
+                border-radius: 8px;
+            }
+
+            .page-jump {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .page-jump label {
+                font-size: 0.5rem;
+                color: #aaa;
             }
 
             .page-jump input {
                 width: 70px;
-                height: 42px;
+                height: 38px;
+                background: #0d0d1a;
                 border: 2px solid #444;
-                border-radius: 12px;
-                background: #1a1a2e;
+                border-radius: 8px;
                 color: #fff;
-                text-align: center;
                 font-family: 'Press Start 2P', monospace;
-                font-size: 0.7rem;
+                font-size: 0.6rem;
+                text-align: center;
+                outline: none;
             }
 
-            .page-jump input::placeholder {
-                color: #666;
+            .page-jump input:focus {
+                border-color: #ff0;
+                box-shadow: 0 0 8px rgba(255,255,0,0.4);
+            }
+
+            .page-jump input.input-error {
+                border-color: #f66;
+                box-shadow: 0 0 8px rgba(255,100,100,0.4);
             }
 
             .page-jump button {
-                height: 42px;
+                height: 38px;
                 padding: 0 12px;
-                border-radius: 12px;
-                background: linear-gradient(145deg, #ff6b6b, #ee5a52);
-                border: 2px solid #fff;
-                color: #fff;
-                font-weight: bold;
-                font-size: 0.7rem;
+                background: transparent;
+                border: 2px solid #ff0;
+                color: #ff0;
+                font-family: 'Press Start 2P', monospace;
+                font-size: 0.5rem;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.2s ease;
             }
 
-            @media (max-width: 768px) {
-                .pokemon-grid {
-                    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-                    gap: 16px;
+            .page-jump button:hover {
+                background: #ff0;
+                color: #000;
+            }
+
+            .error-msg {
+                font-size: 0.45rem;
+                color: #f66;
+                display: none;
+            }
+
+            @media (max-width: 600px) {
+                .grid {
+                    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                }
+                .card-container {
+                    height: 260px;
                 }
             }
         </style>
     </head>
     <body>
 
-        <div class="container">
-            <div class="pokedex-header">
-                <h1 class="pokedex-title">POKÉDEX</h1>
-                <p class="pokedex-subtitle">Haz click en las cartas para darles vuelta</p>
-            </div>
+        <div class="header">
+            <h1>&#x25B6; POKÉDEX</h1>
+            <p>Pasa el cursor por una carta para ver los stats</p>
+        </div>
 
-            <!-- Error -->
-            <div th:if="${result.Correct == false}" 
-                 class="alert alert-danger text-center mb-4">
-                <span th:text="${result.ErrorMessage}"></span>
-            </div>
+        <!-- Error -->
+        <div th:if="${result.Correct == false}"
+             style="text-align:center; color:#f66; font-size:0.7rem;">
+            <p th:text="${result.ErrorMessage}"></p>
+        </div>
 
-            <!-- Grid -->
-            <div th:if="${result.Correct == true}" class="pokemon-grid">
-                <div class="card-container" 
-                     th:each="pokemon : ${result.Objects}"
-                     onclick="this.classList.toggle('flipped')">
+        <!-- Grid -->
+        <div class="grid" th:if="${result.Correct == true}">
+            <div class="card-container" th:each="pokemon : ${result.Objects}">
+                <div class="card-inner">
 
-                    <div class="poke-card">
+                    <!-- ══ FRENTE ══ -->
+                    <div class="card-face card-front"
+                         th:style="'background: ' + ${@pokeApiController.obtenerTipo(pokemon)}">
 
-                        <!-- FRENTE -->
-                        <div class="card-face card-front"
-                             th:style="'background: ' + ${@pokeApiController.obtenerTipo(pokemon)}">
-
-                            <div class="card-header">
-                                <div class="pokemon-name" th:text="${pokemon.name}"></div>
-                                <div class="pokemon-id"
-                                     th:text="'#' + ${#numbers.formatInteger(pokemon.id, 3)}"></div>
-                            </div>
-
-                            <div class="pokemon-sprite">
-                                <img th:if="${pokemon.sprites != null}"
-                                     th:src="${pokemon.sprites.frontDefault}"
-                                     th:alt="${pokemon.name}">
-                            </div>
-
-                            <div class="pokemon-types">
-                                <span class="type-badge"
-                                      th:each="t : ${pokemon.types}"
-                                      th:text="${t.type.name}"></span>
-                            </div>
-
+                        <div class="poke-header">
+                            <div class="poke-name" th:text="${pokemon.name}"></div>
+                            <div class="poke-id"
+                                 th:text="'#' + ${#numbers.formatInteger(pokemon.id, 3)}"></div>
                         </div>
 
-                        <!-- TRASERO -->
-                        <div class="card-face card-back">
-                            <div class="back-content">
-                                <div class="back-stats">
-                                    <p>Altura: <span th:text="${pokemon.height}"></span> dm</p>
-                                    <p>Peso: <span th:text="${pokemon.weight}"></span> hg</p>
-                                    <p>Base EXP: <span th:text="${pokemon.baseExperience}"></span></p>
-                                </div>
-
-                                <a class="detail-btn"
-                                   th:href="@{/pokemon/{name}(name=${pokemon.name})}">
-                                    VER DETALLE →
-                                </a>
-                            </div>
+                        <div class="poke-sprite">
+                            <img th:if="${pokemon.sprites != null}"
+                                 th:src="${pokemon.sprites.frontDefault}"
+                                 th:alt="${pokemon.name}">
                         </div>
 
+                        <div class="poke-types">
+                            <span class="type-badge"
+                                  th:each="t : ${pokemon.types}"
+                                  th:text="${t.type.name}"></span>
+                        </div>
                     </div>
+
+                    <!-- ══ TRASERA ══ -->
+                    <div class="card-face card-back">
+
+                        <div class="back-title" th:text="${pokemon.name}"></div>
+
+                        <div class="stats-list" th:if="${pokemon.stats != null}">
+                            <div class="stat-row" th:each="stat : ${pokemon.stats}">
+                                <div class="stat-label"
+                                     th:text="${stat.stat.name}"></div>
+                                <div class="stat-bar-bg">
+                                    <div class="stat-bar-fill"
+                                         th:style="'width: ' + ${stat.baseStat > 100 ? 100 : stat.baseStat} + '%; background: ' + ${@pokeApiController.obtenerTipo(pokemon)}">
+                                    </div>
+                                </div>
+                                <div class="stat-value"
+                                     th:text="${stat.baseStat}"></div>
+                            </div>
+                        </div>
+
+                        <a class="detail-btn"
+                           th:href="@{/pokemon/{name}(name=${pokemon.name})}">
+                            ▶ VER DETALLE
+                        </a>
+                    </div>
+
                 </div>
             </div>
-
-            <!-- PAGINACIÓN -->
-            <div class="pagination-container" th:if="${result.Correct == true}">
-                <a class="page-btn"
-                   th:if="${currentOffset > 0}"
-                   th:href="@{/pokemon(limit=${limit}, offset=${currentOffset - limit})}">
-                    ← Anterior
-                </a>
-
-                <span class="page-info">
-                    Página <span th:text="${currentOffset / limit + 1}"></span>
-                </span>
-
-                <a class="page-btn"
-                   th:href="@{/pokemon(limit=${limit}, offset=${currentOffset + limit})}">
-                    Siguiente →
-                </a>
-
-                <form class="page-jump" th:action="@{/pokemon}" method="get">
-                    <input type="hidden" name="limit" th:value="${limit}"/>
-                    <input type="number" 
-                           name="page" 
-                           min="1"
-                           th:value="${currentOffset / limit + 1}"
-                           placeholder="Página"/>
-                    <button type="submit">Ir</button>
-                </form>
-            </div>
         </div>
-        
-        <button id="miBotón">Reproducir Sonido</button>
-        <audio id="miAudio" src="https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/1.ogg"></audio>
-        
+
+        <!-- Paginador -->
+        <div class="pagination-wrapper" th:if="${result.Correct == true}">
+
+            <a class="page-btn"
+               th:classappend="${currentOffset <= 0} ? ' disabled'"
+               th:href="@{/pokemon(limit=${limit}, offset=${currentOffset - limit < 0 ? 0 : currentOffset - limit})}">
+                ← PREV
+            </a>
+
+            <span class="page-info">
+                PÁG. <span th:text="${currentOffset / limit + 1}"></span>
+            </span>
+
+            <a class="page-btn"
+               th:href="@{/pokemon(limit=${limit}, offset=${currentOffset + limit})}">
+                NEXT →
+            </a>
+
+            <form class="page-jump" id="jumpForm" th:action="@{/pokemon}" method="get">
+                <input type="hidden" name="limit" th:value="${limit}"/>
+                <label>IR A</label>
+                <input type="text"
+                       id="pageInput"
+                       name="page"
+                       placeholder="Pág."
+                       maxlength="4"
+                       th:value="${currentOffset / limit + 1}"/>
+                <span class="error-msg" id="pageError">Solo números</span>
+                <button type="submit">OK</button>
+            </form>
+
+        </div>
+
         <script>
-            document.getElementById('miBotón').addEventListener('click', function() {
-              var audio = document.getElementById('miAudio');
-              audio.play();
-            });
-        </script>
+            const pageInput = document.getElementById('pageInput');
+            const pageError = document.getElementById('pageError');
+            const jumpForm = document.getElementById('jumpForm');
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+            if (pageInput) {
+                pageInput.addEventListener('keypress', function (e) {
+                    if (!/[0-9]/.test(e.key)) {
+                        e.preventDefault();
+                    }
+                });
 
-        <!-- paginación -->
-        <script th:inline="javascript">
-                         document.querySelectorAll('form[action$="/pokemon"]').forEach(form => {
-                             form.addEventListener('submit', function (e) {
-                                 const pageInput = this.querySelector('input[name="page"]');
-                                 const limitInput = this.querySelector('input[name="limit"]');
+                pageInput.addEventListener('input', function () {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                });
+            }
 
-                                 if (pageInput && limitInput) {
-                                     const page = parseInt(pageInput.value) || 1;
-                                     const limit = parseInt(limitInput.value) || 12;
-                                     const offset = (page - 1) * limit;
+            if (jumpForm) {
+                jumpForm.addEventListener('submit', function (e) {
+                    const val = pageInput.value.trim();
 
-                                     const offsetInput = document.createElement('input');
-                                     offsetInput.type = 'hidden';
-                                     offsetInput.name = 'offset';
-                                     offsetInput.value = offset;
-                                     this.appendChild(offsetInput);
-                                 }
-                             });
-                         });
+                    if (!val || isNaN(val) || parseInt(val) < 1) {
+                        e.preventDefault();
+                        pageInput.classList.add('input-error');
+                        pageError.style.display = 'block';
+                        return;
+                    }
+
+                    pageInput.classList.remove('input-error');
+                    pageError.style.display = 'none';
+
+                    const limitInput = jumpForm.querySelector('input[name="limit"]');
+                    const page = parseInt(val);
+                    const limit = parseInt(limitInput.value) || 12;
+                    const offset = (page - 1) * limit;
+
+                    const offsetInput = document.createElement('input');
+                    offsetInput.type = 'hidden';
+                    offsetInput.name = 'offset';
+                    offsetInput.value = offset;
+                    jumpForm.appendChild(offsetInput);
+                });
+            }
         </script>
 
     </body>
