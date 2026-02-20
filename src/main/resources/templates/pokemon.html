@@ -13,96 +13,104 @@
 
         <div class="container py-5">
             <div class="row justify-content-center">
-                <div class="col-md-6">
+                <div class="col-12 col-md-8 col-lg-5">
 
-                    <div class="card shadow-lg">
+                    <div class="card shadow border-0 overflow-hidden" style="border-radius: 1.5rem;">
 
-                        <!-- Header -->
-                        <div class="card-header text-white text-center"
-                             th:style="'background: ' + ${Color}">
-                            <h3 class="mb-0 text-capitalize" th:text="${pokemon.name}">Nombre</h3>
-                            <small>#<span th:text="${pokemon.id}">25</span></small>
+                        <div class="card-header text-white text-center py-4" th:style="'background: ' + ${Color}">
+                            <div class="d-flex justify-content-between px-3 text-white-50 small fw-bold">
+                                <span>POKÉDEX</span>
+                                <span th:text="'#' + ${pokemon.id}">#25</span>
+                            </div>
+                            <h2 class="text-white text-capitalize mb-0 mt-2 display-6 fw-bold" th:text="${pokemon.name}">Nombre</h2>
                         </div>
 
-                        <!-- Imagen -->
-                        <div class="text-center p-3">
-                            <img id="pokemonImg"
-                                 th:src="${pokemon.sprites.frontDefault}"
-                                 class="img-fluid"
-                                 style="max-height:150px; cursor:pointer;"
-                                 onclick="cambiarSprite()">
+                        <div class="card-body bg-white text-center pt-0">
 
-                            <br> <i id="iconoShiny" class="bi bi-stars" 
+                            <div class="bg-white rounded-circle d-inline-block shadow-sm p-3" 
+                                 style="margin-top: -10px; width: 150px; height: 150px; border: 5px solid black;">
+                                <img id="pokemonImg" 
+                                     th:src="${pokemon.sprites.frontDefault}" 
+                                     class="img-fluid" 
+                                     style="cursor: pointer; transform: scale(1.2);"
+                                     onclick="cambiarSprite()">
+                            </div>
+
+                            <div class="d-flex justify-content-center gap-4 my-3">
+                                <i id="iconoShiny" class="bi bi-stars" 
                                     onclick="toggleShiny()" 
                                     style="cursor:pointer; font-size: 1.5rem;" 
                                     title="Modo Shiny"></i>
 
-                            <i id="iconoGenero" class="bi bi-gender-male" 
-                               onclick="toggleGenero()" 
-                               style="cursor:pointer; font-size: 1.5rem; color: #3498db;" 
-                               title="Cambiar Género"></i>
+                                    <i id="iconoGenero" class="bi bi-gender-male fs-3" onclick="toggleGenero()" style="cursor:pointer; color: #0d6efd;" title="Género"></i>
+                                    <i id="iconoSonido" class="bi bi-volume-up-fill fs-3 text-secondary" onclick="Sonido()" style="cursor:pointer;" title="Sonido"></i>
+                            </div>
 
-                            <i id="iconoSonido" class="bi bi-volume-up-fill" 
-                               onclick="Sonido()" 
-                               style="cursor:pointer; font-size: 1.5rem; color: #3498db;" 
-                               title="Escuchar sonido"></i>
-                        </div>
+                            <div class="mb-4">
+                                <span th:each="type, iterStat : ${pokemon.types}"
+                                      th:text="${type.type.name}"
+                                      th:style="'background-color: ' + ${coloresTipos[iterStat.index]}"
+                                      class="badge rounded-pill text-white px-3 py-2 text-capitalize mx-1 shadow-sm">
+                                </span>
+                            </div>
 
-                        <!-- Información -->
-                        <ul class="list-group list-group-flush">
-
-                            <li class="list-group-item d-flex justify-content-between">
-                                <span><i class="bi bi-lightning-charge text-warning"></i> Experiencia</span>
-                                <strong th:text="${pokemon.baseExperience}">112</strong>
-                            </li>
-
-                            <li class="list-group-item d-flex justify-content-between">
-                                <span><i class="bi bi-arrows-vertical"></i> Altura</span>
-                                <strong th:text="${pokemon.height}">4</strong>
-                            </li>
-
-                            <li class="list-group-item d-flex justify-content-between">
-                                <span><i class="bi bi-speedometer2"></i> Peso</span>
-                                <strong th:text="${pokemon.weight}">60</strong>
-                            </li>
-
-                            <!-- Tipos -->
-                            <li class="list-group-item">
-                                <strong>Tipos:</strong>
-                                <div class="mt-2">
-                                    <span class="badge me-1 text-capitalize text-white"
-                                          th:each="type, iterStat : ${pokemon.types}"
-                                          th:text="${type.type.name}"
-                                          th:style="'background: ' + ${coloresTipos[iterStat.index]}">
-                                    </span>
+                            <div class="row g-0 py-2 bg-light rounded-4 mb-4">
+                                <div class="col-4 border-end">
+                                    <small class="text-muted d-block">Peso</small>
+                                    <span class="fw-bold" th:text="${pokemon.weight / 10.0} + ' kg'">6 kg</span>
                                 </div>
-                            </li>
+                                <div class="col-4 border-end">
+                                    <small class="text-muted d-block">Altura</small>
+                                    <span class="fw-bold" th:text="${pokemon.height / 10.0} + ' m'">0.4 m</span>
+                                </div>
+                                <div class="col-4">
+                                    <small class="text-muted d-block">Base Exp</small>
+                                    <span class="fw-bold" th:text="${pokemon.baseExperience}">112</span>
+                                </div>
+                            </div>
 
-                            <!-- Habilidades -->
-                            <li class="list-group-item">
-                                <strong>Habilidades:</strong>
-                                <ul class="mb-0 mt-2">
-                                    <li th:each="ability : ${pokemon.abilities}"
-                                        th:text="${ability.ability.name}"
-                                        class="text-capitalize">
-                                        static
-                                    </li>
-                                </ul>
-                            </li>                                                        
+                            <div class="text-start mb-4 px-2">
+                                <h6 class="fw-bold text-secondary mb-3 small"><i class="bi bi-bar-chart-fill"></i> ESTADÍSTICAS BASE</h6>
+                                <div th:each="stat : ${pokemon.stats}" class="row align-items-center mb-2">
+                                    <div class="col-4 text-capitalize small fw-bold text-muted" th:text="${stat.stat.name}">hp</div>
+                                    <div class="col-6 p-0">
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar rounded-pill" 
+                                                 th:style="'width: ' + (${stat.baseStat} * 100 / 200) + '%; background-color: ' + ${Color}"
+                                                 th:aria-valuenow="${stat.baseStat}" aria-valuemin="0" aria-valuemax="255"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-2 text-end small fw-bold" th:text="${stat.baseStat}">50</div>
+                                </div>
+                            </div>
 
-                        </ul>
+                            <div class="row text-start g-3 px-2">
+                                <div class="col-6">
+                                    <h6 class="fw-bold text-secondary small text-uppercase">Habilidades</h6>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        <span th:each="ability : ${pokemon.abilities}" 
+                                              th:text="${ability.ability.name}"
+                                              class="badge bg-light text-dark border fw-normal text-capitalize w-100 py-2">
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <h6 class="fw-bold text-secondary small text-uppercase">Movimientos</h6>
+                                    <div class="overflow-auto border rounded-3 p-2 bg-light" style="max-height: 80px;">
+                                        <span th:each="move : ${pokemon.moves}" 
+                                              th:text="${move.move.name}"
+                                              class="d-block small text-capitalize mb-1 border-bottom pb-1">
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
 
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-    </body>
+                        </div> </div> </div> </div> </div> </body>
 
 
     <script th:inline="javascript">
 
+        //sonido del pokemon
         const audio = /*[[${pokemon.cries.latest}]]*/ ''
         const pokemonAudio = new Audio(audio);
         function Sonido() {
@@ -185,10 +193,10 @@
                 const icono = document.getElementById('iconoGenero');
                 if (esFemenino) {
                     icono.className = 'bi bi-gender-female';
-                    icono.style.color = '#e84393'; // Rosado
+                    icono.style.color = '#e84393';
                 } else {
                     icono.className = 'bi bi-gender-male';
-                    icono.style.color = '#3498db'; // Azul
+                    icono.style.color = '#3498db';
                 }
             }
         }
