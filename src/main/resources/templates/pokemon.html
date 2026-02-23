@@ -27,6 +27,39 @@
                 color: #fff;
             }
 
+            .back-btn {
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                z-index: 101;
+                background: transparent;
+                border: 2px solid #fff;
+                color: #fff;
+                padding: 10px 14px;
+                font-size: 0.65rem;
+                border-radius: 8px;
+                cursor: pointer;
+                font-family: 'Press Start 2P', monospace;
+                letter-spacing: 1px;
+                text-decoration: none;
+                transition: all 0.3s ease;
+                box-shadow: 0 0 8px rgba(255,255,255,0.2);
+                white-space: nowrap;
+            }
+
+            .back-btn:hover {
+                background: #fff;
+                color: #000;
+                box-shadow: 
+                    0 0 16px rgba(255,255,255,0.6),
+                    inset 0 0 10px rgba(255,255,255,0.3);
+                transform: translateY(-2px);
+            }
+
+            .back-btn:active {
+                transform: translateY(0);
+            }
+
         </style>
 
     </head>
@@ -34,10 +67,13 @@
 
     <body>
 
+        <div class="back-btn" id="backBtn" title="Atrás">
+            ← ATRAS
+        </div>
+
         <div class="container py-5">
             <div class="row justify-content-center">
                 <div class="col-12 col-md-8 col-lg-5">
-
                     <div class="card shadow border-0 overflow-hidden" style="border-radius: 1.5rem;">
 
                         <div class="card-header text-white text-center py-4" th:style="'background: ' + ${Color}">
@@ -58,7 +94,7 @@
                                      style="cursor: pointer; transform: scale(1.2);"
                                      onclick="cambiarSprite()">
                             </div>
-
+                            
                             <div class="d-flex justify-content-center gap-4 my-3">
                                 <i id="iconoShiny" class="bi bi-stars" 
                                    onclick="toggleShiny()" 
@@ -224,8 +260,19 @@
             }
         }
 
-        // Ejecutar al cargar
         checkGeneroHabilitado();
+        
+        var backBtn = document.getElementById('backBtn');
+        if (backBtn) {
+            backBtn.addEventListener('click', function() {
+                if (window.history.length > 1) {
+                    window.history.back();
+                } else {
+                    window.location.href = '/';
+                }
+            });
+        }
+
     </script>
 
 </html>

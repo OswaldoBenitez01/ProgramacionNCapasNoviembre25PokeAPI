@@ -19,15 +19,23 @@ public class PokeApiController {
     }
 
     @GetMapping
-    public String listFull(
+    public String listPokemon(
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String region,
             @RequestParam(defaultValue = "20") int limit,
             @RequestParam(defaultValue = "0") int offset,
             Model model) {
 
-        Result result = pokemonService.getPokemonList(limit, offset);
+        Result result = pokemonService.getPokemonFiltered(type, region, limit, offset);
+
         model.addAttribute("result", result);
         model.addAttribute("currentOffset", offset);
         model.addAttribute("limit", limit);
+        model.addAttribute("currentType", type);
+        model.addAttribute("currentRegion", region);
+
+        Result tiposResult = pokemonService.getAllTypes();
+        model.addAttribute("tipos", tiposResult.Objects);
 
         return "index";
     }
@@ -35,14 +43,16 @@ public class PokeApiController {
 
     @GetMapping("/{idOrName}")
     public String pokemonDetail(@PathVariable String idOrName, Model model) {
+        Result result = pokemonService.getPokemonByIdOrName(idOrName);
         
-        Pokemon pokemon = obtenerPokemon(idOrName);
-
-        model.addAttribute("pokemon", pokemon);
-
-        model.addAttribute("Color", obtenerTipo(pokemon));
-
-        model.addAttribute("coloresTipos", obtenerColoresTipos(pokemon));
+        if (result.Correct) {
+            Pokemon pokemon = (Pokemon) result.Object;
+            model.addAttribute("pokemon", pokemon);
+            model.addAttribute("Color", obtenerTipo(pokemon));
+            model.addAttribute("coloresTipos", obtenerColoresTipos(pokemon));
+        } else {
+            model.addAttribute("error", result.ErrorMessage);
+        }
 
         return "pokemon";
     }
