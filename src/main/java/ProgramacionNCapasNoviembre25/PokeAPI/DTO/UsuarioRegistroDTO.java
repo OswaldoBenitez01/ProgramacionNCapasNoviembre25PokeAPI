@@ -1,58 +1,39 @@
-package ProgramacionNCapasNoviembre25.PokeAPI.JPA;
+package ProgramacionNCapasNoviembre25.PokeAPI.DTO;
 
 import ProgramacionNCapasNoviembre25.PokeAPI.JPA.Rol;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 
-@Entity
-@Table(name = "usuario")
-public class Usuario {
+public class UsuarioRegistroDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idusuario")
-    private Integer idUsuario;
-
-    @Column(name = "nombre", length = 100)
     private String nombre;
 
-    @Column(name = "apellidopaterno", length = 100)
     private String apellidoPaterno;
 
-    @Column(name = "apellidomaterno", length = 100)
     private String apellidoMaterno;
 
-    @Column(name = "username", length = 50)
     private String username;
 
-    @Column(name = "correoelectronico", length = 150)
     private String correo;
-
-    @Column(name = "contrasena", length = 255)
     private String contrasena;
-
-    @Column(name = "estatus")
     private int estatus;
 
-    @ManyToOne
-    @JoinColumn(name = "idrol")
     public Rol rol;
 
-    @Column(name = "token")
     private String token;
 
-    public Integer getIdUsuario() {
-        return idUsuario;
+    public String getCorreo() {
+        return correo;
     }
 
-    public void setIdUsuario(Integer idUsuario) {
-        this.idUsuario = idUsuario;
+    public void setCorreo(String correo) {
+        this.correo = correo;
+    }
+
+    public String getContrasena() {
+        return contrasena;
+    }
+
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
     }
 
     public String getNombre() {
@@ -85,22 +66,6 @@ public class Usuario {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getCorreo() {
-        return correo;
-    }
-
-    public void setCorreo(String correo) {
-        this.correo = correo;
-    }
-
-    public String getContrasena() {
-        return contrasena;
-    }
-
-    public void setContrasena(String contrasena) {
-        this.contrasena = contrasena;
     }
 
     public int getEstatus() {

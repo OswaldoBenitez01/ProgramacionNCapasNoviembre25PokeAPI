@@ -506,7 +506,8 @@
         </style>
     </head>
     <body>
-        <div class="toggle-btn" id="toggleBtn">☰ FILTROS</div>
+
+        <div class="toggle-btn" id="toggleBtn">☰ FILTROS</div>             
 
         <div class="overlay" id="overlay"></div>
 
@@ -547,14 +548,33 @@
             </form>
         </div>
 
+
+
         <div class="main-content">
             <div class="header">
-                <h1 onclick="window.location.href='/pokemon'">&#x25B6; POKÉDEX</h1>
+                <h1 onclick="window.location.href = '/pokemon'">&#x25B6; POKÉDEX</h1>
+            </div>             
+            <div style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+                <form th:action="@{/logout}" method="post" style="margin: 0;">
+                    <button type="submit" 
+                            style="background: rgba(0,0,0,0.8);
+                            border: 2px solid #dc3545;
+                            color: #dc3545;
+                            padding: 12px 16px;
+                            font-size: 0.8rem;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            font-family: 'Press Start 2P', monospace;
+                            box-shadow: 0 0 10px rgba(220,53,69,0.3);
+                            transition: 0.3s;">
+                        SALIR <i class="bi bi-box-arrow-right"></i>
+                    </button>
+                </form>
             </div>
 
             <div class="filter-chips"
                  th:if="${(currentType != null and !#strings.isEmpty(currentType)) or
-                          (currentRegion != null and !#strings.isEmpty(currentRegion))}">
+                 (currentRegion != null and !#strings.isEmpty(currentRegion))}">
                 <span class="chip"
                       th:if="${currentType != null and !#strings.isEmpty(currentType)}"
                       onclick="removeFilter('type')">
@@ -604,19 +624,19 @@
                                 <canvas class="radar-canvas"
                                         width="200" height="200"
                                         th:attr="data-stats=${pokemon.stats[0].baseStat + ',' +
-                                                             pokemon.stats[1].baseStat + ',' +
-                                                             pokemon.stats[2].baseStat + ',' +
-                                                             pokemon.stats[3].baseStat + ',' +
-                                                             pokemon.stats[4].baseStat + ',' +
-                                                             pokemon.stats[5].baseStat},
-                                                 data-color=${@pokeApiController.obtenerTipo(pokemon)}">
+                                        pokemon.stats[1].baseStat + ',' +
+                                        pokemon.stats[2].baseStat + ',' +
+                                        pokemon.stats[3].baseStat + ',' +
+                                        pokemon.stats[4].baseStat + ',' +
+                                        pokemon.stats[5].baseStat},
+                                        data-color=${@pokeApiController.obtenerTipo(pokemon)}">
                                 </canvas>
-                                
+
                             </div>
 
                             <a class="detail-btn"
                                th:href="@{/pokemon/{name}(name=${pokemon.name})}">
-                               VER DETALLE
+                                VER DETALLE
                             </a>
                         </div>
 
@@ -652,9 +672,9 @@
         </div>
 
         <script>
-            const toggleBtn   = document.getElementById('toggleBtn');
+            const toggleBtn = document.getElementById('toggleBtn');
             const filtersPanel = document.getElementById('filtersPanel');
-            const overlay     = document.getElementById('overlay');
+            const overlay = document.getElementById('overlay');
 
             toggleBtn.addEventListener('click', function () {
                 filtersPanel.classList.toggle('open');
@@ -709,7 +729,11 @@
                         var angle = (Math.PI * 2 / n) * i - Math.PI / 2;
                         var px = cx + r * Math.cos(angle);
                         var py = cy + r * Math.sin(angle);
-                        if (i === 0) { ctx.moveTo(px, py); } else { ctx.lineTo(px, py); }
+                        if (i === 0) {
+                            ctx.moveTo(px, py);
+                        } else {
+                            ctx.lineTo(px, py);
+                        }
                     }
                     ctx.stroke();
                 }
@@ -729,12 +753,16 @@
                     var ratio = Math.min(values[i], maxVal) / maxVal;
                     var px = cx + radius * ratio * Math.cos(angle);
                     var py = cy + radius * ratio * Math.sin(angle);
-                    if (i === 0) { ctx.moveTo(px, py); } else { ctx.lineTo(px, py); }
+                    if (i === 0) {
+                        ctx.moveTo(px, py);
+                    } else {
+                        ctx.lineTo(px, py);
+                    }
                 }
                 ctx.closePath();
-                ctx.fillStyle   = 'rgba(255,255,0,0.3)';
+                ctx.fillStyle = 'rgba(255,255,0,0.3)';
                 ctx.strokeStyle = 'rgba(255,255,0,1)';
-                ctx.lineWidth   = 2;
+                ctx.lineWidth = 2;
                 ctx.fill();
                 ctx.stroke();
 
@@ -776,7 +804,8 @@
                 canvases.forEach(function (canvas) {
                     var raw = canvas.getAttribute('data-stats');
                     var color = canvas.getAttribute('data-color') || '';
-                    if (!raw) return;
+                    if (!raw)
+                        return;
                     var values = raw.split(',').map(function (v) {
                         return parseInt(v.trim(), 10) || 0;
                     });
@@ -787,11 +816,12 @@
             // ── Paginador jump ────────────────────────────────────
             var pageInput = document.getElementById('pageInput');
             var pageError = document.getElementById('pageError');
-            var jumpForm  = document.getElementById('jumpForm');
+            var jumpForm = document.getElementById('jumpForm');
 
             if (pageInput) {
                 pageInput.addEventListener('keypress', function (e) {
-                    if (!/[0-9]/.test(e.key)) e.preventDefault();
+                    if (!/[0-9]/.test(e.key))
+                        e.preventDefault();
                 });
                 pageInput.addEventListener('input', function () {
                     this.value = this.value.replace(/[^0-9]/g, '');
@@ -815,13 +845,13 @@
                     pageError.style.display = 'none';
 
                     var limitInput = jumpForm.querySelector('input[name="limit"]');
-                    var page   = parseInt(val);
-                    var lim    = parseInt(limitInput.value) || 12;
+                    var page = parseInt(val);
+                    var lim = parseInt(limitInput.value) || 12;
                     var offset = (page - 1) * lim;
 
                     var offsetInput = document.createElement('input');
-                    offsetInput.type  = 'hidden';
-                    offsetInput.name  = 'offset';
+                    offsetInput.type = 'hidden';
+                    offsetInput.name = 'offset';
                     offsetInput.value = offset.toString();
                     jumpForm.appendChild(offsetInput);
                 });
