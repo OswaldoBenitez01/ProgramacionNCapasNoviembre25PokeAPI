@@ -39,6 +39,11 @@ public class PokeApiController {
 
         return "index";
     }
+    
+    @GetMapping("/favoritos")
+    public String pokemonFav(){
+        return "pokemonfavoritos";
+    }
 
 
     @GetMapping("/{idOrName}")

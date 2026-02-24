@@ -55,7 +55,7 @@
 
             .toggle-btn {
                 position: fixed;
-                top: 20px;
+                top: 100px;
                 left: 20px;
                 z-index: 101;
                 background: rgba(0,0,0,0.8);
@@ -79,12 +79,12 @@
             .filters-panel {
                 position: fixed;
                 left: -320px;
-                top: 0;
+                top: 70px;
                 width: 300px;
-                height: 100vh;
+                height: calc(100vh - 70px);
                 background: linear-gradient(180deg, rgba(27,27,47,0.98) 0%, rgba(20,20,40,0.98) 100%);
                 backdrop-filter: blur(20px);
-                padding: 80px 24px 24px;
+                padding: 40px 24px 24px;
                 transition: left 0.3s ease;
                 z-index: 100;
                 overflow-y: auto;
@@ -235,6 +235,7 @@
             }
 
             .main-content {
+                padding-top: 80px;
                 transition: margin-left 0.3s ease;
             }
 
@@ -503,9 +504,83 @@
                     height: 260px;
                 }
             }
+            .navbar-retro {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px 25px;
+                background: rgba(0, 0, 0, 0.85);
+                backdrop-filter: blur(5px);
+                border-bottom: 3px solid #333;
+                z-index: 2000;
+            }
+            .logout-btn {
+                background: rgba(0,0,0,0.8);
+                border: 2px solid #dc3545;
+                color: #dc3545;
+                padding: 10px 16px;
+                font-size: 0.7rem;
+                border-radius: 8px;
+                cursor: pointer;
+                font-family: 'Press Start 2P', monospace;
+                box-shadow: 0 0 10px rgba(220,53,69,0.3);
+                transition: 0.3s;
+            }
+
+            .logout-btn:hover {
+                background: #dc3545;
+                color: white;
+                box-shadow: 0 0 15px rgba(220,53,69,0.5);
+            }
+            .nav-custom-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    font-size: 0.65rem;
+    border-radius: 8px;
+    text-decoration: none;
+    border: 2px solid #ff0;
+    font-family: 'Press Start 2P', monospace;
+    transition: all 0.3s ease;
+}
+
+.fav-btn-style {
+    background: rgba(0,0,0,0.8);
+    color: #ff0;
+    box-shadow: 0 0 10px rgba(255,255,0,0.3);
+}
+
+.fav-btn-style:hover {
+    background: #ff0;
+    color: #000;
+    box-shadow: 0 0 20px #ff0;
+}
+
         </style>
     </head>
     <body>
+        <nav class="navbar-retro">          
+
+            <div>
+                <a th:href="@{/pokemon/favoritos}" 
+                   id="favBtn" 
+                   class="nav-custom-btn fav-btn-style">
+                    <i class="bi bi-heart-fill"></i> 
+                    <span class="d-none d-sm-inline">FAVORITOS</span>
+                </a>
+            </div>
+
+            <form th:action="@{/logout}" method="post" style="margin: 0;">
+                <button type="submit" class="logout-btn">
+                    SALIR <i class="bi bi-box-arrow-right"></i>
+                </button>
+            </form>
+        </nav>
 
         <div class="toggle-btn" id="toggleBtn">☰ FILTROS</div>             
 

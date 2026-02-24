@@ -8,6 +8,7 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.min.css">
+
         <style>
             * {
                 box-sizing: border-box;
@@ -23,15 +24,29 @@
                     linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
                 background-size: 40px 40px;
                 min-height: 100vh;
-                padding: 30px 20px;
+                padding-top: 100px; /* Espacio para el navbar fijo */
+                padding-bottom: 30px;
                 color: #fff;
             }
 
-            .back-btn {
+
+            .navbar-retro {
                 position: fixed;
-                top: 20px;
-                left: 20px;
-                z-index: 101;
+                top: 0;
+                left: 0;
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px 25px;
+                background: rgba(0, 0, 0, 0.85);
+                backdrop-filter: blur(5px);
+                border-bottom: 3px solid #333;
+                z-index: 2000;
+            }
+
+
+            .back-btn {
                 background: transparent;
                 border: 2px solid #fff;
                 color: #fff;
@@ -50,54 +65,64 @@
             .back-btn:hover {
                 background: #fff;
                 color: #000;
-                box-shadow:
-                    0 0 16px rgba(255,255,255,0.6),
-                    inset 0 0 10px rgba(255,255,255,0.3);
+                box-shadow: 0 0 16px rgba(255,255,255,0.6);
                 transform: translateY(-2px);
             }
 
-            .back-btn:active {
-                transform: translateY(0);
+
+            .logout-btn {
+                background: rgba(0,0,0,0.8);
+                border: 2px solid #dc3545;
+                color: #dc3545;
+                padding: 10px 16px;
+                font-size: 0.7rem;
+                border-radius: 8px;
+                cursor: pointer;
+                font-family: 'Press Start 2P', monospace;
+                box-shadow: 0 0 10px rgba(220,53,69,0.3);
+                transition: 0.3s;
             }
 
+            .logout-btn:hover {
+                background: #dc3545;
+                color: white;
+                box-shadow: 0 0 15px rgba(220,53,69,0.5);
+            }
         </style>
-
     </head>
-
 
     <body>
 
-        <div class="back-btn" id="backBtn" title="Atrás">
-            ← ATRAS
-        </div>
+        <nav class="navbar-retro">
+            <div class="back-btn" id="backBtn" title="Atrás">
+                ← ATRAS
+            </div>
 
+            <div>
+                <a th:href="@{/pokemon/favoritos}" 
+                   id="favBtn" 
+                   class="btn btn-outline-warning btn-sm d-flex align-items-center gap-2" 
+                   style="font-family: 'Press Start 2P', monospace; font-size: 0.65rem; padding: 8px 12px; border-width: 2px; text-decoration: none;">
+                    <i class="bi bi-heart-fill"></i> 
+                    <span class="d-none d-sm-inline">FAVORITOS</span>
+                </a>
+            </div>
 
-        <div style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
             <form th:action="@{/logout}" method="post" style="margin: 0;">
-                <button type="submit" 
-                        style="background: rgba(0,0,0,0.8);
-                        border: 2px solid #dc3545;
-                        color: #dc3545;
-                        padding: 12px 16px;
-                        font-size: 0.8rem;
-                        border-radius: 8px;
-                        cursor: pointer;
-                        font-family: 'Press Start 2P', monospace;
-                        box-shadow: 0 0 10px rgba(220,53,69,0.3);
-                        transition: 0.3s;">
+                <button type="submit" class="logout-btn">
                     SALIR <i class="bi bi-box-arrow-right"></i>
                 </button>
             </form>
-        </div>
+        </nav>
 
-        <div class="container py-5">
+        <div class="container">
             <div class="row justify-content-center">
                 <div class="col-12 col-md-8 col-lg-5">
                     <div class="card shadow border-0 overflow-hidden" style="border-radius: 1.5rem;">
 
                         <div class="card-header text-white text-center py-4" th:style="'background: ' + ${Color}">
                             <div class="d-flex justify-content-between px-3 text-white-50 small fw-bold">
-                                <a href="http://localhost:8080/pokemon" style="color: white;">POKÉDEX</a >
+                                <a href="http://localhost:8080/pokemon" style="color: white; text-decoration: none;">POKÉDEX</a>
                                 <span th:text="'#' + ${pokemon.id}">#25</span>
                             </div>
                             <h2 class="text-white text-capitalize mb-0 mt-2 display-6 fw-bold" th:text="${pokemon.name}">Nombre</h2>
@@ -115,11 +140,7 @@
                             </div>
 
                             <div class="d-flex justify-content-center gap-4 my-3">
-                                <i id="iconoShiny" class="bi bi-stars" 
-                                   onclick="toggleShiny()" 
-                                   style="cursor:pointer; font-size: 1.5rem;" 
-                                   title="Modo Shiny"></i>
-
+                                <i id="iconoShiny" class="bi bi-stars" onclick="toggleShiny()" style="cursor:pointer; font-size: 1.5rem; color: #333;" title="Modo Shiny"></i>
                                 <i id="iconoGenero" class="bi bi-gender-male fs-3" onclick="toggleGenero()" style="cursor:pointer; color: #0d6efd;" title="Género"></i>
                                 <i id="iconoSonido" class="bi bi-volume-up-fill fs-3 text-secondary" onclick="Sonido()" style="cursor:pointer;" title="Sonido"></i>
                             </div>
@@ -134,23 +155,23 @@
 
                             <div class="row g-0 py-2 bg-light rounded-4 mb-4">
                                 <div class="col-4 border-end">
-                                    <small class="text-muted d-block">Peso</small>
-                                    <span class="fw-bold" th:text="${pokemon.weight / 10.0} + ' kg'">6 kg</span>
+                                    <small class="text-muted d-block" style="font-size: 0.5rem;">Peso</small>
+                                    <span class="fw-bold text-dark" style="font-size: 0.7rem;" th:text="${pokemon.weight / 10.0} + ' kg'">6 kg</span>
                                 </div>
                                 <div class="col-4 border-end">
-                                    <small class="text-muted d-block">Altura</small>
-                                    <span class="fw-bold" th:text="${pokemon.height / 10.0} + ' m'">0.4 m</span>
+                                    <small class="text-muted d-block" style="font-size: 0.5rem;">Altura</small>
+                                    <span class="fw-bold text-dark" style="font-size: 0.7rem;" th:text="${pokemon.height / 10.0} + ' m'">0.4 m</span>
                                 </div>
                                 <div class="col-4">
-                                    <small class="text-muted d-block">Base Exp</small>
-                                    <span class="fw-bold" th:text="${pokemon.baseExperience}">112</span>
+                                    <small class="text-muted d-block" style="font-size: 0.5rem;">Base Exp</small>
+                                    <span class="fw-bold text-dark" style="font-size: 0.7rem;" th:text="${pokemon.baseExperience}">112</span>
                                 </div>
                             </div>
 
                             <div class="text-start mb-4 px-2">
-                                <h6 class="fw-bold text-secondary mb-3 small"><i class="bi bi-bar-chart-fill"></i> ESTADÍSTICAS BASE</h6>
+                                <h6 class="fw-bold text-secondary mb-3" style="font-size: 0.6rem;"><i class="bi bi-bar-chart-fill"></i> ESTADÍSTICAS</h6>
                                 <div th:each="stat : ${pokemon.stats}" class="row align-items-center mb-2">
-                                    <div class="col-4 text-capitalize small fw-bold text-muted" th:text="${stat.stat.name}">hp</div>
+                                    <div class="col-4 text-capitalize text-muted" style="font-size: 0.5rem;" th:text="${stat.stat.name}">hp</div>
                                     <div class="col-6 p-0">
                                         <div class="progress" style="height: 8px;">
                                             <div class="progress-bar rounded-pill" 
@@ -158,140 +179,120 @@
                                                  th:aria-valuenow="${stat.baseStat}" aria-valuemin="0" aria-valuemax="255"></div>
                                         </div>
                                     </div>
-                                    <div class="col-2 text-end small fw-bold" th:text="${stat.baseStat}">50</div>
+                                    <div class="col-2 text-end text-dark" style="font-size: 0.5rem;" th:text="${stat.baseStat}">50</div>
                                 </div>
                             </div>
 
-                            <div class="row text-start g-3 px-2">
+                            <div class="row text-start g-3 px-2 pb-3">
                                 <div class="col-6">
-                                    <h6 class="fw-bold text-secondary small text-uppercase">Habilidades</h6>
+                                    <h6 class="fw-bold text-secondary text-uppercase" style="font-size: 0.5rem;">Habilidades</h6>
                                     <div class="d-flex flex-wrap gap-1">
                                         <span th:each="ability : ${pokemon.abilities}" 
                                               th:text="${ability.ability.name}"
-                                              class="badge bg-light text-dark border fw-normal text-capitalize w-100 py-2">
+                                              class="badge bg-light text-dark border fw-normal text-capitalize w-100 py-2" style="font-size: 0.5rem;">
                                         </span>
                                     </div>
                                 </div>
                                 <div class="col-6">
-                                    <h6 class="fw-bold text-secondary small text-uppercase">Movimientos</h6>
+                                    <h6 class="fw-bold text-secondary text-uppercase" style="font-size: 0.5rem;">Movimientos</h6>
                                     <div class="overflow-auto border rounded-3 p-2 bg-light" style="max-height: 80px;">
                                         <span th:each="move : ${pokemon.moves}" 
                                               th:text="${move.move.name}"
-                                              class="d-block small text-capitalize mb-1 border-bottom pb-1">
+                                              class="d-block text-dark text-capitalize mb-1 border-bottom pb-1" style="font-size: 0.45rem;">
                                         </span>
                                     </div>
                                 </div>
                             </div>
+                        </div> 
+                    </div> 
+                </div> 
+            </div> 
+        </div>
 
-                        </div> </div> </div> </div> </div> </body>
-
-
-    <script th:inline="javascript">
-
-        //sonido del pokemon
-        const audio = /*[[${pokemon.cries.latest}]]*/ ''
-        const pokemonAudio = new Audio(audio);
-        function Sonido() {
-            pokemonAudio.currentTime = 0;
-            pokemonAudio.play().catch(error => {
-                console.error("Error al reproducir el audio:", error);
-            });
-
-        }
-
-        // Esto es para tener los sprites del pokemon en shiny o normal,de espalda, de frente y es hembra o macho
-        const sprites = {
-            front: /*[[${pokemon.sprites.frontDefault}]]*/ '',
-            back: /*[[${pokemon.sprites.backDefault}]]*/ '',
-            frontShiny: /*[[${pokemon.sprites.frontShiny}]]*/ '',
-            backShiny: /*[[${pokemon.sprites.backShiny}]]*/ '',
-            frontFem: /*[[${pokemon.sprites.frontFemale}]]*/ '',
-            backFem: /*[[${pokemon.sprites.backFemale}]]*/ '',
-            frontShinyFem: /*[[${pokemon.sprites.frontShinyFemale}]]*/ '',
-            backShinyFem: /*[[${pokemon.sprites.backShinyFemale}]]*/ ''
-        };
-
-        let esShiny = false;
-        let mostrandoFront = true;
-        let esFemenino = false;
-
-        // Función para ocultar el icono de género si no hay sprites femeninos
-        function checkGeneroHabilitado() {
-            const iconoG = document.getElementById('iconoGenero');
-            if (!sprites.frontFem) {
-                iconoG.style.display = 'none';
-            }
-        }
-
-        function actualizarImagen() {
-            const img = document.getElementById('pokemonImg');
-            let seleccionada = '';
-
-            if (esFemenino && sprites.frontFem) {
-                // Lógica Femenina
-                if (esShiny && sprites.frontShinyFem) {
-                    seleccionada = mostrandoFront ? sprites.frontShinyFem : (sprites.backShinyFem || sprites.frontShinyFem);
-                } else {
-                    seleccionada = mostrandoFront ? sprites.frontFem : (sprites.backFem || sprites.frontFem);
-                }
-            } else {
-                // Lógica Masculina / Default
-                if (esShiny) {
-                    seleccionada = mostrandoFront ? sprites.frontShiny : (sprites.backShiny || sprites.frontShiny);
-                } else {
-                    seleccionada = mostrandoFront ? sprites.front : (sprites.back || sprites.front);
-                }
+        <script th:inline="javascript">
+            // [Tus funciones de audio, sprites, shiny y genero se mantienen igual]
+            const audio = /*[[${pokemon.cries.latest}]]*/ ''
+            const pokemonAudio = new Audio(audio);
+            function Sonido() {
+                pokemonAudio.currentTime = 0;
+                pokemonAudio.play().catch(error => console.error("Error audio:", error));
             }
 
-            if (seleccionada)
-                img.src = seleccionada;
-        }
+            const sprites = {
+                front: /*[[${pokemon.sprites.frontDefault}]]*/ '',
+                back: /*[[${pokemon.sprites.backDefault}]]*/ '',
+                frontShiny: /*[[${pokemon.sprites.frontShiny}]]*/ '',
+                backShiny: /*[[${pokemon.sprites.backShiny}]]*/ '',
+                frontFem: /*[[${pokemon.sprites.frontFemale}]]*/ '',
+                backFem: /*[[${pokemon.sprites.backFemale}]]*/ '',
+                frontShinyFem: /*[[${pokemon.sprites.frontShinyFemale}]]*/ '',
+                backShinyFem: /*[[${pokemon.sprites.backShinyFemale}]]*/ ''
+            };
 
-        // Esta es la funcion para que el pokemon se de vuelta
-        function cambiarSprite() {
-            mostrandoFront = !mostrandoFront;
-            actualizarImagen();
-        }
+            let esShiny = false;
+            let mostrandoFront = true;
+            let esFemenino = false;
 
-        //Esta funcion es para hacer que sea shiny o regrese al normal y cambia el diesño del botom
-        function toggleShiny() {
-            if (esShiny || sprites.frontShiny) { // Verificar si existe versión shiny
-                esShiny = !esShiny;
+            function checkGeneroHabilitado() {
+                const iconoG = document.getElementById('iconoGenero');
+                if (!sprites.frontFem)
+                    iconoG.style.display = 'none';
+            }
+
+            function actualizarImagen() {
+                const img = document.getElementById('pokemonImg');
+                let seleccionada = '';
+                if (esFemenino && sprites.frontFem) {
+                    if (esShiny && sprites.frontShinyFem)
+                        seleccionada = mostrandoFront ? sprites.frontShinyFem : (sprites.backShinyFem || sprites.frontShinyFem);
+                    else
+                        seleccionada = mostrandoFront ? sprites.frontFem : (sprites.backFem || sprites.frontFem);
+                } else {
+                    if (esShiny)
+                        seleccionada = mostrandoFront ? sprites.frontShiny : (sprites.backShiny || sprites.frontShiny);
+                    else
+                        seleccionada = mostrandoFront ? sprites.front : (sprites.back || sprites.front);
+                }
+                if (seleccionada)
+                    img.src = seleccionada;
+            }
+
+            function cambiarSprite() {
+                mostrandoFront = !mostrandoFront;
                 actualizarImagen();
-                const icono = document.getElementById('iconoShiny');
-                icono.style.color = esShiny ? '#f1c40f' : 'inherit';
             }
-        }
 
-        function toggleGenero() {
-            if (sprites.frontFem) {
-                esFemenino = !esFemenino;
-                actualizarImagen();
-
-                const icono = document.getElementById('iconoGenero');
-                if (esFemenino) {
-                    icono.className = 'bi bi-gender-female';
-                    icono.style.color = '#e84393';
-                } else {
-                    icono.className = 'bi bi-gender-male';
-                    icono.style.color = '#3498db';
+            function toggleShiny() {
+                if (esShiny || sprites.frontShiny) {
+                    esShiny = !esShiny;
+                    actualizarImagen();
+                    document.getElementById('iconoShiny').style.color = esShiny ? '#f1c40f' : '#333';
                 }
             }
-        }
 
-        checkGeneroHabilitado();
+            function toggleGenero() {
+                if (sprites.frontFem) {
+                    esFemenino = !esFemenino;
+                    actualizarImagen();
+                    const icono = document.getElementById('iconoGenero');
+                    if (esFemenino) {
+                        icono.className = 'bi bi-gender-female';
+                        icono.style.color = '#e84393';
+                    } else {
+                        icono.className = 'bi bi-gender-male';
+                        icono.style.color = '#3498db';
+                    }
+                }
+            }
 
-        var backBtn = document.getElementById('backBtn');
-        if (backBtn) {
-            backBtn.addEventListener('click', function () {
-                if (window.history.length > 1) {
+            checkGeneroHabilitado();
+
+            document.getElementById('backBtn').addEventListener('click', function () {
+                if (window.history.length > 1)
                     window.history.back();
-                } else {
+                else
                     window.location.href = '/';
-                }
             });
-        }
-
-    </script>
-
+        </script>
+    </body>
 </html>
