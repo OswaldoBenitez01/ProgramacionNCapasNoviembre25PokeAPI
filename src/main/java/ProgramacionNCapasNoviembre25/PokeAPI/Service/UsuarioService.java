@@ -53,7 +53,7 @@ public class UsuarioService {
         user.setContrasena(new BCryptPasswordEncoder().encode(userDto.getContrasena()));
         user.setEstatus(0);
         Rol rol = new Rol();
-        rol.setIdRol(userDto.getRol().getIdRol());
+        rol.setIdRol(2);
 
         user.setRol(rol);
 

@@ -1,91 +1,357 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <title>Registro</title>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<head>
+    <title>Registro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Press Start 2P', monospace !important;
+        }
 
-        <!-- Icons -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+        body {
+            background-color: #1b1b2f;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            min-height: 100vh;
+            padding: 60px 20px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-        <!-- SweetAlert -->
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        .register-container {
+            max-width: 480px;
+            width: 100%;
+        }
 
-        <!--        <script src="https://code.jquery.com/jquery-3.7.1.js"></script>-->
+        .register-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
 
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    </head>
-    <body>
-        <div class="container">
-            <h2 class="mt-5">Register</h2>
-            <form th:action="@{/registro}" th:object="${usuario}" method="post" class="needs-validation" novalidate>
+        .register-header h1 {
+            font-size: clamp(1.2rem, 4vw, 2rem);
+            color: #fff;
+            text-shadow:
+                0 0 10px #ff0,
+                0 0 20px #ff0,
+                0 0 40px #f80;
+            letter-spacing: 4px;
+            margin-bottom: 12px;
+        }
 
-                <div class="mb-3">
-                    <label for="nombre" class="form-label">Nombre</label>
-                    <input type="text" class="form-control" id="nombre"  th:field="*{nombre}" required/>                             
-                </div>
-                <div class="mb-3">
-                    <label for="apellidoPaterno" class="form-label">Apellido Paterno</label>
-                    <input type="text" class="form-control" id="apellidoPaterno" name="apellidoPaterno" required/>            
-                </div>
-                <div class="mb-3">
-                    <label for="apellidoMaterno" class="form-label">Apellido Materno</label>
-                    <input type="text" class="form-control" id="apellidoMaterno" name="apellidoMaterno" required/>
-                </div>
+        .register-header p {
+            font-size: 0.5rem;
+            color: #aaa;
+            letter-spacing: 2px;
+        }
 
-                <div class="mb-3">
-                    <label for="username" class="form-label">Usuario</label>
-                    <input type="text" class="form-control" id="username" name="username"  required/>
-                </div>
-                <div> 
-                    <label for="RolUsuario" class="form-label">Rol</label>
-                    <select class="form-select" id="RolUsuario" name="rol.idRol">
-                        <option value="0">Selecciona un Rol</option>
-                        <option th:each="r : ${Roles}" 
-                                th:text="${r.nombre}" 
-                                th:value="${r.idRol}">
-                        </option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="correo" class="form-label">Correo</label>
-                    <div th:if="${errorCorreo}" class="alert alert-danger py-2 mb-2" role="alert" style="font-size: 0.85rem;">
-                        <i class="bi bi-exclamation-triangle-fill"></i> <span th:text="${errorCorreo}"></span>
-                    </div>
+        /* Error correo */
+        .error-correo {
+            border: 2px solid #f66;
+            background: rgba(255,102,102,0.12);
+            color: #f66;
+            text-shadow: 0 0 8px #f66;
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(255,102,102,0.25);
+            font-size: 0.75rem;
+            line-height: 1.4;
+            text-align: center;
+        }
 
-                    <input type="email" class="form-control" id="correo" th:field="*{correo}" required/>
+        .form-group {
+            margin-bottom: 35px;
+        }
 
-                    <div class="invalid-feedback">
-                        Introduce un email valido.
-                    </div>
-                </div>        
-                <div class="mb-3">
-                    <label for="contrasena" class="form-label">Contraseña</label>
-                    <input type="password" class="form-control" id="contrasena" name="contrasena" required/>
-                    <div class="invalid-feedback">
-                        Coloca una contraseña.
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary">Register</button>
-            </form>
+        .form-label {
+            display: block;
+            font-size: 0.65rem;
+            color: #ccc;
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .input-group-custom {
+            background: rgba(13,13,26,0.95);
+            border: 2px solid rgba(255,255,255,0.12);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            height: 60px;
+            display: grid;
+            grid-template-columns: 55px 1fr;
+            align-items: center;
+        }
+
+        .input-group-custom:focus-within {
+            border-color: #ff0;
+            box-shadow: 
+                0 0 25px rgba(255,255,0,0.4),
+                inset 0 0 10px rgba(255,255,0,0.1);
+        }
+
+        .input-group-text-custom {
+            background: transparent;
+            border: none;
+            border-right: 2px solid rgba(255,255,255,0.12);
+            color: #888;
+            padding: 0 18px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            width: 55px;
+        }
+
+        .form-control-custom {
+            background: transparent;
+            border: none;
+            color: #fff;
+            padding: 0 20px;
+            font-size: 0.85rem;
+            height: 100%;
+            flex: 1;
+            letter-spacing: 1px;
+        }
+
+        .form-control-custom::placeholder {
+            color: #666;
+            letter-spacing: 1px;
+        }
+
+        .form-control-custom:focus {
+            outline: none;
+            box-shadow: none;
+            color: #fff;
+        }
+
+        .password-group {
+            grid-template-columns: 55px 1fr 55px;
+        }
+
+        .btn-eye {
+            background: transparent;
+            border: none;
+            border-left: 2px solid rgba(255,255,255,0.12);
+            color: #888;
+            padding: 0;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-eye:hover {
+            color: #ff0;
+            background: rgba(255,255,0,0.08);
+        }
+
+        .btn-custom {
+            width: 100%;
+            padding: 20px 28px;
+            font-size: 0.75rem;
+            border-radius: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            margin-bottom: 14px;
+        }
+
+        .btn-register {
+            background: linear-gradient(145deg, #28a745, #20c997);
+            color: #fff;
+            box-shadow: 
+                inset 0 4px 8px rgba(255,255,255,0.2),
+                0 6px 20px rgba(40,167,69,0.4);
+        }
+
+        .btn-register:hover {
+            background: linear-gradient(145deg, #218838, #1ea085);
+            box-shadow: 
+                inset 0 4px 12px rgba(255,255,255,0.3),
+                0 8px 25px rgba(40,167,69,0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-login {
+            background: transparent;
+            border: 2px solid #ff0;
+            color: #ff0;
+            text-shadow: 0 0 8px #ff0;
+            box-shadow: 
+                inset 0 2px 4px rgba(0,0,0,0.3),
+                0 0 15px rgba(255,255,0,0.3);
+        }
+
+        .btn-login:hover {
+            background: #ff0;
+            color: #000;
+            text-shadow: none;
+            box-shadow: 
+                inset 0 4px 12px rgba(255,255,255,0.4),
+                0 0 25px rgba(255,255,0,0.6);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 40px 15px; }
+            .input-group-custom { height: 55px; }
+            .input-group-text-custom, .btn-eye { width: 50px; padding: 0 14px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-header">
+            <h1>REGISTRO</h1>
+            <p>Crea tu cuenta Pokédex</p>
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script>
-            (function () {
-                'use strict'
-                var forms = document.querySelectorAll('.needs-validation')
-                Array.prototype.slice.call(forms)
-                        .forEach(function (form) {
-                            form.addEventListener('submit', function (event) {
-                                if (!form.checkValidity()) {
-                                    event.preventDefault()
-                                    event.stopPropagation()
-                                }
-                                form.classList.add('was-validated')
-                            }, false)
-                        })
-            })()
-        </script>
-    </body>
+
+        <!-- Error correo existente -->
+        <div th:if="${errorCorreo}" class="error-correo">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span th:text="${errorCorreo}">Este correo ya está registrado</span>
+        </div>
+
+        <form th:action="@{/registro}" th:object="${usuario}" method="post" class="needs-validation" novalidate>
+            <div class="form-group">
+                <label class="form-label" for="nombre">NOMBRE</label>
+                <div class="input-group input-group-custom">
+                    <span class="input-group-text-custom">
+                        <i class="bi bi-person-fill"></i>
+                    </span>
+                    <input type="text" class="form-control-custom" id="nombre" th:field="*{nombre}" 
+                           placeholder="Pikachu" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="apellidoPaterno">APELLIDO PATERNO</label>
+                <div class="input-group input-group-custom">
+                    <span class="input-group-text-custom">
+                        <i class="bi bi-person-badge-fill"></i>
+                    </span>
+                    <input type="text" class="form-control-custom" id="apellidoPaterno" name="apellidoPaterno" 
+                           placeholder="Pika" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="apellidoMaterno">APELLIDO MATERNO</label>
+                <div class="input-group input-group-custom">
+                    <span class="input-group-text-custom">
+                        <i class="bi bi-person-badge"></i>
+                    </span>
+                    <input type="text" class="form-control-custom" id="apellidoMaterno" name="apellidoMaterno" 
+                           placeholder="Chu" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="username">USUARIO</label>
+                <div class="input-group input-group-custom">
+                    <span class="input-group-text-custom">
+                        <i class="bi bi-person-lines-fill"></i>
+                    </span>
+                    <input type="text" class="form-control-custom" id="username" name="username" 
+                           placeholder="pikachu123" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="correo">CORREO</label>
+                <div class="input-group input-group-custom">
+                    <span class="input-group-text-custom">
+                        <i class="bi bi-envelope-fill"></i>
+                    </span>
+                    <input type="email" class="form-control-custom" id="correo" th:field="*{correo}" 
+                           placeholder="pikachu@paldea.com" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="contrasena">CONTRASEÑA</label>
+                <div class="input-group input-group-custom password-group">
+                    <span class="input-group-text-custom">
+                        <i class="bi bi-lock-fill"></i>
+                    </span>
+                    <input type="password" class="form-control-custom" id="contrasena" name="contrasena" 
+                           placeholder="••••••••" required>
+                    <button class="btn-eye" type="button" onclick="mostrarContrasena()" title="Mostrar/Ocultar">
+                        <i class="bi bi-eye" id="eyeIcon"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn-custom btn-register">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    Registrarse
+                </button>
+                <a href="/login" class="btn-custom btn-login">
+                    <i class="bi bi-arrow-left-circle-fill me-2"></i>
+                    Iniciar Sesión
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toggle contraseña
+        function mostrarContrasena() {
+            var passwordInput = document.getElementById("contrasena");
+            var eyeIcon = document.getElementById("eyeIcon");
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                eyeIcon.classList.remove("bi-eye");
+                eyeIcon.classList.add("bi-eye-slash");
+            } else {
+                passwordInput.type = "password";
+                eyeIcon.classList.remove("bi-eye-slash");
+                eyeIcon.classList.add("bi-eye");
+            }
+        }
+
+        // Validación Bootstrap
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    </script>
+</body>
 </html>

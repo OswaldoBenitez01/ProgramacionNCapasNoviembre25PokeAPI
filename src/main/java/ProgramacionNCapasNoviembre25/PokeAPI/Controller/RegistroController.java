@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class RegistroController {
@@ -42,37 +43,41 @@ public class RegistroController {
     }
 
     @PostMapping("/registro")
-    public String registrarUsuario(@ModelAttribute("usuario") UsuarioRegistroDTO usuarioDTO, Model model) {
+    public String registrarUsuario(@ModelAttribute("usuario") UsuarioRegistroDTO usuarioDTO, 
+                                   RedirectAttributes redirectAttributes, Model model) {
         Usuario correoRegistrado = iUsuarioJPARepository.findByCorreo(usuarioDTO.getCorreo());
-        if (correoRegistrado != null ) {
+        if (correoRegistrado != null) {
             Result roles = RolService.getAll();
             model.addAttribute("Roles", roles.Objects);
             model.addAttribute("errorCorreo", "Este correo electrónico ya está vinculado a una cuenta.");
             model.addAttribute("usuario", usuarioDTO);
             return "Registro";
         }      
-        if (usuarioDTO.getCorreo()==null) {
-             Result roles = RolService.getAll();
+        if (usuarioDTO.getCorreo() == null) {
+            Result roles = RolService.getAll();
             model.addAttribute("Roles", roles.Objects);   
             model.addAttribute("usuario", new UsuarioRegistroDTO());
             return "Registro";
-            
         }
         Usuario registro = usuarioService.registerNewUserAccount(usuarioDTO);
         eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registro));
-        return "redirect:/login?registered=true";
+
+        redirectAttributes.addAttribute("registered", "true");
+        redirectAttributes.addAttribute("user", usuarioDTO.getCorreo());
+        return "redirect:/login";
     }
 
     @GetMapping("/verificar-email")
-    public String verificarEmail(@RequestParam(value = "token", required = false) String token, Model model) {
+    public String verificarEmail(@RequestParam(value = "token", required = false) String token, 
+                                 @RequestParam(value = "redirectTo", defaultValue = "login") String redirectTo,
+                                 RedirectAttributes redirectAttributes, Model model) {
         String result = usuarioService.validateVerificationToken(token);
         if (result.equals("valid")) {
-            model.addAttribute("message", "Se verifico de manera correcta");
-            return "redirect:/login?verified=true";
+            redirectAttributes.addAttribute("verified", "true");
+            return "redirect:/" + redirectTo;
         } else {
             model.addAttribute("message", "token no valido");
             return "Verificar-email";
         }
     }
-
 }
