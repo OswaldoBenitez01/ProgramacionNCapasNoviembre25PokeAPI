@@ -719,7 +719,6 @@
 
                 ctx.clearRect(0, 0, W, H);
 
-                // Cuadrículas de referencia
                 ctx.lineWidth = 1;
                 for (var level = 1; level <= 4; level++) {
                     var r = radius * (level / 4);
@@ -813,7 +812,6 @@
                 });
             });
 
-            // ── Paginador jump ────────────────────────────────────
             var pageInput = document.getElementById('pageInput');
             var pageError = document.getElementById('pageError');
             var jumpForm = document.getElementById('jumpForm');

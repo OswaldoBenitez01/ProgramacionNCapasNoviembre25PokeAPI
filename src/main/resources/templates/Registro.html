@@ -54,7 +54,6 @@
             letter-spacing: 2px;
         }
 
-        /* Error correo */
         .error-correo {
             border: 2px solid #f66;
             background: rgba(255,102,102,0.12);
@@ -230,7 +229,6 @@
             <p>Crea tu cuenta Pokédex</p>
         </div>
 
-        <!-- Error correo existente -->
         <div th:if="${errorCorreo}" class="error-correo">
             <i class="bi bi-exclamation-triangle-fill me-2"></i>
             <span th:text="${errorCorreo}">Este correo ya está registrado</span>
@@ -337,7 +335,6 @@
             }
         }
 
-        // Validación Bootstrap
         (function () {
             'use strict'
             var forms = document.querySelectorAll('.needs-validation')
