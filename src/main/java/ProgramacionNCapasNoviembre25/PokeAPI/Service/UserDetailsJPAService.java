@@ -22,17 +22,10 @@ public class UserDetailsJPAService implements UserDetailsService {
     public UserDetails loadUserByUsername(String correo) throws UsernameNotFoundException {
         Usuario usuario = iUsuarioJPARepository.findByCorreo(correo);
 
-        boolean deshabilidato = (usuario.getEstatus() == 0);
-
-        boolean cuentaExpirada = (usuario.getEstatus() == 2);
 
         return User.withUsername(usuario.getUsername())
                 .password(usuario.getContrasena())
-                .roles(usuario.rol.getNombre())
-                
-//                .accountExpired(cuentaExpirada)
-//                .disabled(deshabilidato)
-//                
+                .roles(usuario.rol.getNombre())                
                 .build();
     }
 
