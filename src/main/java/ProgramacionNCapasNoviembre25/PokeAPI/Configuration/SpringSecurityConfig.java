@@ -15,10 +15,11 @@ public class SpringSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/registro","/verificar-email","/login").permitAll()
-                        .requestMatchers("/pokemon","/pokemon**").authenticated()
-                .anyRequest().authenticated()
+//                .requestMatchers("/registro","/verificar-email","/login").permitAll()
+//                        .requestMatchers("/pokemon","/pokemon**").authenticated()
+                .anyRequest().permitAll()
                 )
                 .formLogin(form -> form
                 .loginPage("/login")

@@ -21,28 +21,6 @@ public class UsuarioService {
     @Autowired
     private EmailService emailService;
 
-    public Result GetAll() {
-        Result result = new Result();
-
-        try {
-            List<ProgramacionNCapasNoviembre25.PokeAPI.JPA.Usuario> usuarios = usuarioRepository.findAll();
-            if (usuarios.isEmpty() || usuarios == null) {
-                result.Correct = false;
-                result.ErrorMessage = "No se encontraron los usuarios";
-                result.Objects = new ArrayList<>();
-                return result;
-            }
-            result.Objects = new ArrayList<>(usuarios);
-            result.Correct = true;
-        } catch (Exception ex) {
-            result.Correct = false;
-            result.ErrorMessage = ex.getLocalizedMessage();
-            result.ex = ex;
-        }
-
-        return result;
-    }
-
     public Usuario registerNewUserAccount(UsuarioRegistroDTO userDto) {
         Usuario user = new Usuario();
         user.setNombre(userDto.getNombre());
