@@ -2,7 +2,7 @@ package ProgramacionNCapasNoviembre25.PokeAPI.Controller;
 
 import ProgramacionNCapasNoviembre25.PokeAPI.DTO.UsuarioRegistroDTO;
 import ProgramacionNCapasNoviembre25.PokeAPI.Event.OnRegistrationCompleteEvent;
-import ProgramacionNCapasNoviembre25.PokeAPI.JPA.IUsuarioJPARepository;
+import ProgramacionNCapasNoviembre25.PokeAPI.DAO.IUsuarioJPARepository;
 import ProgramacionNCapasNoviembre25.PokeAPI.JPA.Usuario;
 import ProgramacionNCapasNoviembre25.PokeAPI.ML.Result;
 import ProgramacionNCapasNoviembre25.PokeAPI.Service.RolService;

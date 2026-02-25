@@ -1,7 +1,7 @@
 package ProgramacionNCapasNoviembre25.PokeAPI.Service;
 
 import ProgramacionNCapasNoviembre25.PokeAPI.DAO.IUsuario;
-import ProgramacionNCapasNoviembre25.PokeAPI.JPA.IUsuarioJPARepository;
+import ProgramacionNCapasNoviembre25.PokeAPI.DAO.IUsuarioJPARepository;
 import ProgramacionNCapasNoviembre25.PokeAPI.JPA.Usuario;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
