@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <head>
         <title>Pokédex</title>
         <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -564,23 +565,36 @@
         </style>
     </head>
     <body>
-        <nav class="navbar-retro">          
+        <nav class="navbar-retro">
 
-            <div>
-                <a th:href="@{/pokemon/favoritos}" 
-                   id="favBtn" 
-                   class="nav-custom-btn fav-btn-style">
-                    <i class="bi bi-heart-fill"></i> 
-                    <span class="d-none d-sm-inline">FAVORITOS</span>
+            <div sec:authorize="hasRole('Administrador')">
+                <a th:href="@{/usuarios/admin}"
+                   class="nav-custom-btn fav-btn-style"
+                   style="border-color:#e63946; color:#e63946;
+                          box-shadow: 0 0 10px rgba(230,57,70,0.3);">
+                    &#x2699; ADMIN PANEL
                 </a>
             </div>
 
-            <form th:action="@{/logout}" method="post" style="margin: 0;">
+            <div sec:authorize="hasRole('Usuario')">
+                <a th:href="@{/pokemon/favoritos}"
+                   class="nav-custom-btn fav-btn-style">
+                    &#x2665; FAVORITOS
+                </a>
+            </div>
+
+            <span style="font-size:0.5rem; color:#aaa; letter-spacing:2px;"
+                  sec:authentication="name">
+            </span>
+
+            <form th:action="@{/logout}" method="post" style="margin:0;">
                 <button type="submit" class="logout-btn">
-                    SALIR <i class="bi bi-box-arrow-right"></i>
+                    &#x23FB; SALIR
                 </button>
             </form>
+
         </nav>
+
 
         <div class="toggle-btn" id="toggleBtn">☰ FILTROS</div>             
 
