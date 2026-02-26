@@ -6,7 +6,9 @@ import ProgramacionNCapasNoviembre25.PokeAPI.JPA.Usuario;
 import ProgramacionNCapasNoviembre25.PokeAPI.ML.Result;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +42,7 @@ public class FavoritoService {
         Result result = new Result();
 //        Integer idUsuario=usuario.getIdUsuario();
         try {
-            
+
             Favorito favorito = iFavoritos.findByUsuarioYPokemon(idUsuario, idPokemon).orElse(null);
 
             if (favorito != null) {
@@ -116,4 +118,17 @@ public class FavoritoService {
         return result;
     }
 
+    public Map<String, Long> obtenerConteos() {
+
+        List<Object[]> resultados = iFavoritos.contarAgrupados();
+        Map<String, Long> mapa = new HashMap<>();
+
+        for (Object[] fila : resultados) {
+            String pokemonId = (String) fila[0];
+            Long total = (Long) fila[1];
+            mapa.put(pokemonId, total);
+        }
+
+        return mapa;
+    }
 }

@@ -18,6 +18,13 @@ public interface IFavoritos extends JpaRepository<Favorito, Integer> {
 
     List<Favorito> findByUsuarioIdUsuarioAndPokemon(Integer idUsuario, String pokemon);
 
+    @Query("""
+       SELECT f.pokemon, COUNT(f)
+       FROM Favorito f
+       GROUP BY f.pokemon
+       """)
+    List<Object[]> contarAgrupados();
+
     @Modifying
     @Query("DELETE FROM Favorito f WHERE f.usuario.idUsuario = :idUsuario")
     void deleteByUsuarioIdUsuario(@Param("idUsuario") Integer idUsuario);

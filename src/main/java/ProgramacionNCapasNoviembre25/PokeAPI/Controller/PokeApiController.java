@@ -10,6 +10,7 @@ import ProgramacionNCapasNoviembre25.PokeAPI.Service.UsuarioService;
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +62,10 @@ public class PokeApiController {
         Result tiposResult = pokemonService.getAllTypes();
         model.addAttribute("tipos", tiposResult.Objects);
 
+        Map<String, Long> conteos = favoritoService.obtenerConteos();
+
+        model.addAttribute("conteos", conteos);
+
         return "index";
     }
 
@@ -68,9 +73,9 @@ public class PokeApiController {
     public String pokemonFav(Model model) {
         Usuario Logueado = obtenerUsuarioLogueado();
         int idUsuario = Logueado.getIdUsuario();
-        Result resultFavoritosAll=favoritoService.getAllByUsuario(idUsuario);
-        model.addAttribute("Favoritos",resultFavoritosAll);
-        model.addAttribute("UsuarioL", Logueado);        
+        Result resultFavoritosAll = favoritoService.getAllByUsuario(idUsuario);
+        model.addAttribute("Favoritos", resultFavoritosAll);
+        model.addAttribute("UsuarioL", Logueado);
         return "pokemonfavoritos";
     }
 

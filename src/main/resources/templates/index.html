@@ -561,7 +561,7 @@
                 color: #000;
                 box-shadow: 0 0 20px #ff0;
             }
-            
+
             .btn-favorito {
                 width: 100%;
                 margin-top: 10px;
@@ -582,7 +582,7 @@
                 box-shadow: 0 0 10px rgba(255, 255, 0, 0.2);
             }
 
-            
+
             .btn-favorito:hover:not(:disabled) {
                 background: #ff0;
                 color: #000;
@@ -590,9 +590,9 @@
                 transform: translateY(-2px);
             }
 
-            
+
             .btn-favorito:disabled {
-                border-color: #00f7ff; 
+                border-color: #00f7ff;
                 color: #00f7ff;
                 background: rgba(0, 247, 255, 0.1);
                 box-shadow: 0 0 15px rgba(0, 247, 255, 0.4);
@@ -600,7 +600,7 @@
                 opacity: 1; /* Para que no se vea opaco por defecto de browser */
             }
 
-            
+
             .btn-favorito i {
                 font-size: 0.7rem;
             }
@@ -758,6 +758,10 @@
                                 <span class="type-badge"
                                       th:each="t : ${pokemon.types}"
                                       th:text="${t.type.name}"></span>
+                            </div>
+                            <div class="poke-stats" sec:authorize="hasRole('Administrador')">
+                                <i class="fa-solid fa-eye"></i>
+                                <span th:text="${conteos[pokemon.id.toString()] ?: 0}"></span>
                             </div>
                         </div>
 
