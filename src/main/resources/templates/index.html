@@ -90,8 +90,6 @@
                 transition: all 0.3s; text-decoration: none; color: #fff;
             }
             .chip:hover { background: linear-gradient(145deg, #ff0, #ff8c00); color: #000; }
-            .chip.clear { background: rgba(220,53,69,0.2); border-color: #dc3545; color: #dc3545; }
-            .chip.clear:hover { background: #dc3545; color: #fff; }
 
             .grid {
                 display: grid;
@@ -147,11 +145,6 @@
                 display: flex; align-items: center;
                 justify-content: flex-end; gap: 5px; margin-top: 6px;
             }
-            .poke-stats .heart-svg {
-                width: 16px; height: 16px;
-                image-rendering: pixelated;
-                filter: brightness(0) invert(1);
-            }
             .poke-stats .count-badge {
                 font-size: 0.45rem; color: #fff;
                 background: rgba(0,0,0,0.45);
@@ -182,22 +175,20 @@
                 font-family: 'Press Start 2P', monospace; font-size: 0.5rem;
                 border-radius: 8px; text-decoration: none; letter-spacing: 1px;
                 text-shadow: 0 0 6px #ff0; box-shadow: 0 0 8px rgba(255,255,0,0.3);
-                transition: all 0.2s ease;
+                transition: transform 0.2s ease;
             }
             .detail-btn:hover { transform: translateY(-1px); }
-            .btn-favorito:hover:not(:disabled) { transform: translateY(-2px); }
-
 
             .btn-favorito {
                 width: 100%; margin-top: 10px; padding: 10px;
                 font-family: 'Press Start 2P', monospace; font-size: 0.5rem;
-                cursor: pointer; border-radius: 8px; transition: all 0.3s ease;
+                cursor: pointer; border-radius: 8px; transition: transform 0.2s ease;
                 display: flex; align-items: center; justify-content: center; gap: 8px;
                 text-transform: uppercase; border: 2px solid #ff0;
                 background: rgba(255,255,0,0.05); color: #ff0;
                 box-shadow: 0 0 10px rgba(255,255,0,0.2);
             }
-            .btn-favorito:hover:not(:disabled) { filter: brightness(1.2); transform: translateY(-2px); }
+            .btn-favorito:hover:not(:disabled) { transform: translateY(-2px); }
             .btn-favorito:disabled {
                 border-color: #00f7ff; color: #00f7ff;
                 background: rgba(0,247,255,0.1);
@@ -222,7 +213,7 @@
                 font-size: 0.6rem; color: #aaa; padding: 10px 16px;
                 border: 2px solid #333; border-radius: 8px;
             }
-            .page-jump { display: flex; align-items: center; gap: 8px; }
+            .page-jump { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
             .page-jump label { font-size: 0.5rem; color: #aaa; }
             .page-jump input {
                 width: 70px; height: 38px; background: #0d0d1a;
@@ -241,7 +232,7 @@
                 border-radius: 8px; cursor: pointer; transition: all 0.2s ease;
             }
             .page-jump button:not(:disabled):hover { background: #ff0; color: #000; }
-            .error-msg { font-size: 0.45rem; color: #f66; display: none; }
+            .error-msg { font-size: 0.45rem; color: #f66; display: none; width: 100%; }
 
             @media (max-width: 600px) {
                 .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
@@ -349,10 +340,58 @@
                                   th:each="t : ${pokemon.types}"
                                   th:text="${t.type.name}"></span>
                         </div>
+
                         <div class="poke-stats" sec:authorize="hasRole('Administrador')">
-                            <svg class="heart-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                                 width="16" height="16" fill="white">
-                                <polygon points="23 6 23 11 22 11 22 12 21 12 21 13 20 13 20 14 19 14 19 15 18 15 18 16 17 16 17 17 16 17 16 18 15 18 15 19 14 19 14 20 13 20 13 21 11 21 11 20 10 20 10 19 9 19 9 18 8 18 8 17 7 17 7 16 6 16 6 15 5 15 5 14 4 14 4 13 3 13 3 12 2 12 2 11 1 11 1 6 2 6 2 5 3 5 3 4 4 4 4 3 10 3 10 4 11 4 11 5 13 5 13 4 14 4 14 3 20 3 20 4 21 4 21 5 22 5 22 6 23 6"/>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"
+                                 width="20" height="20" shape-rendering="crispEdges"
+                                 style="image-rendering:pixelated; flex-shrink:0;">
+                                <g fill="#000000">
+                                    <rect x="6" y="0" width="4" height="1"/><rect x="4" y="1" width="2" height="1"/>
+                                    <rect x="10" y="1" width="2" height="1"/><rect x="3" y="2" width="1" height="1"/>
+                                    <rect x="12" y="2" width="1" height="1"/><rect x="2" y="3" width="1" height="1"/>
+                                    <rect x="13" y="3" width="1" height="1"/><rect x="1" y="4" width="1" height="1"/>
+                                    <rect x="14" y="4" width="1" height="1"/><rect x="1" y="5" width="1" height="1"/>
+                                    <rect x="5" y="5" width="6" height="1"/><rect x="14" y="5" width="1" height="1"/>
+                                    <rect x="0" y="6" width="1" height="1"/><rect x="5" y="6" width="1" height="1"/>
+                                    <rect x="10" y="6" width="1" height="1"/><rect x="15" y="6" width="1" height="1"/>
+                                    <rect x="0" y="7" width="6" height="1"/><rect x="7" y="7" width="2" height="1"/>
+                                    <rect x="10" y="7" width="6" height="1"/><rect x="0" y="8" width="6" height="1"/>
+                                    <rect x="7" y="8" width="2" height="1"/><rect x="10" y="8" width="6" height="1"/>
+                                    <rect x="0" y="9" width="1" height="1"/><rect x="5" y="9" width="1" height="1"/>
+                                    <rect x="10" y="9" width="1" height="1"/><rect x="15" y="9" width="1" height="1"/>
+                                    <rect x="1" y="10" width="1" height="1"/><rect x="5" y="10" width="6" height="1"/>
+                                    <rect x="14" y="10" width="1" height="1"/><rect x="1" y="11" width="1" height="1"/>
+                                    <rect x="14" y="11" width="1" height="1"/><rect x="2" y="12" width="1" height="1"/>
+                                    <rect x="13" y="12" width="1" height="1"/><rect x="3" y="13" width="1" height="1"/>
+                                    <rect x="12" y="13" width="1" height="1"/><rect x="4" y="14" width="2" height="1"/>
+                                    <rect x="10" y="14" width="2" height="1"/><rect x="6" y="15" width="4" height="1"/>
+                                </g>
+                                <g fill="#E3350D">
+                                    <rect x="6" y="1" width="4" height="1"/><rect x="4" y="2" width="1" height="1"/>
+                                    <rect x="7" y="2" width="5" height="1"/><rect x="3" y="3" width="1" height="1"/>
+                                    <rect x="6" y="3" width="7" height="1"/><rect x="2" y="4" width="1" height="1"/>
+                                    <rect x="4" y="4" width="10" height="1"/><rect x="2" y="5" width="3" height="1"/>
+                                    <rect x="11" y="5" width="3" height="1"/><rect x="1" y="6" width="4" height="1"/>
+                                    <rect x="11" y="6" width="4" height="1"/>
+                                </g>
+                                <g fill="#FF8A8A">
+                                    <rect x="5" y="2" width="2" height="1"/><rect x="4" y="3" width="2" height="1"/>
+                                    <rect x="3" y="4" width="1" height="1"/>
+                                </g>
+                                <g fill="#FFFFFF">
+                                    <rect x="6" y="6" width="4" height="1"/><rect x="6" y="7" width="1" height="1"/>
+                                    <rect x="9" y="7" width="1" height="1"/><rect x="6" y="8" width="1" height="1"/>
+                                    <rect x="9" y="8" width="1" height="1"/><rect x="1" y="9" width="4" height="1"/>
+                                    <rect x="6" y="9" width="4" height="1"/><rect x="11" y="9" width="4" height="1"/>
+                                    <rect x="2" y="10" width="3" height="1"/><rect x="11" y="10" width="1" height="1"/>
+                                    <rect x="2" y="11" width="9" height="1"/><rect x="3" y="12" width="7" height="1"/>
+                                    <rect x="4" y="13" width="3" height="1"/>
+                                </g>
+                                <g fill="#D0D4D8">
+                                    <rect x="12" y="10" width="2" height="1"/><rect x="11" y="11" width="3" height="1"/>
+                                    <rect x="10" y="12" width="3" height="1"/><rect x="7" y="13" width="5" height="1"/>
+                                    <rect x="6" y="14" width="4" height="1"/>
+                                </g>
                             </svg>
                             <span class="count-badge" th:text="${conteos[pokemon.id.toString()] ?: 0}"></span>
                         </div>
@@ -400,14 +439,18 @@
                th:href="@{/pokemon(limit=${limit}, offset=${currentOffset - limit}, type=${currentType}, region=${currentRegion})}">
                 ← ANTERIOR
             </a>
+
             <span class="page-info">
                 PÁG. <span th:text="${(currentOffset / limit) + 1}"></span>
+                / <span th:text="${totalPages}"></span>
             </span>
+
             <a class="page-btn"
                th:if="${#lists.size(result.Objects) >= limit}"
                th:href="@{/pokemon(limit=${limit}, offset=${currentOffset + limit}, type=${currentType}, region=${currentRegion})}">
                 SIGUIENTE →
             </a>
+
             <form class="page-jump" id="jumpForm" th:action="@{/pokemon}" method="get">
                 <input type="hidden" name="limit"  th:value="${limit}"/>
                 <input type="hidden" name="type"   th:value="${currentType}"/>
@@ -415,10 +458,11 @@
                 <label>IR A</label>
                 <input type="text" id="pageInput" name="page" placeholder="Pág." maxlength="4"
                        th:value="${(currentOffset / limit) + 1}"
+                       th:attr="data-max=${totalPages}"
                        th:disabled="${#lists.size(result.Objects) < limit}"/>
-                <span class="error-msg" id="pageError">Solo números</span>
                 <button type="submit"
                         th:disabled="${#lists.size(result.Objects) < limit}">OK</button>
+                <span class="error-msg" id="pageError"></span>
             </form>
         </div>
 
@@ -469,35 +513,34 @@
                 document.querySelectorAll('.detail-btn').forEach(function(btn) {
                     btn.addEventListener('mouseenter', function() {
                         var c = this.getAttribute('data-color') || '#ff0';
-                        this.style.background  = c;
-                        this.style.color       = '#000';
-                        this.style.textShadow  = 'none';
-                        this.style.boxShadow   = '0 0 16px ' + hexToRgba(c, 0.7);
+                        this.style.background = c;
+                        this.style.color      = '#000';
+                        this.style.textShadow = 'none';
+                        this.style.boxShadow  = '0 0 16px ' + hexToRgba(c, 0.7);
                     });
                     btn.addEventListener('mouseleave', function() {
                         var c = this.getAttribute('data-color') || '#ff0';
-                        this.style.background  = 'transparent';
-                        this.style.color       = c;
-                        this.style.textShadow  = '0 0 6px ' + c;
-                        this.style.boxShadow   = '0 0 8px ' + hexToRgba(c, 0.3);
+                        this.style.background = 'transparent';
+                        this.style.color      = c;
+                        this.style.textShadow = '0 0 6px ' + c;
+                        this.style.boxShadow  = '0 0 8px ' + hexToRgba(c, 0.3);
                     });
                 });
 
                 document.querySelectorAll('.btn-favorito:not(:disabled)').forEach(function(btn) {
                     btn.addEventListener('mouseenter', function() {
                         var c = this.getAttribute('data-color') || '#ff0';
-                        this.style.background  = c;
-                        this.style.color       = '#000';
-                        this.style.boxShadow   = '0 0 20px ' + c;
+                        this.style.background = c;
+                        this.style.color      = '#000';
+                        this.style.boxShadow  = '0 0 20px ' + c;
                     });
                     btn.addEventListener('mouseleave', function() {
                         var c = this.getAttribute('data-color') || '#ff0';
-                        this.style.background  = hexToRgba(c, 0.08);
-                        this.style.color       = c;
-                        this.style.boxShadow   = '0 0 10px ' + hexToRgba(c, 0.3);
+                        this.style.background = hexToRgba(c, 0.08);
+                        this.style.color      = c;
+                        this.style.boxShadow  = '0 0 10px ' + hexToRgba(c, 0.3);
                     });
                 });
-
 
                 document.querySelectorAll('.radar-canvas').forEach(function(canvas) {
                     var raw   = canvas.getAttribute('data-stats');
@@ -513,31 +556,42 @@
                 var jumpForm  = document.getElementById('jumpForm');
 
                 if (pageInput && !pageInput.disabled) {
-                    pageInput.addEventListener('keypress', function(e) { if (!/[0-9]/.test(e.key)) e.preventDefault(); });
-                    pageInput.addEventListener('input',    function()  { this.value = this.value.replace(/[^0-9]/g, ''); });
+                    pageInput.addEventListener('keypress', function(e) {
+                        if (!/[0-9]/.test(e.key)) e.preventDefault();
+                    });
+                    pageInput.addEventListener('input', function() {
+                        this.value = this.value.replace(/[^0-9]/g, '');
+                    });
                 }
 
                 if (jumpForm) {
                     jumpForm.addEventListener('submit', function(e) {
                         if (pageInput.disabled) { e.preventDefault(); return; }
-                        var val = pageInput.value.trim();
-                        if (!val || isNaN(val) || parseInt(val) < 1) {
+
+                        var val     = parseInt(pageInput.value.trim(), 10);
+                        var maxPage = parseInt(pageInput.getAttribute('data-max') || '9999', 10);
+
+                        if (!val || val < 1 || val > maxPage) {
                             e.preventDefault();
                             pageInput.classList.add('input-error');
+                            pageError.textContent  = (val > maxPage)
+                                ? 'Max: pag. ' + maxPage
+                                : 'Solo numeros';
                             pageError.style.display = 'block';
                             setTimeout(function() {
                                 pageInput.classList.remove('input-error');
                                 pageError.style.display = 'none';
-                            }, 2000);
+                            }, 2500);
                             return;
                         }
-                        var lim    = parseInt(jumpForm.querySelector('input[name="limit"]').value) || 12;
-                        var offset = (parseInt(val) - 1) * lim;
-                        var input  = document.createElement('input');
-                        input.type  = 'hidden';
-                        input.name  = 'offset';
-                        input.value = offset.toString();
-                        jumpForm.appendChild(input);
+
+                        var lim    = parseInt(jumpForm.querySelector('input[name="limit"]').value) || 20;
+                        var offset = (val - 1) * lim;
+                        var inp    = document.createElement('input');
+                        inp.type   = 'hidden';
+                        inp.name   = 'offset';
+                        inp.value  = offset.toString();
+                        jumpForm.appendChild(inp);
                     });
                 }
             });
@@ -564,8 +618,7 @@
                             ? ctx.moveTo(cx + r * Math.cos(angle), cy + r * Math.sin(angle))
                             : ctx.lineTo(cx + r * Math.cos(angle), cy + r * Math.sin(angle));
                     }
-                    ctx.closePath();
-                    ctx.stroke();
+                    ctx.closePath(); ctx.stroke();
                 }
 
                 ctx.strokeStyle = 'rgba(255,255,255,0.2)';
@@ -589,8 +642,7 @@
                 ctx.fillStyle   = hexToRgba(color, 0.4);
                 ctx.strokeStyle = color;
                 ctx.lineWidth   = 2;
-                ctx.fill();
-                ctx.stroke();
+                ctx.fill(); ctx.stroke();
 
                 for (var i = 0; i < n; i++) {
                     var angle = (Math.PI * 2 / n) * i - Math.PI / 2;
@@ -601,8 +653,7 @@
                         cy + radius * ratio * Math.sin(angle),
                         3, 0, Math.PI * 2
                     );
-                    ctx.fillStyle = color;
-                    ctx.fill();
+                    ctx.fillStyle = color; ctx.fill();
                 }
 
                 ctx.font = 'bold 12px monospace';
@@ -621,7 +672,6 @@
             function agregarFavorito(btn) {
                 var pokemonId = btn.getAttribute('data-id');
                 var idUsuario = document.getElementById('idUsuarioLogueado').value;
-
                 fetch('/favorito/add', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },

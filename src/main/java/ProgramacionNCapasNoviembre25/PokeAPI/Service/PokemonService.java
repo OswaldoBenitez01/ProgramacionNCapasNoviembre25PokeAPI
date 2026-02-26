@@ -121,7 +121,7 @@ public class PokemonService {
             result.Correct = true;
             result.Objects = new ArrayList<>(pokemonsCompletos);
             result.Object = "nextOffset=" + (offset + limit);
-            
+            result.ErrorMessage = basicList.getCount().toString();
         } catch (Exception ex) {
             result.Correct = false;
             result.ErrorMessage = "Error lista completa: " + ex.getMessage();

@@ -43,7 +43,6 @@ public class PokeApiController {
             Model model) {
 
         Result result = pokemonService.getPokemonFiltered(type, region, limit, offset);
-        Result result2 = pokemonService.getPokemonList(limit, offset);
 
         Usuario Logueado = obtenerUsuarioLogueado();
 
@@ -62,9 +61,10 @@ public class PokeApiController {
         model.addAttribute("tipos", tiposResult.Objects);
 
         Map<String, Long> conteos = favoritoService.obtenerConteos();
-
+        int totalPokemon = Integer.parseInt(result.ErrorMessage);
+        
         model.addAttribute("conteos", conteos);
-        model.addAttribute("totalPages", (int) Math.ceil((double) conteos.size() / limit));
+        model.addAttribute("totalPages", (totalPokemon / limit));
 
         return "index";
     }
