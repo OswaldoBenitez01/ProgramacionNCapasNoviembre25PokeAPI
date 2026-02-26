@@ -5,6 +5,7 @@ import ProgramacionNCapasNoviembre25.PokeAPI.JPA.Favorito;
 import ProgramacionNCapasNoviembre25.PokeAPI.JPA.Usuario;
 import ProgramacionNCapasNoviembre25.PokeAPI.ML.Result;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,6 +62,7 @@ public class FavoritoService {
         Result result = new Result();
         try {
             List<Favorito> favoritos = iFavoritos.findByUsuarioIdUsuario(idUsuario);
+            favoritos.sort(Comparator.comparing(Favorito::getPokemon));
             if (favoritos != null && !favoritos.isEmpty()) {
                 result.Object = favoritos;
                 result.Correct = true;

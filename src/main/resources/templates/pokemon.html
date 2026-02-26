@@ -99,7 +99,7 @@
             </div>
 
             <div>
-                <a th:href="@{/pokemon/favoritos}" 
+                <a sec:authorize="hasRole('Usuario')" th:href="@{/pokemon/favoritos}" 
                    id="favBtn" 
                    class="btn btn-outline-warning btn-sm d-flex align-items-center gap-2" 
                    style="font-family: 'Press Start 2P', monospace; font-size: 0.65rem; padding: 8px 12px; border-width: 2px; text-decoration: none;">

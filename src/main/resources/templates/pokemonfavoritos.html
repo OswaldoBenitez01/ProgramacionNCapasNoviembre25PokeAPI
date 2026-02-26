@@ -1,15 +1,757 @@
 <!DOCTYPE html>
-<!--
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
--->
-<html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <head>
-        <title>TODO supply a title</title>
+        <title>Mis Favoritos - Pokédex</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">       
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <style>
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                font-family: 'Press Start 2P', monospace;
+                background-color: #1b1b2f;
+                background-image:
+                    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+                background-size: 40px 40px;
+                min-height: 100vh;
+                padding: 30px 20px;
+                color: #fff;
+            }
+
+            .header {
+                text-align: center;
+                margin-bottom: 40px;
+            }
+
+            .header h1 {
+                font-size: clamp(1.2rem, 4vw, 2rem);
+                color: #fff;
+                text-shadow:
+                    0 0 10px #ff0,
+                    0 0 20px #ff0,
+                    0 0 40px #f80;
+                letter-spacing: 4px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+            .header h1:hover {
+                text-shadow:
+                    0 0 20px #ff0,
+                    0 0 40px #ff0,
+                    0 0 60px #f80;
+            }
+
+            .header p {
+                font-size: 0.5rem;
+                color: #aaa;
+                margin-top: 10px;
+                letter-spacing: 2px;
+            }
+
+            .toggle-btn {
+                position: fixed;
+                top: 100px;
+                left: 20px;
+                z-index: 101;
+                background: rgba(0,0,0,0.8);
+                border: 2px solid #ff0;
+                color: #ff0;
+                padding: 12px 16px;
+                font-size: 0.8rem;
+                border-radius: 8px;
+                cursor: pointer;
+                font-family: 'Press Start 2P', monospace;
+                transition: all 0.3s ease;
+                box-shadow: 0 0 10px rgba(255,255,0,0.3);
+            }
+
+            .toggle-btn:hover {
+                background: #ff0;
+                color: #000;
+                box-shadow: 0 0 20px #ff0;
+            }
+
+            .filters-panel {
+                position: fixed;
+                left: -320px;
+                top: 70px;
+                width: 300px;
+                height: calc(100vh - 70px);
+                background: linear-gradient(180deg, rgba(27,27,47,0.98) 0%, rgba(20,20,40,0.98) 100%);
+                backdrop-filter: blur(20px);
+                padding: 40px 24px 24px;
+                transition: left 0.3s ease;
+                z-index: 100;
+                overflow-y: auto;
+                box-shadow: 10px 0 40px rgba(0,0,0,0.7);
+                border-right: 3px solid rgba(255,255,0,0.2);
+            }
+
+            .filters-panel.open {
+                left: 0;
+            }
+
+            .panel-title {
+                font-size: 0.85rem;
+                color: #ff0;
+                margin-bottom: 24px;
+                text-align: center;
+                text-shadow: 0 0 8px #ff0;
+                padding-bottom: 16px;
+                border-bottom: 1px solid rgba(255,255,0,0.1);
+            }
+
+            .filter-group {
+                margin-bottom: 24px;
+            }
+
+            .filter-group label {
+                display: block;
+                font-size: 0.65rem;
+                color: #ccc;
+                margin-bottom: 10px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+
+            .filter-group select {
+                width: 100%;
+                background: rgba(13,13,26,0.9);
+                border: 2px solid rgba(255,255,255,0.15);
+                color: #fff;
+                padding: 12px;
+                font-family: 'Press Start 2P', monospace;
+                font-size: 0.65rem;
+                border-radius: 8px;
+                transition: all 0.3s ease;
+            }
+
+            .filter-group select:focus {
+                border-color: #ff0;
+                box-shadow: 0 0 12px rgba(255,255,0,0.4);
+                outline: none;
+            }
+
+            .filter-group select option {
+                background: #1b1b2f;
+                color: #fff;
+            }
+
+            .filter-btn {
+                width: 100%;
+                padding: 14px;
+                background: linear-gradient(145deg, #28a745, #20c997);
+                border: none;
+                color: #fff;
+                font-family: 'Press Start 2P', monospace;
+                font-size: 0.65rem;
+                border-radius: 10px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                box-shadow: 0 4px 12px rgba(40,167,69,0.3);
+                margin-bottom: 12px;
+            }
+
+            .filter-btn:hover {
+                background: linear-gradient(145deg, #218838, #1ea085);
+                box-shadow: 0 6px 20px rgba(40,167,69,0.5);
+                transform: translateY(-2px);
+            }
+
+            .clear-btn {
+                background: linear-gradient(145deg, #dc3545, #fd7e14);
+                box-shadow: 0 4px 12px rgba(220,53,69,0.3);
+            }
+
+            .clear-btn:hover {
+                background: linear-gradient(145deg, #c82333, #e65c00);
+                box-shadow: 0 6px 20px rgba(220,53,69,0.5);
+            }
+
+            .overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.8);
+                z-index: 99;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+            }
+
+            .overlay.open {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .filter-chips {
+                max-width: 1200px;
+                margin: 0 auto 30px;
+                display: flex;
+                gap: 12px;
+                flex-wrap: wrap;
+                padding: 0 20px;
+            }
+
+            .chip {
+                background: linear-gradient(145deg, rgba(255,255,0,0.2), rgba(255,165,0,0.1));
+                border: 2px solid #ff0;
+                padding: 10px 16px;
+                border-radius: 25px;
+                font-size: 0.7rem;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                transition: all 0.3s ease;
+                text-decoration: none;
+                color: #fff;
+            }
+
+            .chip:hover {
+                background: linear-gradient(145deg, #ff0, #ff8c00);
+                color: #000;
+                transform: scale(1.08);
+            }
+
+            .chip.clear {
+                background: linear-gradient(145deg, rgba(220,53,69,0.2), rgba(253,126,20,0.1));
+                border-color: #dc3545;
+                color: #dc3545;
+            }
+
+            .chip.clear:hover {
+                background: linear-gradient(145deg, #dc3545, #fd7e14);
+                color: #fff;
+            }
+
+            .main-content {
+                padding-top: 80px;
+                transition: margin-left 0.3s ease;
+            }
+
+            .grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                gap: 30px;
+                max-width: 1400px;
+                margin: 0 auto 40px;
+            }
+
+            .card-container {
+                height: 300px;
+                perspective: 1000px;
+            }
+
+            .card-inner {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                transform-style: preserve-3d;
+                transition: transform 0.7s ease;
+            }
+
+            .card-container:hover .card-inner {
+                transform: rotateY(180deg);
+            }
+
+            .card-face {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                backface-visibility: hidden;
+                border-radius: 12px;
+                padding: 16px;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .card-front {
+                border: 3px solid rgba(255,255,255,0.15);
+                box-shadow:
+                    0 0 10px rgba(255,255,255,0.05),
+                    inset 0 0 20px rgba(0,0,0,0.3);
+            }
+
+            .card-front .poke-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 8px;
+            }
+
+            .card-front .poke-name {
+                font-size: 0.7rem;
+                text-transform: uppercase;
+                text-shadow: 1px 1px 0 rgba(0,0,0,0.8);
+                max-width: 120px;
+                word-break: break-word;
+                line-height: 1.5;
+            }
+
+            .card-front .poke-id {
+                font-size: 0.55rem;
+                background: rgba(0,0,0,0.5);
+                padding: 4px 6px;
+                border-radius: 6px;
+                white-space: nowrap;
+            }
+
+            .card-front .poke-sprite {
+                flex: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .card-front .poke-sprite img {
+                width: 80%;
+                height: 80%;
+                image-rendering: pixelated;
+                filter: drop-shadow(3px 3px 0px rgba(0,0,0,0.7));
+            }
+
+            .card-front .poke-types {
+                display: flex;
+                gap: 6px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .type-badge {
+                font-size: 0.5rem;
+                padding: 4px 8px;
+                border-radius: 6px;
+                text-transform: uppercase;
+                background: rgba(0,0,0,0.4);
+                border: 1px solid rgba(255,255,255,0.3);
+            }
+
+            .card-back {
+                transform: rotateY(180deg);
+                background: #12122a;
+                border: 3px solid rgba(255,255,255,0.1);
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px;
+            }
+
+            .back-title {
+                font-size: 0.55rem;
+                color: #aaa;
+                text-align: center;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                width: 100%;
+            }
+
+            .stats-radar {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 4px;
+            }
+
+            .radar-labels {
+                font-size: 0.38rem;
+                color: #aaa;
+                text-align: center;
+                letter-spacing: 1px;
+            }
+
+            .detail-btn {
+                display: block;
+                width: 100%;
+                text-align: center;
+                padding: 8px 0;
+                background: transparent;
+                border: 2px solid #ff0;
+                color: #ff0;
+                font-family: 'Press Start 2P', monospace;
+                font-size: 0.5rem;
+                border-radius: 8px;
+                text-decoration: none;
+                letter-spacing: 1px;
+                text-shadow: 0 0 6px #ff0;
+                box-shadow: 0 0 8px rgba(255,255,0,0.3);
+                transition: all 0.2s ease;
+            }
+
+            .detail-btn:hover {
+                background: #ff0;
+                color: #000;
+                text-shadow: none;
+                box-shadow: 0 0 16px rgba(255,255,0,0.7);
+            }
+
+            .pagination-wrapper {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 14px;
+                margin-top: 40px;
+            }
+
+            .page-btn {
+                font-family: 'Press Start 2P', monospace;
+                font-size: 0.6rem;
+                padding: 10px 16px;
+                background: transparent;
+                border: 2px solid #fff;
+                color: #fff;
+                border-radius: 8px;
+                text-decoration: none;
+                letter-spacing: 1px;
+                transition: all 0.2s ease;
+            }
+
+            .page-btn:hover {
+                background: #fff;
+                color: #000;
+                box-shadow: 0 0 12px rgba(255,255,255,0.5);
+            }
+
+            .page-btn.disabled {
+                opacity: 0.3;
+                pointer-events: none;
+            }
+
+            .page-info {
+                font-size: 0.6rem;
+                color: #aaa;
+                padding: 10px 16px;
+                border: 2px solid #333;
+                border-radius: 8px;
+            }
+
+            .page-jump {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .page-jump label {
+                font-size: 0.5rem;
+                color: #aaa;
+            }
+
+            .page-jump input {
+                width: 70px;
+                height: 38px;
+                background: #0d0d1a;
+                border: 2px solid #444;
+                border-radius: 8px;
+                color: #fff;
+                font-family: 'Press Start 2P', monospace;
+                font-size: 0.6rem;
+                text-align: center;
+                outline: none;
+            }
+
+            .page-jump input:focus {
+                border-color: #ff0;
+                box-shadow: 0 0 8px rgba(255,255,0,0.4);
+            }
+
+            .page-jump input.input-error {
+                border-color: #f66;
+                box-shadow: 0 0 8px rgba(255,100,100,0.4);
+            }
+
+            .page-jump button {
+                height: 38px;
+                padding: 0 12px;
+                background: transparent;
+                border: 2px solid #ff0;
+                color: #ff0;
+                font-family: 'Press Start 2P', monospace;
+                font-size: 0.5rem;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+            .page-jump button:hover {
+                background: #ff0;
+                color: #000;
+            }
+
+            .error-msg {
+                font-size: 0.45rem;
+                color: #f66;
+                display: none;
+            }
+
+            @media (max-width: 600px) {
+                .grid {
+                    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                }
+                .card-container {
+                    height: 260px;
+                }
+            }
+            .navbar-retro {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px 25px;
+                background: rgba(0, 0, 0, 0.85);
+                backdrop-filter: blur(5px);
+                border-bottom: 3px solid #333;
+                z-index: 2000;
+            }
+            .logout-btn {
+                background: rgba(0,0,0,0.8);
+                border: 2px solid #dc3545;
+                color: #dc3545;
+                padding: 10px 16px;
+                font-size: 0.7rem;
+                border-radius: 8px;
+                cursor: pointer;
+                font-family: 'Press Start 2P', monospace;
+                box-shadow: 0 0 10px rgba(220,53,69,0.3);
+                transition: 0.3s;
+            }
+
+            .logout-btn:hover {
+                background: #dc3545;
+                color: white;
+                box-shadow: 0 0 15px rgba(220,53,69,0.5);
+            }
+            .nav-custom-btn {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 10px 16px;
+                font-size: 0.65rem;
+                border-radius: 8px;
+                text-decoration: none;
+                border: 2px solid #ff0;
+                font-family: 'Press Start 2P', monospace;
+                transition: all 0.3s ease;
+            }
+
+            .fav-btn-style {
+                background: rgba(0,0,0,0.8);
+                color: #ff0;
+                box-shadow: 0 0 10px rgba(255,255,0,0.3);
+            }
+
+            .fav-btn-style:hover {
+                background: #ff0;
+                color: #000;
+                box-shadow: 0 0 20px #ff0;
+            }
+
+            .btn-favorito {
+                width: 100%;
+                margin-top: 10px;
+                padding: 10px;
+                font-family: 'Press Start 2P', monospace;
+                font-size: 0.5rem;
+                cursor: pointer;
+                border-radius: 8px;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                text-transform: uppercase;
+                border: 2px solid #ff0;
+                background: rgba(255, 255, 0, 0.05);
+                color: #ff0;
+                box-shadow: 0 0 10px rgba(255, 255, 0, 0.2);
+            }
+
+
+            .btn-favorito:hover:not(:disabled) {
+                background: #ff0;
+                color: #000;
+                box-shadow: 0 0 20px #ff0;
+                transform: translateY(-2px);
+            }
+
+
+            .btn-favorito:disabled {
+                border-color: #00f7ff;
+                color: #00f7ff;
+                background: rgba(0, 247, 255, 0.1);
+                box-shadow: 0 0 15px rgba(0, 247, 255, 0.4);
+                cursor: not-allowed;
+                opacity: 1; /* Para que no se vea opaco por defecto de browser */
+            }
+
+
+            .btn-favorito i {
+                font-size: 0.7rem;
+            }
+
+            .btn-favorito:hover i {
+                animation: star-pulse 0.5s infinite alternate;
+            }
+
+            @keyframes star-pulse {
+                from {
+                    transform: scale(1);
+                }
+                to {
+                    transform: scale(1.3);
+                }
+            }
+        </style>
     </head>
     <body>
-        <div>TODO write content</div>
+
+        <nav class="navbar-retro">
+
+            <div sec:authorize="hasRole('Administrador')">
+                <a th:href="@{/usuarios/admin}"
+                   class="nav-custom-btn fav-btn-style"
+                   style="border-color:#e63946; color:#e63946;
+                   box-shadow: 0 0 10px rgba(230,57,70,0.3);">
+                    &#x2699; ADMIN PANEL
+                </a>
+            </div>
+
+            <div sec:authorize="hasRole('Usuario')">
+                <a th:href="@{/pokemon}"
+                   class="btn fw-bold px-4"
+                   style="
+                   background: #0d6efd;
+                   color: white;
+                   border-radius: 20px;
+                   "
+                   onmouseover="this.style.background = '#00c3ff';this.style.color = '#111';this.style.boxShadow = '0 0 20px rgba(0,195,255,0.9)';"
+                   onmouseout="this.style.background = '#111';this.style.color = '#00c3ff';this.style.boxShadow = '0 0 8px rgba(0,195,255,0.6)';">
+                    POKÉDEX
+                </a>
+            </div>
+
+            <span style="font-size:0.5rem; color:#aaa; letter-spacing:2px;"
+                  sec:authentication="name">
+            </span>
+
+            <form th:action="@{/logout}" method="post" style="margin:0;">
+                <button type="submit" class="logout-btn">
+                    &#x23FB; SALIR
+                </button>
+            </form>
+
+        </nav>
+
+
+        <div class="main-content">
+            <div class="header">
+                <h1>&#x25B6; FAVORITOS</h1>
+            </div>    
+            <div class="grid" >
+
+                <div class="card-container"
+                     th:each="fav : ${Favoritos.Object}">
+
+                    <div class="card-face card-front" 
+
+                         >
+
+                        <div class="poke-header">
+                            <div class="poke-name"
+                                 th:text=" ${@pokemonService.getPokemonByIdOrName(fav.pokemon).Object.name}">
+                            </div>
+
+
+                            <div class="poke-id"
+                                 th:text="'#'+${fav.pokemon}">
+                            </div>
+                        </div>
+
+                        <div class="poke-sprite">
+                            <img th:src="${'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/' + fav.pokemon + '.png'}"
+                                 alt="pokemon">
+                        </div>
+
+                        <button type="button"
+                                class="btn-favorito"
+                                style="border-color:#dc3545; color:#dc3545;"
+                                th:attr="data-id=${fav.id}"
+                                onclick="eliminarFavorito(this)">
+                            ❌ Quitar
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <script>
+            function eliminarFavorito(btn) {
+
+                const favoritoId = btn.getAttribute("data-id");
+
+                Swal.fire({
+                    title: "¿Eliminar favorito?",
+                    text: "Esta acción no se puede deshacer",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#dc3545",
+                    cancelButtonColor: "#aaa",
+                    confirmButtonText: "Sí, eliminar"
+                }).then((result) => {
+
+                    if (result.isConfirmed) {
+
+                        fetch("/favorito/delete/" + favoritoId, {
+                            method: "DELETE"
+                        })
+                                .then(response => response.json())
+                                .then(data => {
+
+                                    if (data.Correct) {
+                                        Swal.fire({
+                                            icon: "success",
+                                            title: "Eliminado",
+                                            timer: 1500,
+                                            showConfirmButton: false
+                                        }).then(() => {
+                                            location.reload();
+                                        });
+                                    } else {
+                                        Swal.fire("Error", data.Object, "error");
+                                    }
+
+                                });
+
+                    }
+
+                });
+            }
+        </script>
+
     </body>
 </html>

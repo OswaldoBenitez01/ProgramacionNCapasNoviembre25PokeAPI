@@ -561,8 +561,64 @@
                 color: #000;
                 box-shadow: 0 0 20px #ff0;
             }
+            
+            .btn-favorito {
+                width: 100%;
+                margin-top: 10px;
+                padding: 10px;
+                font-family: 'Press Start 2P', monospace;
+                font-size: 0.5rem;
+                cursor: pointer;
+                border-radius: 8px;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                text-transform: uppercase;
+                border: 2px solid #ff0;
+                background: rgba(255, 255, 0, 0.05);
+                color: #ff0;
+                box-shadow: 0 0 10px rgba(255, 255, 0, 0.2);
+            }
 
+            
+            .btn-favorito:hover:not(:disabled) {
+                background: #ff0;
+                color: #000;
+                box-shadow: 0 0 20px #ff0;
+                transform: translateY(-2px);
+            }
+
+            
+            .btn-favorito:disabled {
+                border-color: #00f7ff; 
+                color: #00f7ff;
+                background: rgba(0, 247, 255, 0.1);
+                box-shadow: 0 0 15px rgba(0, 247, 255, 0.4);
+                cursor: not-allowed;
+                opacity: 1; /* Para que no se vea opaco por defecto de browser */
+            }
+
+            
+            .btn-favorito i {
+                font-size: 0.7rem;
+            }
+
+            .btn-favorito:hover i {
+                animation: star-pulse 0.5s infinite alternate;
+            }
+
+            @keyframes star-pulse {
+                from {
+                    transform: scale(1);
+                }
+                to {
+                    transform: scale(1.3);
+                }
+            }
         </style>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     </head>
     <body>
         <nav class="navbar-retro">
@@ -571,7 +627,7 @@
                 <a th:href="@{/usuarios/admin}"
                    class="nav-custom-btn fav-btn-style"
                    style="border-color:#e63946; color:#e63946;
-                          box-shadow: 0 0 10px rgba(230,57,70,0.3);">
+                   box-shadow: 0 0 10px rgba(230,57,70,0.3);">
                     &#x2699; ADMIN PANEL
                 </a>
             </div>
@@ -722,10 +778,18 @@
                                 </canvas>
 
                             </div>
-<!--                            <input type="hidden" name="idUsuario" th:value="${UsuarioL.idUsuario}" />
-                            <button type="button">
-                                <i class="bi bi-star"></i>Favorito</button>
-                           -->
+                            <input type="hidden" id="idUsuarioLogueado" th:value="${UsuarioL.idUsuario}" />                          
+
+                            <button sec:authorize="hasRole('Usuario')" type="button" 
+                                    class="btn-favorito" 
+                                    th:data-id="${pokemon.id}" 
+                                    th:disabled="${Favoritos.contains(pokemon.id.toString())}" 
+                                    onclick="agregarFavorito(this)">
+
+                                <i th:class="${Favoritos.contains(pokemon.id.toString()) ? 'bi bi-star-fill' : 'bi bi-star'}"></i>
+
+                                <span th:text="${Favoritos.contains(pokemon.id.toString()) ? 'EN EQUIPO' : 'CAPTURAR'}"></span>
+                            </button>
 
                             <a class="detail-btn"
                                th:href="@{/pokemon/{name}(name=${pokemon.name})}">
@@ -763,6 +827,57 @@
             </div>
 
         </div>
+        <script>
+            function agregarFavorito(btn) {
+
+                const pokemonId = btn.getAttribute('data-id');
+                const idUsuario = document.getElementById('idUsuarioLogueado').value;
+
+                const favoritoData = {
+                    usuario: {idUsuario: parseInt(idUsuario)},
+                    pokemon: parseInt(pokemonId)
+                };
+
+                fetch('/favorito/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(favoritoData)
+                })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.Correct) {
+
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: '¡Agregado!',
+                                    text: data.Object,
+                                    confirmButtonColor: '#3085d6',
+                                    confirmButtonText: 'Aceptar'
+                                }).then(() => {
+                                    // 🔄 Recargar página
+                                    location.reload();
+                                });
+
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: data.Object
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error de conexión',
+                                text: 'No se pudo conectar con el servidor'
+                            });
+                        });
+            }
+        </script>
 
         <script>
             const toggleBtn = document.getElementById('toggleBtn');

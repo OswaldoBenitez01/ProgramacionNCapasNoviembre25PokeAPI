@@ -1,5 +1,6 @@
 package ProgramacionNCapasNoviembre25.PokeAPI.Controller;
 
+import ProgramacionNCapasNoviembre25.PokeAPI.JPA.Favorito;
 import ProgramacionNCapasNoviembre25.PokeAPI.JPA.Usuario;
 import ProgramacionNCapasNoviembre25.PokeAPI.ML.Pokemon;
 import ProgramacionNCapasNoviembre25.PokeAPI.ML.Result;
@@ -7,7 +8,10 @@ import ProgramacionNCapasNoviembre25.PokeAPI.Service.FavoritoService;
 import ProgramacionNCapasNoviembre25.PokeAPI.Service.PokemonService;
 import ProgramacionNCapasNoviembre25.PokeAPI.Service.UsuarioService;
 import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,11 +43,15 @@ public class PokeApiController {
             @RequestParam(defaultValue = "0") int offset,
             Model model) {
 
-             
-       
         Result result = pokemonService.getPokemonFiltered(type, region, limit, offset);
 
-        model.addAttribute("UsuarioL",obtenerUsuarioLogueado());
+        Usuario Logueado = obtenerUsuarioLogueado();
+
+        int idUsuario = Logueado.getIdUsuario();
+
+        model.addAttribute("Favoritos", FavoritosPokemonId(idUsuario));
+
+        model.addAttribute("UsuarioL", Logueado);
         model.addAttribute("result", result);
         model.addAttribute("currentOffset", offset);
         model.addAttribute("limit", limit);
@@ -57,7 +65,12 @@ public class PokeApiController {
     }
 
     @GetMapping("/favoritos")
-    public String pokemonFav() {
+    public String pokemonFav(Model model) {
+        Usuario Logueado = obtenerUsuarioLogueado();
+        int idUsuario = Logueado.getIdUsuario();
+        Result resultFavoritosAll=favoritoService.getAllByUsuario(idUsuario);
+        model.addAttribute("Favoritos",resultFavoritosAll);
+        model.addAttribute("UsuarioL", Logueado);        
         return "pokemonfavoritos";
     }
 
@@ -81,8 +94,23 @@ public class PokeApiController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String name = auth.getName();
         Result resultUserActivo = usuarioService.getByUsername(name);
-        Usuario usuario=(Usuario) resultUserActivo.Object;
+        Usuario usuario = (Usuario) resultUserActivo.Object;
         return usuario;
+    }
+
+    public List<String> FavoritosPokemonId(int idUsuario) {
+        Result resultFavortios = favoritoService.getAllByUsuario(idUsuario);
+
+        List<String> favoritosPokemonIds = new ArrayList<>();
+
+        if (resultFavortios.Correct) {
+            List<Favorito> favoritos = (List<Favorito>) resultFavortios.Object;
+
+            favoritosPokemonIds = favoritos.stream()
+                    .map(Favorito::getPokemon)
+                    .collect(Collectors.toList());
+        }
+        return favoritosPokemonIds;
     }
 
     public Pokemon obtenerPokemon(String idOrName) {
