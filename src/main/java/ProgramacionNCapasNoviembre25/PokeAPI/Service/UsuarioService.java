@@ -57,4 +57,44 @@ public class UsuarioService {
         usuarioRepository.save(user);
         return "valid";
     }
+    
+    public Result getById(Integer idUsuario) {
+        Result result = new Result();
+        try {
+            Usuario usuario = usuarioRepository.findById(idUsuario).orElse(null);
+            if (usuario != null) {
+                result.Object = usuario;
+                result.Correct = true;
+            } else {
+                result.Correct = false;
+                result.ErrorMessage = "no se encontro un usuario con ese id";
+            }
+        } catch (Exception ex) {
+            result.Correct = false;
+            result.ErrorMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+        return result;
+
+    }
+    
+    public Result getByUsername(String username) {
+        Result result = new Result();
+        try {
+            Usuario usuario = usuarioRepository.findByUsername(username).orElse(null);
+            if (usuario != null) {
+                result.Object = usuario;
+                result.Correct = true;
+            } else {
+                result.Correct = false;
+                result.ErrorMessage = "no se encontro un usuario con ese id";
+            }
+        } catch (Exception ex) {
+            result.Correct = false;
+            result.ErrorMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+        return result;
+
+    }
 }

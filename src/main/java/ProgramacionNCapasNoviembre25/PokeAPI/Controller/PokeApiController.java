@@ -1,9 +1,16 @@
 package ProgramacionNCapasNoviembre25.PokeAPI.Controller;
 
+import ProgramacionNCapasNoviembre25.PokeAPI.JPA.Usuario;
 import ProgramacionNCapasNoviembre25.PokeAPI.ML.Pokemon;
 import ProgramacionNCapasNoviembre25.PokeAPI.ML.Result;
+import ProgramacionNCapasNoviembre25.PokeAPI.Service.FavoritoService;
 import ProgramacionNCapasNoviembre25.PokeAPI.Service.PokemonService;
+import ProgramacionNCapasNoviembre25.PokeAPI.Service.UsuarioService;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +18,12 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequestMapping("/pokemon")
 public class PokeApiController {
+
+    @Autowired
+    private FavoritoService favoritoService;
+
+    @Autowired
+    private UsuarioService usuarioService;
 
     private final PokemonService pokemonService;
 
@@ -26,8 +39,11 @@ public class PokeApiController {
             @RequestParam(defaultValue = "0") int offset,
             Model model) {
 
+             
+       
         Result result = pokemonService.getPokemonFiltered(type, region, limit, offset);
 
+        model.addAttribute("UsuarioL",obtenerUsuarioLogueado());
         model.addAttribute("result", result);
         model.addAttribute("currentOffset", offset);
         model.addAttribute("limit", limit);
@@ -39,17 +55,16 @@ public class PokeApiController {
 
         return "index";
     }
-    
+
     @GetMapping("/favoritos")
-    public String pokemonFav(){
+    public String pokemonFav() {
         return "pokemonfavoritos";
     }
-
 
     @GetMapping("/{idOrName}")
     public String pokemonDetail(@PathVariable String idOrName, Model model) {
         Result result = pokemonService.getPokemonByIdOrName(idOrName);
-        
+
         if (result.Correct) {
             Pokemon pokemon = (Pokemon) result.Object;
             model.addAttribute("pokemon", pokemon);
@@ -60,6 +75,14 @@ public class PokeApiController {
         }
 
         return "pokemon";
+    }
+
+    public Usuario obtenerUsuarioLogueado() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String name = auth.getName();
+        Result resultUserActivo = usuarioService.getByUsername(name);
+        Usuario usuario=(Usuario) resultUserActivo.Object;
+        return usuario;
     }
 
     public Pokemon obtenerPokemon(String idOrName) {
