@@ -692,6 +692,10 @@
                                  alt="pokemon">
                         </div>
 
+                        <a class="detail-btn"
+                           th:href="@{/pokemon/{name}(name=${fav.pokemon})}">
+                            VER DETALLE
+                        </a>
                         <button type="button"
                                 class="btn-favorito"
                                 style="border-color:#dc3545; color:#dc3545;"
