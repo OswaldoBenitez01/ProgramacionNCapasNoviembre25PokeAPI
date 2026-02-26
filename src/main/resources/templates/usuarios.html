@@ -1,719 +1,493 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <title>Admin Panel</title>
-        <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <style>
-            * {
-                box-sizing: border-box;
-            }
+<head>
+    <title>Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <style>
+        * { box-sizing: border-box; }
 
-            body {
-                font-family: 'Press Start 2P', monospace;
-                background-color: #1b1b2f;
-                background-image:
-                    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-                background-size: 40px 40px;
-                min-height: 100vh;
-                padding: 24px;
-                color: #fff;
-            }
+        body {
+            font-family: 'Press Start 2P', monospace;
+            background-color: #1b1b2f;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            min-height: 100vh;
+            padding: 24px;
+            color: #fff;
+        }
 
-            .admin-header {
-                text-align: center;
-                margin-bottom: 32px;
-            }
+        .admin-header { text-align: center; margin-bottom: 32px; }
+        .admin-header h1 {
+            font-size: clamp(1rem, 3vw, 1.8rem);
+            color: #fff;
+            text-shadow: 0 0 10px #ff0, 0 0 20px #f80;
+            letter-spacing: 4px;
+            margin-bottom: 8px;
+        }
+        .admin-header p { font-size: 0.5rem; color: #aaa; letter-spacing: 2px; }
 
-            .admin-header h1 {
-                font-size: clamp(1rem, 3vw, 1.8rem);
-                color: #fff;
-                text-shadow: 0 0 10px #ff0, 0 0 20px #f80;
-                letter-spacing: 4px;
-                margin-bottom: 8px;
-            }
-
-            .admin-header p {
-                font-size: 0.5rem;
-                color: #aaa;
-                letter-spacing: 2px;
-            }
-
-            .search-section {
-                background: rgba(255,255,255,0.04);
-                border: 2px solid rgba(255,255,255,0.1);
-                border-radius: 12px;
-                padding: 20px;
-                margin-bottom: 24px;
-            }
-
-            .search-section input {
-                background: #0d0d1a;
-                border: 2px solid #333;
-                color: #fff;
-                border-radius: 8px;
-                font-family: 'Press Start 2P', monospace;
-                font-size: 0.6rem;
-                height: 40px;
-            }
-
-            .search-section input:focus {
-                background: #0d0d1a;
-                border-color: #ff0;
-                box-shadow: 0 0 8px rgba(255,255,0,0.3);
-                color: #fff;
-            }
-
-            .btn-retro {
-                font-family: 'Press Start 2P', monospace;
-                font-size: 0.55rem;
-                border-radius: 8px;
-                padding: 8px 14px;
-                cursor: pointer;
-                transition: all 0.2s;
-                border: 2px solid;
-            }
-
-            .btn-retro:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-            }
-
-            .btn-primary-retro   {
-                background: #3a86ff;
-                border-color: #3a86ff;
-                color: #fff;
-            }
-            .btn-secondary-retro {
-                background: #444;
-                border-color: #666;
-                color: #fff;
-            }
-            .btn-warning-retro   {
-                background: #ffd60a;
-                border-color: #ffd60a;
-                color: #000;
-            }
-            .btn-danger-retro    {
-                background: #e63946;
-                border-color: #e63946;
-                color: #fff;
-            }
-
-            .table-wrapper {
-                background: rgba(255,255,255,0.04);
-                border: 2px solid rgba(255,255,255,0.1);
-                border-radius: 12px;
-                overflow: hidden;
-            }
-
-            .table {
-                color: #fff;
-                font-size: 0.6rem;
-                margin: 0;
-            }
-
-            .table th {
-                background: #e63946;
-                color: #fff;
-                border: none;
-                padding: 14px 10px;
-                text-align: center;
-                letter-spacing: 1px;
-            }
-
-            .table td {
-                vertical-align: middle;
-                text-align: center;
-                border-color: rgba(255,255,255,0.07);
-                padding: 12px 8px;
-            }
-
-            .table tbody tr:hover {
-                background: rgba(255,255,255,0.04);
-            }
-
-            .form-switch .form-check-input {
-                width: 52px;
-                height: 28px;
-                cursor: pointer;
-                background-color: #555;
-                border-color: #666;
-            }
-
-            .form-switch .form-check-input:checked {
-                background-color: #28a745;
-                border-color: #28a745;
-            }
-
-            .fav-list-container {
-                max-height: 180px;
-                overflow-y: auto;
-                background: rgba(0,0,0,0.4);
-                border-radius: 8px;
-                padding: 8px;
-                border: 1px solid rgba(255,255,255,0.08);
-                scrollbar-width: thin;
-                scrollbar-color: #444 #111;
-            }
-
-            .fav-item {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                padding: 6px 4px;
-                border-bottom: 1px solid rgba(255,255,255,0.06);
-            }
-
-            .fav-item:last-child {
-                border-bottom: none;
-            }
-
-            .fav-sprite {
-                width: 40px;
-                height: 40px;
-                image-rendering: pixelated;
-                flex-shrink: 0;
-            }
-
-            .fav-name {
-                font-size: 0.55rem;
-                text-transform: capitalize;
-                font-weight: bold;
-            }
-
-            .fav-meta {
-                font-size: 0.5rem;
-                color: #aaa;
-            }
-
-            .no-favoritos {
-                text-align: center;
-                padding: 12px;
-                font-size: 0.55rem;
-                color: #aaa;
-            }
-
-            .modal-content {
-                background: #1b1b2f;
-                border: 2px solid rgba(255,255,255,0.15);
-                border-radius: 16px;
-                color: #fff;
-                font-family: 'Press Start 2P', monospace;
-            }
-
-            .modal-header {
-                border-bottom: 1px solid rgba(255,255,255,0.1);
-            }
-            .modal-footer {
-                border-top:    1px solid rgba(255,255,255,0.1);
-            }
-
-            .modal-title {
-                font-size: 0.9rem;
-                color: #ff0;
-                text-shadow: 0 0 8px #f80;
-            }
-
-            .modal-body label {
-                font-size: 0.55rem;
-                color: #aaa;
-                margin-bottom: 4px;
-                display: block;
-            }
-
-            .modal-body input,
-            .modal-body select {
-                background: #0d0d1a;
-                border: 2px solid #333;
-                color: #fff;
-                border-radius: 8px;
-                font-family: 'Press Start 2P', monospace;
-                font-size: 0.6rem;
-                width: 100%;
-                padding: 8px;
-                margin-bottom: 16px;
-            }
-
-            .modal-body input:focus,
-            .modal-body select:focus {
-                border-color: #ff0;
-                outline: none;
-                box-shadow: 0 0 6px rgba(255,255,0,0.3);
-            }
-
-            .modal-body select option {
-                background: #1b1b2f;
-            }
-
-            .btn-close {
-                filter: invert(1);
-            }
-        </style>
-    </head>
-    <body>
-
-        <!-- Navbar -->
-        <nav style="
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .retro-panel {
             background: rgba(255,255,255,0.04);
             border: 2px solid rgba(255,255,255,0.1);
             border-radius: 12px;
-            padding: 12px 20px;
-            margin-bottom: 24px;">
+        }
 
-            <a href="/pokemon"
-               class="btn-retro btn-primary-retro"
-               style="text-decoration:none;">
-                &#x2190; REGRESAR
-            </a>
+        .retro-input {
+            background: #0d0d1a;
+            border: 2px solid #333;
+            color: #fff;
+            border-radius: 8px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.6rem;
+            height: 40px;
+        }
+        .retro-input:focus {
+            background: #0d0d1a;
+            border-color: #ff0;
+            box-shadow: 0 0 8px rgba(255,255,0,0.3);
+            color: #fff;
+            outline: none;
+        }
 
-            <span style="font-size:0.6rem; color:#aaa; letter-spacing:2px;">
-                ADMIN PANEL
-            </span>
+        .btn-retro {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.55rem;
+            border-radius: 8px;
+            padding: 8px 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid;
+        }
+        .btn-retro:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
 
-            <form action="/logout" method="post" style="margin:0;">
-                <button type="submit"
-                        class="btn-retro btn-danger-retro">
-                    &#x23FB; SALIR
-                </button>
-            </form>
-        </nav>
+        .btn-primary-retro   { background: #3a86ff; border-color: #3a86ff; color: #fff; }
+        .btn-secondary-retro { background: #444;    border-color: #666;    color: #fff; }
+        .btn-warning-retro   { background: #ffd60a; border-color: #ffd60a; color: #000; }
+        .btn-danger-retro    { background: #e63946; border-color: #e63946; color: #fff; }
 
-        
-        <!-- Header -->
-        <div class="admin-header">
-            <h1>&#x25B6; ADMIN PANEL</h1>
-            <p>Gestión de usuarios y favoritos</p>
-        </div>
+        .table { color: #fff; font-size: 0.6rem; margin: 0; }
+        .table th {
+            background: #e63946; color: #fff; border: none;
+            padding: 14px 10px; text-align: center; letter-spacing: 1px;
+        }
+        .table td {
+            vertical-align: middle; text-align: center;
+            border-color: rgba(255,255,255,0.07); padding: 12px 8px;
+        }
+        .table tbody tr:hover { background: rgba(255,255,255,0.04); }
 
-        <div class="container-fluid">
+        .form-switch .form-check-input {
+            width: 52px; height: 28px; cursor: pointer;
+            background-color: #555; border-color: #666;
+        }
+        .form-switch .form-check-input:checked { background-color: #28a745; border-color: #28a745; }
 
-            <!-- Buscador -->
-            <div class="search-section">
-                <div class="row g-2 align-items-center">
-                    <div class="col-md-4">
-                        <input type="text" id="inputUsername"
-                               class="form-control"
-                               placeholder="Username...">
-                    </div>
-                    <div class="col-md-4">
-                        <input type="text" id="inputCorreo"
-                               class="form-control"
-                               placeholder="Correo...">
-                    </div>
-                    <div class="col-md-4 d-flex gap-2">
-                        <button onclick="buscar()"
-                                class="btn-retro btn-primary-retro w-100">Buscar</button>
-                        <button onclick="cargarTodos()"
-                                class="btn-retro btn-secondary-retro w-100">Ver Todos</button>
-                    </div>
+        .fav-list-container {
+            max-height: 180px; overflow-y: auto;
+            background: rgba(0,0,0,0.4); border-radius: 8px;
+            padding: 8px; border: 1px solid rgba(255,255,255,0.08);
+            scrollbar-width: thin; scrollbar-color: #444 #111;
+        }
+        .fav-item {
+            display: flex; align-items: center; gap: 8px;
+            padding: 6px 4px; border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .fav-item:last-child { border-bottom: none; }
+        .fav-sprite { width: 40px; height: 40px; image-rendering: pixelated; flex-shrink: 0; }
+        .fav-name   { font-size: 0.55rem; text-transform: capitalize; font-weight: bold; }
+        .fav-meta   { font-size: 0.5rem; color: #aaa; }
+        .no-favoritos { text-align: center; padding: 12px; font-size: 0.55rem; color: #aaa; }
+
+        .modal-content {
+            background: #1b1b2f; border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 16px; color: #fff; font-family: 'Press Start 2P', monospace;
+        }
+        .modal-header { border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .modal-footer { border-top:    1px solid rgba(255,255,255,0.1); }
+        .modal-title  { font-size: 0.9rem; color: #ff0; text-shadow: 0 0 8px #f80; }
+
+        .modal-body label { font-size: 0.55rem; color: #aaa; margin-bottom: 4px; display: block; }
+        .modal-body input,
+        .modal-body select {
+            background: #0d0d1a; border: 2px solid #333; color: #fff;
+            border-radius: 8px; font-family: 'Press Start 2P', monospace;
+            font-size: 0.6rem; width: 100%; padding: 8px; margin-bottom: 16px;
+        }
+        .modal-body input:focus,
+        .modal-body select:focus { border-color: #ff0; outline: none; box-shadow: 0 0 6px rgba(255,255,0,0.3); }
+        .modal-body select option { background: #1b1b2f; }
+
+        .btn-close { filter: invert(1); }
+    </style>
+</head>
+<body>
+
+    <nav class="retro-panel d-flex justify-content-between align-items-center px-3 py-2 mb-4">
+        <a href="/pokemon" class="btn-retro btn-primary-retro" style="text-decoration:none;">
+            &#x2190; REGRESAR
+        </a>
+        <span style="font-size:0.6rem; color:#aaa; letter-spacing:2px;">ADMIN PANEL</span>
+        <form action="/logout" method="post" class="m-0">
+            <button type="submit" class="btn-retro btn-danger-retro">&#x23FB; SALIR</button>
+        </form>
+    </nav>
+
+    <div class="admin-header">
+        <h1>&#x25B6; ADMIN PANEL</h1>
+        <p>Gestión de usuarios y favoritos</p>
+    </div>
+
+    <div class="container-fluid">
+
+        <div class="retro-panel p-3 mb-4">
+            <div class="row g-2 align-items-center">
+                <div class="col-md-4">
+                    <input type="text" id="inputUsername" class="retro-input form-control" placeholder="Username...">
+                </div>
+                <div class="col-md-4">
+                    <input type="text" id="inputCorreo" class="retro-input form-control" placeholder="Correo...">
+                </div>
+                <div class="col-md-4 d-flex gap-2">
+                    <button id="btnBuscar"    class="btn-retro btn-primary-retro w-100">Buscar</button>
+                    <button id="btnVerTodos"  class="btn-retro btn-secondary-retro w-100">Ver Todos</button>
                 </div>
             </div>
-
-            <!-- Tabla -->
-            <div class="table-wrapper">
-                <div class="table-responsive">
-                    <table class="table table-dark table-hover">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Username</th>
-                                <th>Correo</th>
-                                <th>Rol</th>
-                                <th>Estatus</th>
-                                <th>Acciones</th>
-                                <th style="min-width:280px;">Pokémon Favoritos</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tablaBody">
-                            <tr>
-                                <td colspan="7" class="text-center py-4">Cargando...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
         </div>
 
-        <!-- Modal Editar Usuario -->
-        <div class="modal fade" id="modalEditar" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">&#x270F; EDITAR USUARIO</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <input type="hidden" id="editId">
-
-                        <label>Nombre</label>
-                        <input type="text" id="editNombre" placeholder="Nombre">
-
-                        <label>Apellido Paterno</label>
-                        <input type="text" id="editApPat" placeholder="Apellido paterno">
-
-                        <label>Apellido Materno</label>
-                        <input type="text" id="editApMat" placeholder="Apellido materno">
-
-                        <label>Username</label>
-                        <input type="text" id="editUsername" placeholder="Username">
-
-                        <label>Correo</label>
-                        <input type="text" id="editCorreo" placeholder="Correo">
-
-                        <label>Rol</label>
-                        <select id="editRol">
-                            <option value="">Cargando roles...</option>
-                        </select>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button"
-                                class="btn-retro btn-secondary-retro"
-                                data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button"
-                                class="btn-retro btn-warning-retro"
-                                onclick="guardarEdicion()">Guardar</button>
-                    </div>
-                </div>
+        <div class="retro-panel overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Correo</th>
+                            <th>Rol</th>
+                            <th>Estatus</th>
+                            <th>Acciones</th>
+                            <th style="min-width:280px;">Pokémon Favoritos</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaBody">
+                        <tr>
+                            <td colspan="7" class="text-center py-4">Cargando...</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    </div>
 
-        <script>
-        document.addEventListener('DOMContentLoaded', function () {
+    <div class="modal fade" id="modalEditar" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">&#x270F; EDITAR USUARIO</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editId">
+                    <label>Nombre</label>          <input type="text" id="editNombre"   placeholder="Nombre">
+                    <label>Apellido Paterno</label> <input type="text" id="editApPat"    placeholder="Apellido paterno">
+                    <label>Apellido Materno</label> <input type="text" id="editApMat"    placeholder="Apellido materno">
+                    <label>Username</label>         <input type="text" id="editUsername" placeholder="Username">
+                    <label>Correo</label>           <input type="text" id="editCorreo"   placeholder="Correo">
+                    <label>Rol</label>
+                    <select id="editRol">
+                        <option value="">Cargando roles...</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-retro btn-secondary-retro" data-bs-dismiss="modal">Cancelar</button>
+                    <button id="btnGuardar" class="btn-retro btn-warning-retro">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+
+        var TIPO_COLORES = {
+            fire:'#f08030', water:'#6890f0', grass:'#78c850', electric:'#f8d030',
+            normal:'#a8a878', fighting:'#c03028', poison:'#a040a0', ground:'#e0c068',
+            flying:'#a890f0', psychic:'#f85888', bug:'#a8b820', rock:'#b8a038',
+            ghost:'#705898', dragon:'#7038f8', steel:'#b8b8d0', fairy:'#ee99ac',
+            dark:'#705848', ice:'#98d8d8'
+        };
+
+        var SWAL_TEMA = { background: '#1b1b2f', color: '#fff' };
+
+        function colorTipo(tipo) { return TIPO_COLORES[tipo] || '#aaa'; }
+        function toastOk(titulo) {
+            Swal.fire(Object.assign({}, SWAL_TEMA, {
+                toast: true, position: 'top-end', icon: 'success',
+                title: titulo, showConfirmButton: false, timer: 1500
+            }));
+        }
+        function alertaError(titulo) {
+            Swal.fire(Object.assign({}, SWAL_TEMA, { icon: 'error', title: titulo }));
+        }
+
+        function btnVer(id) {
+            return `<button class="btn-retro btn-secondary-retro btn-ver-fav"
+                            data-id="${id}"
+                            style="font-size:0.5rem; padding:6px 10px;">
+                        &#x25BA; Ver favoritos
+                    </button>`;
+        }
+
+        function btnOcultar(id) {
+            return `<div class="text-center mt-2">
+                        <button class="btn-retro btn-secondary-retro btn-ocultar-fav"
+                                data-id="${id}"
+                                style="font-size:0.5rem; padding:6px 10px;">
+                            &#x25A0; Ocultar
+                        </button>
+                    </div>`;
+        }
+
+        $(function() {
+            // Carga inicial
             cargarTodos();
+
+            // Buscador
+            $('#btnBuscar').on('click', function() {
+                var username = $('#inputUsername').val();
+                var correo   = $('#inputCorreo').val();
+                $.getJSON('/usuarios/buscar', { username: username, correo: correo }, renderTabla);
+            });
+
+            // Ver todos
+            $('#btnVerTodos').on('click', cargarTodos);
+
+            // Guardar edición (modal)
+            $('#btnGuardar').on('click', guardarEdicion);
+
+            // Toggle estatus
+            $('#tablaBody').on('change', '.form-check-input', function() {
+                var id     = $(this).data('id');
+                var activo = $(this).is(':checked') ? 1 : 0;
+                $.ajax({ url: '/usuarios/' + id + '/estatus/' + activo, method: 'PATCH' })
+                 .done(function() { toastOk('Estatus actualizado'); });
+            });
+
+            // Abrir modal editar
+            $('#tablaBody').on('click', '.btn-editar', function() {
+                var d = $(this).data();
+                $('#editId').val(d.id);
+                $('#editNombre').val(d.nombre);
+                $('#editApPat').val(d.appat);
+                $('#editApMat').val(d.apmat);
+                $('#editUsername').val(d.username);
+                $('#editCorreo').val(d.correo);
+                cargarRoles(d.rolid);
+                new bootstrap.Modal($('#modalEditar')[0]).show();
+            });
+
+            // Eliminar usuario
+            $('#tablaBody').on('click', '.btn-eliminar', function() {
+                eliminarUsuario($(this).data('id'));
+            });
+
+            // Ver favoritos
+            $('#tablaBody').on('click', '.btn-ver-fav', function() {
+                cargarFavoritos($(this).data('id'));
+            });
+
+            // Ocultar favoritos
+            $('#tablaBody').on('click', '.btn-ocultar-fav', function() {
+                var id = $(this).data('id');
+                $('#fav-' + id).html(btnVer(id));
+            });
+
+            // Eliminar favorito
+            $('#tablaBody').on('click', '.btn-eliminar-fav', function() {
+                var idFav     = $(this).data('favid');
+                var idUsuario = $(this).data('userid');
+                eliminarFavorito(idFav, idUsuario);
+            });
         });
 
         function cargarTodos() {
-            fetch('/usuarios')
-                    .then(function (r) {
-                        return r.json();
-                    })
-                    .then(function (usuarios) {
-                        renderTabla(usuarios);
-                    })
-                    .catch(function () {
-                        document.getElementById('tablaBody').innerHTML =
-                                '<tr><td colspan="7" class="text-center text-danger py-4">Error cargando usuarios</td></tr>';
-                    });
-        }
-
-        function buscar() {
-            var username = document.getElementById('inputUsername').value;
-            var correo = document.getElementById('inputCorreo').value;
-            fetch('/usuarios/buscar?username=' + encodeURIComponent(username) + '&correo=' + encodeURIComponent(correo))
-                    .then(function (r) {
-                        return r.json();
-                    })
-                    .then(function (usuarios) {
-                        renderTabla(usuarios);
-                    });
+            $.getJSON('/usuarios', renderTabla)
+             .fail(function() {
+                 $('#tablaBody').html('<tr><td colspan="7" class="text-center text-danger py-4">Error cargando usuarios</td></tr>');
+             });
         }
 
         function renderTabla(usuarios) {
-            var tbody = document.getElementById('tablaBody');
-
             if (!usuarios || usuarios.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4" style="font-size:0.7rem;">No hay usuarios</td></tr>';
+                $('#tablaBody').html('<tr><td colspan="7" class="text-center py-4">No hay usuarios</td></tr>');
                 return;
             }
 
-            var html = '';
-
-            for (var i = 0; i < usuarios.length; i++) {
-                var u = usuarios[i];
-                var rol = (u.rol && u.rol.nombre) ? u.rol.nombre : 'Sin rol';
-                var rolId = (u.rol && u.rol.idRol) ? u.rol.idRol : '';
+            var filas = usuarios.map(function(u) {
+                var rol   = u.rol ? u.rol.nombre : 'Sin rol';
+                var rolId = u.rol ? u.rol.idRol  : 0;
                 var activo = u.estatus === 1 || u.estatus === true;
 
-                var nombre = u.nombre || '';
-                var apPat = u.apellidoPaterno || '';
-                var apMat = u.apellidoMaterno || '';
-                var uname = u.username || '';
-                var correo = u.correo || '';
+                return `
+                <tr>
+                    <td>${u.idUsuario}</td>
+                    <td>${u.username || ''}</td>
+                    <td>${u.correo   || ''}</td>
+                    <td>${rol}</td>
 
-                html += '<tr>';
-                html += '<td>' + u.idUsuario + '</td>';
-                html += '<td>' + uname + '</td>';
-                html += '<td>' + correo + '</td>';
-                html += '<td>' + rol + '</td>';
+                    <td>
+                        <div class="form-check form-switch d-flex justify-content-center mb-0">
+                            <input class="form-check-input" type="checkbox" role="switch"
+                                   data-id="${u.idUsuario}"
+                                   ${activo ? 'checked' : ''}>
+                        </div>
+                    </td>
 
-                html += '<td>';
-                html += '  <div class="form-check form-switch d-flex justify-content-center mb-0">';
-                html += '    <input class="form-check-input" type="checkbox" role="switch" ';
-                html += (activo ? 'checked' : '');
-                html += ' onchange="toggleEstatus(' + u.idUsuario + ', this.checked)">';
-                html += '  </div>';
-                html += '</td>';
+                    <td>
+                        <button class="btn-retro btn-warning-retro btn-editar me-1"
+                                data-id="${u.idUsuario}"
+                                data-nombre="${u.nombre           || ''}"
+                                data-appat="${u.apellidoPaterno   || ''}"
+                                data-apmat="${u.apellidoMaterno   || ''}"
+                                data-username="${u.username       || ''}"
+                                data-correo="${u.correo           || ''}"
+                                data-rolid="${rolId}">&#x270F;</button>
+                        <button class="btn-retro btn-danger-retro btn-eliminar"
+                                data-id="${u.idUsuario}">&#x1F5D1;</button>
+                    </td>
 
-                html += '<td>';
-                html += '  <button ';
-                html += '    onclick="abrirEditar(' + u.idUsuario + ',\'' + nombre + '\',\'' + apPat + '\',\'' + apMat + '\',\'' + uname + '\',\'' + correo + '\',' + (rolId || 0) + ')" ';
-                html += '    class="btn-retro btn-warning-retro me-1" title="Editar">&#x270F;</button>';
-                html += '  <button ';
-                html += '    onclick="eliminarUsuario(' + u.idUsuario + ')" ';
-                html += '    class="btn-retro btn-danger-retro" title="Eliminar">&#x1F5D1;</button>';
-                html += '</td>';
+                    <td>
+                        <div id="fav-${u.idUsuario}">
+                            ${btnVer(u.idUsuario)}
+                        </div>
+                    </td>
+                </tr>`;
+            });
 
-                html += '<td>';
-                html += '  <div style="display:flex;gap:6px;margin-bottom:8px;justify-content:center;">';
-                html += '    <button onclick="cargarFavoritos(' + u.idUsuario + ')" ';
-                html += '            class="btn-retro btn-secondary-retro" style="font-size:0.5rem;padding:6px 10px;">&#x25BA; Ver</button>';
-                html += '    <button onclick="ocultarFavoritos(' + u.idUsuario + ')" ';
-                html += '            class="btn-retro btn-secondary-retro" style="font-size:0.5rem;padding:6px 10px;">&#x25A0; Ocultar</button>';
-                html += '  </div>';
-                html += '  <div id="fav-' + u.idUsuario + '"></div>';
-                html += '</td>';
-
-                html += '</tr>';
-            }
-
-            tbody.innerHTML = html;
-        }
-
-        function toggleEstatus(idUsuario, activo) {
-            var estatus = activo ? 1 : 0;
-            fetch('/usuarios/' + idUsuario + '/estatus/' + estatus, {method: 'PATCH'})
-                    .then(function (r) {
-                        if (r.ok) {
-                            Swal.fire({
-                                toast: true,
-                                position: 'top-end',
-                                icon: 'success',
-                                title: 'Estatus actualizado',
-                                showConfirmButton: false,
-                                timer: 1500,
-                                background: '#1b1b2f',
-                                color: '#fff'
-                            });
-                        }
-                    });
+            $('#tablaBody').html(filas.join(''));
         }
 
         function cargarRoles(rolActualId) {
-            var select = document.getElementById('editRol');
-            select.innerHTML = '<option value="">Sin rol</option>';
-
-            fetch('/usuarios/roles')
-                    .then(function (r) {
-                        return r.json();
-                    })
-                    .then(function (roles) {
-                        for (var i = 0; i < roles.length; i++) {
-                            var rol = roles[i];
-                            var selected = (rolActualId && rol.idRol == rolActualId) ? 'selected' : '';
-                            select.innerHTML += '<option value="' + rol.idRol + '" ' + selected + '>' + rol.nombre + '</option>';
-                        }
-                    })
-                    .catch(function () {
-                        select.innerHTML = '<option value="">Error cargando roles</option>';
-                    });
-        }
-
-        function abrirEditar(id, nombre, apPat, apMat, username, correo, rolId) {
-            document.getElementById('editId').value = id;
-            document.getElementById('editNombre').value = nombre;
-            document.getElementById('editApPat').value = apPat;
-            document.getElementById('editApMat').value = apMat;
-            document.getElementById('editUsername').value = username;
-            document.getElementById('editCorreo').value = correo;
-
-            cargarRoles(rolId);
-
-            new bootstrap.Modal(document.getElementById('modalEditar')).show();
+            var $select = $('#editRol');
+            $.getJSON('/usuarios/roles', function(roles) {
+                var opciones = '<option value="">Sin rol</option>' +
+                    roles.map(function(r) {
+                        return `<option value="${r.idRol}" ${r.idRol == rolActualId ? 'selected' : ''}>${r.nombre}</option>`;
+                    }).join('');
+                $select.html(opciones);
+            }).fail(function() {
+                $select.html('<option value="">Error cargando roles</option>');
+            });
         }
 
         function guardarEdicion() {
-            var id = document.getElementById('editId').value;
-            var rolId = document.getElementById('editRol').value;
+            var id    = $('#editId').val();
+            var rolId = $('#editRol').val();
 
-            var body = {
-                nombre: document.getElementById('editNombre').value,
-                apellidoPaterno: document.getElementById('editApPat').value,
-                apellidoMaterno: document.getElementById('editApMat').value,
-                username: document.getElementById('editUsername').value,
-                correo: document.getElementById('editCorreo').value,
-                rol: rolId ? {idRol: parseInt(rolId)} : null
-            };
-
-            fetch('/usuarios/' + id, {
-                method: 'PUT',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(body)
-            })
-                    .then(function (r) {
-                        if (r.ok) {
-                            bootstrap.Modal.getInstance(document.getElementById('modalEditar')).hide();
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Actualizado',
-                                text: 'Usuario actualizado correctamente',
-                                background: '#1b1b2f',
-                                color: '#fff',
-                                confirmButtonColor: '#3a86ff'
-                            }).then(function () {
-                                cargarTodos();
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'No se pudo actualizar el usuario',
-                                background: '#1b1b2f',
-                                color: '#fff'
-                            });
-                        }
-                    });
-        }
-
-        function eliminarUsuario(idUsuario) {
-            Swal.fire({
-                title: '¿Eliminar usuario?',
-                text: 'Esta acción no se puede deshacer',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#e63946',
-                cancelButtonColor: '#444',
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar',
-                background: '#1b1b2f',
-                color: '#fff'
-            }).then(function (result) {
-                if (result.isConfirmed) {
-                    fetch('/usuarios/' + idUsuario, {method: 'DELETE'})
-                            .then(function (r) {
-                                if (r.ok) {
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: 'Eliminado',
-                                        showConfirmButton: false,
-                                        timer: 1500,
-                                        background: '#1b1b2f',
-                                        color: '#fff'
-                                    }).then(function () {
-                                        cargarTodos();
-                                    });
-                                } else {
-                                    Swal.fire({icon: 'error', title: 'Error al eliminar', background: '#1b1b2f', color: '#fff'});
-                                }
-                            });
-                }
+            $.ajax({
+                url:         '/usuarios/' + id,
+                method:      'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    nombre:          $('#editNombre').val(),
+                    apellidoPaterno: $('#editApPat').val(),
+                    apellidoMaterno: $('#editApMat').val(),
+                    username:        $('#editUsername').val(),
+                    correo:          $('#editCorreo').val(),
+                    rol: rolId ? { idRol: parseInt(rolId) } : null
+                })
+            }).done(function() {
+                bootstrap.Modal.getInstance($('#modalEditar')[0]).hide();
+                Swal.fire(Object.assign({}, SWAL_TEMA, {
+                    icon: 'success', title: 'Actualizado',
+                    text: 'Usuario actualizado correctamente',
+                    confirmButtonColor: '#3a86ff'
+                })).then(cargarTodos);
+            }).fail(function() {
+                alertaError('No se pudo actualizar el usuario');
             });
         }
 
-        function cargarFavoritos(idUsuario) {
-            var container = document.getElementById('fav-' + idUsuario);
-            container.innerHTML = '<small style="font-size:0.5rem;">Cargando...</small>';
-
-            fetch('/usuarios/' + idUsuario + '/favoritos')
-                    .then(function (r) {
-                        return r.json();
-                    })
-                    .then(function (data) {
-                        if (!data || data.length === 0) {
-                            container.innerHTML = '<div class="no-favoritos">&#x2205; Sin favoritos</div>';
-                            return;
-                        }
-
-                        var html = '<div class="fav-list-container">';
-
-                        for (var i = 0; i < data.length; i++) {
-                            var combo = data[i];
-                            var fav = combo.favorito;
-                            var poke = combo.pokemon;
-
-                            var sprite = (poke && poke.sprites && poke.sprites.front_default)
-                                    ? poke.sprites.front_default : '';
-                            var nombre = poke ? (poke.name || '???') : '???';
-                            var pokeId = poke ? (poke.id || '') : '';
-                            var tipo = (poke && poke.types && poke.types.length > 0 && poke.types[0].type)
-                                    ? poke.types[0].type.name : '';
-                            var color = getColorByType(tipo);
-                            var favId = fav ? fav.id : '';
-
-                            html += '<div class="fav-item">';
-
-                            if (sprite) {
-                                html += '<img src="' + sprite + '" class="fav-sprite" alt="' + nombre + '">';
-                            } else {
-                                html += '<div class="fav-sprite" style="background:#333;border-radius:6px;"></div>';
-                            }
-
-                            html += '<div class="fav-info">';
-                            html += '  <div class="fav-name" style="color:' + color + '">' + nombre + '</div>';
-                            html += '  <div class="fav-meta">#' + pokeId + ' · ' + tipo + '</div>';
-                            html += '</div>';
-                            html += '<button onclick="eliminarFavorito(' + favId + ',' + idUsuario + ')" '
-                                    + 'class="btn-retro btn-danger-retro" '
-                                    + 'style="font-size:0.5rem;padding:4px 8px;">X</button>';
-                            html += '</div>';
-                        }
-
-                        html += '</div>';
-                        container.innerHTML = html;
-                    })
-                    .catch(function () {
-                        container.innerHTML = '<small class="text-danger" style="font-size:0.5rem;">Error al cargar</small>';
-                    });
-        }
-
-        function ocultarFavoritos(idUsuario) {
-            document.getElementById('fav-' + idUsuario).innerHTML = '';
-        }
-
-        function eliminarFavorito(idFavorito, idUsuario) {
-            Swal.fire({
-                title: '¿Eliminar favorito?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#e63946',
-                cancelButtonColor: '#444',
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar',
-                background: '#1b1b2f',
-                color: '#fff'
-            }).then(function (result) {
-                if (result.isConfirmed) {
-                    fetch('/usuarios/favoritos/' + idFavorito, {method: 'DELETE'})
-                            .then(function (r) {
-                                if (r.ok) {
-                                    Swal.fire({
-                                        toast: true,
-                                        position: 'top-end',
-                                        icon: 'success',
-                                        title: 'Favorito eliminado',
-                                        showConfirmButton: false,
-                                        timer: 1500,
-                                        background: '#1b1b2f',
-                                        color: '#fff'
-                                    }).then(function () {
-                                        cargarFavoritos(idUsuario);
-                                    });
-                                }
-                            });
-                }
+        function eliminarUsuario(id) {
+            Swal.fire(Object.assign({}, SWAL_TEMA, {
+                title: '¿Eliminar usuario?', text: 'Esta acción no se puede deshacer',
+                icon: 'warning', showCancelButton: true,
+                confirmButtonColor: '#e63946', cancelButtonColor: '#444',
+                confirmButtonText: 'Sí, eliminar', cancelButtonText: 'Cancelar'
+            })).then(function(result) {
+                if (!result.isConfirmed) return;
+                $.ajax({ url: '/usuarios/' + id, method: 'DELETE' })
+                 .done(function() {
+                     Swal.fire(Object.assign({}, SWAL_TEMA, {
+                         icon: 'success', title: 'Eliminado',
+                         showConfirmButton: false, timer: 1500
+                     })).then(cargarTodos);
+                 })
+                 .fail(function() { alertaError('Error al eliminar'); });
             });
         }
 
-        function getColorByType(tipo) {
-            var colors = {
-                'fire': '#f08030', 'water': '#6890f0', 'grass': '#78c850',
-                'electric': '#f8d030', 'normal': '#a8a878', 'fighting': '#c03028',
-                'poison': '#a040a0', 'ground': '#e0c068', 'flying': '#a890f0',
-                'psychic': '#f85888', 'bug': '#a8b820', 'rock': '#b8a038',
-                'ghost': '#705898', 'dragon': '#7038f8', 'steel': '#b8b8d0',
-                'fairy': '#ee99ac', 'dark': '#705848', 'ice': '#98d8d8'
-            };
-            return colors[tipo] || '#aaa';
-        }
-        </script>
+        function cargarFavoritos(id) {
+            $('#fav-' + id).html('<small style="font-size:0.5rem;">Cargando...</small>');
 
-    </body>
+            $.getJSON('/usuarios/' + id + '/favoritos', function(data) {
+                if (!data || data.length === 0) {
+                    $('#fav-' + id).html('<div class="no-favoritos">&#x2205; Sin favoritos</div>' + btnOcultar(id));
+                    return;
+                }
+
+                var items = data.map(function(combo) {
+                    var fav    = combo.favorito || {};
+                    var poke   = combo.pokemon  || {};
+                    var sprite = poke.sprites ? poke.sprites.front_default : '';
+                    var nombre = poke.name || '???';
+                    var pokeId = poke.id   || '';
+                    var tipo   = (poke.types && poke.types[0]) ? poke.types[0].type.name : '';
+
+                    return `
+                    <div class="fav-item">
+                        ${sprite
+                            ? `<img src="${sprite}" class="fav-sprite" alt="${nombre}">`
+                            : `<div class="fav-sprite" style="background:#333; border-radius:6px;"></div>`}
+                        <div class="fav-info">
+                            <div class="fav-name" style="color:${colorTipo(tipo)}">${nombre}</div>
+                            <div class="fav-meta">#${pokeId} · ${tipo}</div>
+                        </div>
+                        <button class="btn-retro btn-danger-retro btn-eliminar-fav"
+                                data-favid="${fav.id}"
+                                data-userid="${id}"
+                                style="font-size:0.5rem; padding:4px 8px;">X</button>
+                    </div>`;
+                }).join('');
+
+                $('#fav-' + id).html(`<div class="fav-list-container">${items}</div>` + btnOcultar(id));
+
+            }).fail(function() {
+                $('#fav-' + id).html('<small class="text-danger" style="font-size:0.5rem;">Error al cargar</small>');
+            });
+        }
+
+        function eliminarFavorito(idFav, idUsuario) {
+            Swal.fire(Object.assign({}, SWAL_TEMA, {
+                title: '¿Eliminar favorito?', icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e63946', cancelButtonColor: '#444',
+                confirmButtonText: 'Sí, eliminar', cancelButtonText: 'Cancelar'
+            })).then(function(result) {
+                if (!result.isConfirmed) return;
+                $.ajax({ url: '/usuarios/favoritos/' + idFav, method: 'DELETE' })
+                 .done(function() {
+                     toastOk('Favorito eliminado');
+                     cargarFavoritos(idUsuario);
+                 });
+            });
+        }
+
+    </script>
+</body>
 </html>
