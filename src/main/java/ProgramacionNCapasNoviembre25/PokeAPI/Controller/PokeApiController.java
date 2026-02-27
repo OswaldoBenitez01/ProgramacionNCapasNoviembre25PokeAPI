@@ -36,92 +36,93 @@ public class PokeApiController {
 
     @GetMapping
     public String listPokemon(
+            @RequestParam(required = false) String query,
             @RequestParam(required = false) String type,
             @RequestParam(required = false) String region,
             @RequestParam(defaultValue = "20") int limit,
             @RequestParam(defaultValue = "0") int offset,
             Model model) {
 
-        Result result = pokemonService.getPokemonFiltered(type, region, limit, offset);
+        Result result = pokemonService.getPokemonFiltered(query, type, region, limit, offset);
 
-        Usuario Logueado = obtenerUsuarioLogueado();
+        Usuario logueado = obtenerUsuarioLogueado();
+        int idUsuario = logueado.getIdUsuario();
 
-        int idUsuario = Logueado.getIdUsuario();
-
-        model.addAttribute("Favoritos", FavoritosPokemonId(idUsuario));
-
-        model.addAttribute("UsuarioL", Logueado);
-        model.addAttribute("result", result);
+        model.addAttribute("Favoritos",     FavoritosPokemonId(idUsuario));
+        model.addAttribute("UsuarioL",      logueado);
+        model.addAttribute("result",        result);
         model.addAttribute("currentOffset", offset);
-        model.addAttribute("limit", limit);
-        model.addAttribute("currentType", type);
+        model.addAttribute("limit",         limit);
+        model.addAttribute("currentType",   type);
         model.addAttribute("currentRegion", region);
+        model.addAttribute("currentQuery",  query);
 
         Result tiposResult = pokemonService.getAllTypes();
         model.addAttribute("tipos", tiposResult.Objects);
 
         Map<String, Long> conteos = favoritoService.obtenerConteos();
-        int totalPokemon = Integer.parseInt(result.ErrorMessage);
-        
         model.addAttribute("conteos", conteos);
-        model.addAttribute("totalPages", (int) Math.ceil((double) totalPokemon / limit));
+
+        int totalPages;
+        try {
+            int totalPokemon = Integer.parseInt(result.ErrorMessage.trim());
+            totalPages = Math.max(1, (int) Math.ceil((double) totalPokemon / limit));
+        } catch (Exception e) {
+            int paginaActual = (offset / limit) + 1;
+            boolean esUltima = result.Objects == null || result.Objects.size() < limit;
+            totalPages = esUltima ? paginaActual : paginaActual + 999;
+        }
+        model.addAttribute("totalPages", totalPages);
 
         return "index";
     }
 
     @GetMapping("/favoritos")
     public String pokemonFav(Model model) {
-        Usuario Logueado = obtenerUsuarioLogueado();
-        int idUsuario = Logueado.getIdUsuario();
+        Usuario logueado = obtenerUsuarioLogueado();
+        int idUsuario = logueado.getIdUsuario();
         Result resultFavoritosAll = favoritoService.getAllByUsuario(idUsuario);
         model.addAttribute("Favoritos", resultFavoritosAll);
-        model.addAttribute("UsuarioL", Logueado);
+        model.addAttribute("UsuarioL",  logueado);
         return "pokemonfavoritos";
     }
-    
+
     @GetMapping("/ranking")
     public String pokemonRankin(Model model) {
-        Usuario Logueado = obtenerUsuarioLogueado();
-
+        Usuario logueado = obtenerUsuarioLogueado();
         Map resultFavoritosAll = favoritoService.obtenerConteos();
         model.addAttribute("Favoritos", resultFavoritosAll);
-        model.addAttribute("UsuarioL", Logueado);
+        model.addAttribute("UsuarioL",  logueado);
         return "Ranking";
     }
-
 
     @GetMapping("/{idOrName}")
     public String pokemonDetail(@PathVariable String idOrName, Model model) {
         Result result = pokemonService.getPokemonByIdOrName(idOrName);
-
         if (result.Correct) {
             Pokemon pokemon = (Pokemon) result.Object;
-            model.addAttribute("pokemon", pokemon);
-            model.addAttribute("Color", obtenerTipo(pokemon));
-            model.addAttribute("coloresTipos", obtenerColoresTipos(pokemon));
+            model.addAttribute("pokemon",       pokemon);
+            model.addAttribute("Color",         obtenerTipo(pokemon));
+            model.addAttribute("coloresTipos",  obtenerColoresTipos(pokemon));
         } else {
             model.addAttribute("error", result.ErrorMessage);
         }
-
         return "pokemon";
     }
+
 
     public Usuario obtenerUsuarioLogueado() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String name = auth.getName();
         Result resultUserActivo = usuarioService.getByUsername(name);
-        Usuario usuario = (Usuario) resultUserActivo.Object;
-        return usuario;
+        return (Usuario) resultUserActivo.Object;
     }
 
     public List<String> FavoritosPokemonId(int idUsuario) {
-        Result resultFavortios = favoritoService.getAllByUsuario(idUsuario);
-
+        Result resultFavoritos = favoritoService.getAllByUsuario(idUsuario);
         List<String> favoritosPokemonIds = new ArrayList<>();
-
-        if (resultFavortios.Correct) {
-            List<Favorito> favoritos = (List<Favorito>) resultFavortios.Object;
-
+        if (resultFavoritos.Correct) {
+            List<Favorito> favoritos = (List<Favorito>) resultFavoritos.Object;
             favoritosPokemonIds = favoritos.stream()
                     .map(Favorito::getPokemon)
                     .collect(Collectors.toList());
@@ -146,53 +147,31 @@ public class PokeApiController {
                 .stream()
                 .map(t -> obtenerColorPorTipo(t.getType().getName()))
                 .toList();
-
-        if (colores.size() == 1) {
-            return colores.get(0);
-        }
+        if (colores.size() == 1) return colores.get(0);
         return "linear-gradient(135deg, " + colores.get(0) + ", " + colores.get(1) + ")";
     }
 
     public String obtenerColorPorTipo(String tipo) {
         switch (tipo.toLowerCase()) {
-            case "fire":
-                return "#F08030";
-            case "water":
-                return "#6890F0";
-            case "grass":
-                return "#78C850";
-            case "electric":
-                return "#F8D030";
-            case "ice":
-                return "#98D8D8";
-            case "fighting":
-                return "#C03028";
-            case "poison":
-                return "#A040A0";
-            case "ground":
-                return "#E0C068";
-            case "flying":
-                return "#A890F0";
-            case "psychic":
-                return "#F85888";
-            case "bug":
-                return "#A8B820";
-            case "rock":
-                return "#B8A038";
-            case "ghost":
-                return "#705898";
-            case "dragon":
-                return "#7038F8";
-            case "steel":
-                return "#B8B8D0";
-            case "fairy":
-                return "#EE99AC";
-            case "dark":
-                return "#705848";
-            case "normal":
-                return "#A8A878";
-            default:
-                return "#A8A77A";
+            case "fire":     return "#F08030";
+            case "water":    return "#6890F0";
+            case "grass":    return "#78C850";
+            case "electric": return "#F8D030";
+            case "ice":      return "#98D8D8";
+            case "fighting": return "#C03028";
+            case "poison":   return "#A040A0";
+            case "ground":   return "#E0C068";
+            case "flying":   return "#A890F0";
+            case "psychic":  return "#F85888";
+            case "bug":      return "#A8B820";
+            case "rock":     return "#B8A038";
+            case "ghost":    return "#705898";
+            case "dragon":   return "#7038F8";
+            case "steel":    return "#B8B8D0";
+            case "fairy":    return "#EE99AC";
+            case "dark":     return "#705848";
+            case "normal":   return "#A8A878";
+            default:         return "#A8A77A";
         }
     }
 }
