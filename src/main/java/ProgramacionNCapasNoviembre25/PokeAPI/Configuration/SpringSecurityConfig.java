@@ -23,7 +23,7 @@ public class SpringSecurityConfig {
                 .requestMatchers("/pokemon", "/pokemon**").authenticated()
                 .anyRequest().authenticated()
                 ).exceptionHandling(exception -> exception
-                .accessDeniedPage("/login")
+                .accessDeniedPage("/error")
                 )
                 .formLogin(form -> form
                 .loginPage("/login")

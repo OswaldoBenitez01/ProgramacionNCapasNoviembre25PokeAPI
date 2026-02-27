@@ -19,6 +19,12 @@ public class LoginController {
         }
         return "login";
     }
+    
+    @GetMapping("/error")
+    public String errorVista() {
+        
+        return "error";
+    }
 
 
 }
