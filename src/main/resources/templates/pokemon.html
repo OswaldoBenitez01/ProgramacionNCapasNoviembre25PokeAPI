@@ -136,7 +136,8 @@
                                      th:src="${pokemon.sprites.frontDefault}" 
                                      class="img-fluid" 
                                      style="cursor: pointer; transform: scale(1.2);"
-                                     onclick="cambiarSprite()">
+                                     onclick="cambiarSprite()" alt="pokemon"
+                                 onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png';">
                             </div>
 
                             <div class="d-flex justify-content-center gap-4 my-3">

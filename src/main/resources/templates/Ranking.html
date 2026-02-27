@@ -366,7 +366,8 @@
                             </div>
 
                             <div class="poke-sprite">
-                                <img th:src="${'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/' + entry.key + '.png'}" alt="pokemon">
+                                <img th:src="${'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/' + entry.key + '.png'}" alt="pokemon"
+                                 onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png';">
                             </div>
 
                             <a class="detail-btn" th:href="@{/pokemon/{name}(name=${entry.key})}">
