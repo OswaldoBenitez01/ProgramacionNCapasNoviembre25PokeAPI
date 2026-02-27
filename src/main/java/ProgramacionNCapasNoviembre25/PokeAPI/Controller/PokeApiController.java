@@ -92,7 +92,7 @@ public class PokeApiController {
         Usuario logueado = obtenerUsuarioLogueado();
         Map resultFavoritosAll = favoritoService.obtenerConteos();
         model.addAttribute("Favoritos", resultFavoritosAll);
-        model.addAttribute("UsuarioL",  logueado);
+        model.addAttribute("UsuarioL", logueado);
         return "Ranking";
     }
 
@@ -101,9 +101,9 @@ public class PokeApiController {
         Result result = pokemonService.getPokemonByIdOrName(idOrName);
         if (result.Correct) {
             Pokemon pokemon = (Pokemon) result.Object;
-            model.addAttribute("pokemon",       pokemon);
-            model.addAttribute("Color",         obtenerTipo(pokemon));
-            model.addAttribute("coloresTipos",  obtenerColoresTipos(pokemon));
+            model.addAttribute("pokemon", pokemon);
+            model.addAttribute("Color", obtenerTipo(pokemon));
+            model.addAttribute("coloresTipos", obtenerColoresTipos(pokemon));
         } else {
             model.addAttribute("error", result.ErrorMessage);
         }

@@ -23,7 +23,7 @@ public class PokemonService {
     private List<NamedResource> listaMaestra = null;
 
     public PokemonService(RestTemplate restTemplate, String pokeApiBaseUrl) {
-        this.restTemplate   = restTemplate;
+        this.restTemplate = restTemplate;
         this.pokeApiBaseUrl = pokeApiBaseUrl;
     }
 
@@ -53,8 +53,8 @@ public class PokemonService {
         Result result = new Result();
 
         try {
-            boolean hayQuery  = query  != null && !query.trim().isEmpty();
-            boolean hayTipo   = type   != null && !type.trim().isEmpty();
+            boolean hayQuery = query  != null && !query.trim().isEmpty();
+            boolean hayTipo = type   != null && !type.trim().isEmpty();
             boolean hayRegion = region != null && !region.trim().isEmpty();
 
             if (hayQuery) {
@@ -78,7 +78,7 @@ public class PokemonService {
                         .collect(Collectors.toList());
 
                 int inicio = Math.min(offset, filtradosPorRegion.size());
-                int fin    = Math.min(offset + limit, filtradosPorRegion.size());
+                int fin = Math.min(offset + limit, filtradosPorRegion.size());
                 List<TypePokemonSlot> pagina = filtradosPorRegion.subList(inicio, fin);
 
                 List<CompletableFuture<Pokemon>> hilos = pagina.stream()
@@ -93,9 +93,9 @@ public class PokemonService {
                     if (p != null) listaFiltrada.add(p);
                 }
 
-                result.Correct      = true;
-                result.Objects      = new ArrayList<>(listaFiltrada);
-                result.Object       = filtradosPorRegion.size();
+                result.Correct = true;
+                result.Objects = new ArrayList<>(listaFiltrada);
+                result.Object = filtradosPorRegion.size();
                 result.ErrorMessage = String.valueOf(filtradosPorRegion.size());
 
             } else if (hayTipo) {
@@ -107,9 +107,9 @@ public class PokemonService {
             }
 
         } catch (Exception ex) {
-            result.Correct      = false;
+            result.Correct = false;
             result.ErrorMessage = "Error al filtrar: " + ex.getMessage();
-            result.ex           = ex;
+            result.ex = ex;
         }
 
         return result;
@@ -120,7 +120,7 @@ public class PokemonService {
         try {
             List<NamedResource> maestra = getListaMaestra();
 
-            boolean hayTipo   = type   != null && !type.trim().isEmpty();
+            boolean hayTipo = type   != null && !type.trim().isEmpty();
             boolean hayRegion = region != null && !region.trim().isEmpty();
 
             List<NamedResource> filtrados = maestra.stream()
@@ -171,15 +171,15 @@ public class PokemonService {
                 if (pk != null) pokemonsCompletos.add(pk);
             }
 
-            result.Correct      = true;
-            result.Objects      = new ArrayList<>(pokemonsCompletos);
-            result.Object       = totalFiltrado;
+            result.Correct = true;
+            result.Objects = new ArrayList<>(pokemonsCompletos);
+            result.Object = totalFiltrado;
             result.ErrorMessage = String.valueOf(totalFiltrado);
 
         } catch (Exception ex) {
-            result.Correct      = false;
+            result.Correct = false;
             result.ErrorMessage = "Error en búsqueda: " + ex.getMessage();
-            result.ex           = ex;
+            result.ex = ex;
         }
         return result;
     }
@@ -188,7 +188,7 @@ public class PokemonService {
     private int extraerIdDesdeUrl(String url) {
         try {
             String sinSlash = url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
-            String idStr    = sinSlash.substring(sinSlash.lastIndexOf("/") + 1);
+            String idStr = sinSlash.substring(sinSlash.lastIndexOf("/") + 1);
             return Integer.parseInt(idStr);
         } catch (Exception e) {
             return -1;
@@ -214,15 +214,15 @@ public class PokemonService {
                 if (pokemonCompleto != null) pokemonsCompletos.add(pokemonCompleto);
             }
 
-            result.Correct      = true;
-            result.Objects      = new ArrayList<>(pokemonsCompletos);
-            result.Object       = "nextOffset=" + (offset + limit);
+            result.Correct = true;
+            result.Objects = new ArrayList<>(pokemonsCompletos);
+            result.Object = "nextOffset=" + (offset + limit);
             result.ErrorMessage = basicList.getCount().toString();
 
         } catch (Exception ex) {
-            result.Correct      = false;
+            result.Correct = false;
             result.ErrorMessage = "Error lista completa: " + ex.getMessage();
-            result.ex           = ex;
+            result.ex = ex;
         }
         return result;
     }
@@ -230,14 +230,14 @@ public class PokemonService {
     public Result getPokemonByIdOrName(String idOrName) {
         Result result = new Result();
         try {
-            String url      = pokeApiBaseUrl + "pokemon/" + idOrName;
+            String url = pokeApiBaseUrl + "pokemon/" + idOrName;
             Pokemon pokemon = restTemplate.getForObject(url, Pokemon.class);
-            result.Correct  = true;
-            result.Object   = pokemon;
+            result.Correct = true;
+            result.Object = pokemon;
         } catch (Exception ex) {
-            result.Correct      = false;
+            result.Correct = false;
             result.ErrorMessage = "No encontrado: " + idOrName;
-            result.ex           = ex;
+            result.ex = ex;
         }
         return result;
     }
@@ -250,9 +250,9 @@ public class PokemonService {
             result.Correct = true;
             result.Objects = new ArrayList<>(response.getResults());
         } catch (Exception ex) {
-            result.Correct      = false;
+            result.Correct = false;
             result.ErrorMessage = "Error al obtener tipos: " + ex.getMessage();
-            result.ex           = ex;
+            result.ex = ex;
         }
         return result;
     }
@@ -264,14 +264,14 @@ public class PokemonService {
             TypeResponse typeResponse = restTemplate.getForObject(url, TypeResponse.class);
 
             if (typeResponse == null || typeResponse.getPokemon() == null) {
-                result.Correct      = false;
+                result.Correct = false;
                 result.ErrorMessage = "No se encontraron pokémon del tipo: " + typeName;
                 return result;
             }
 
             List<TypePokemonSlot> todos  = typeResponse.getPokemon();
             int inicio = Math.min(offset, todos.size());
-            int fin    = Math.min(offset + limit, todos.size());
+            int fin = Math.min(offset + limit, todos.size());
             List<TypePokemonSlot> pagina = todos.subList(inicio, fin);
 
             List<CompletableFuture<Pokemon>> hilos = pagina.stream()
@@ -287,15 +287,15 @@ public class PokemonService {
                 if (p != null) pokemonsCompletos.add(p);
             }
 
-            result.Correct      = true;
-            result.Objects      = new ArrayList<>(pokemonsCompletos);
-            result.Object       = todos.size();
+            result.Correct = true;
+            result.Objects = new ArrayList<>(pokemonsCompletos);
+            result.Object = todos.size();
             result.ErrorMessage = String.valueOf(todos.size());
 
         } catch (Exception ex) {
-            result.Correct      = false;
+            result.Correct = false;
             result.ErrorMessage = "Error filtrando por tipo: " + ex.getMessage();
-            result.ex           = ex;
+            result.ex = ex;
         }
         return result;
     }
@@ -305,17 +305,17 @@ public class PokemonService {
         try {
             int[] rango = getRegionRange(regionName);
             if (rango == null) {
-                result.Correct      = false;
+                result.Correct = false;
                 result.ErrorMessage = "Región no reconocida: " + regionName;
                 return result;
             }
 
             int idInicio = rango[0];
-            int idFin    = rango[1];
-            int total    = idFin - idInicio + 1;
+            int idFin = rango[1];
+            int total = idFin - idInicio + 1;
 
             int inicio = idInicio + offset;
-            int fin    = Math.min(inicio + limit, idFin + 1);
+            int fin = Math.min(inicio + limit, idFin + 1);
 
             List<Integer> ids = new ArrayList<>();
             for (int i = inicio; i < fin; i++) ids.add(i);
@@ -333,15 +333,15 @@ public class PokemonService {
                 if (p != null) pokemonsCompletos.add(p);
             }
 
-            result.Correct      = true;
-            result.Objects      = new ArrayList<>(pokemonsCompletos);
-            result.Object       = total;
+            result.Correct = true;
+            result.Objects = new ArrayList<>(pokemonsCompletos);
+            result.Object = total;
             result.ErrorMessage = String.valueOf(total);
 
         } catch (Exception ex) {
-            result.Correct      = false;
+            result.Correct = false;
             result.ErrorMessage = "Error filtrando por región: " + ex.getMessage();
-            result.ex           = ex;
+            result.ex = ex;
         }
         return result;
     }
