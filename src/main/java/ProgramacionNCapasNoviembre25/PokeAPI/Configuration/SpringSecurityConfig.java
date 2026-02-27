@@ -17,8 +17,10 @@ public class SpringSecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/registro","/verificar-email","/login").permitAll()
-                        .requestMatchers("/pokemon","/pokemon**").authenticated()
+                .requestMatchers("/registro", "/verificar-email", "/login").permitAll()
+                .requestMatchers("/pokemon", "/pokemon/favoritos", "/pokemon/{idOrName}").hasAnyRole("Usuario", "Administrador")                        
+                .requestMatchers("/usuarios/**", "/admin/**", "/pokemon/ranking").hasRole("Administrador")
+                .requestMatchers("/pokemon", "/pokemon**").authenticated()
                 .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -26,7 +28,7 @@ public class SpringSecurityConfig {
                 .defaultSuccessUrl("/pokemon", true)
                 .permitAll()
                 )
-                 .logout(logout -> logout
+                .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout")
                 .invalidateHttpSession(true)

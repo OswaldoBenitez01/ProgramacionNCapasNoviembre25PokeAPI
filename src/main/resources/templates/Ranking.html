@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <head>
+        <title>Ranking - Pokédex</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">        
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <style>
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                font-family: 'Press Start 2P', monospace;
+                background-color: #1b1b2f;
+                background-image:
+                    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+                background-size: 40px 40px;
+                min-height: 100vh;
+                padding: 30px 20px;
+                color: #fff;
+            }
+
+            .header {
+                text-align: center;
+                margin-bottom: 40px;
+                padding-top: 80px;
+            }
+
+            .header h1 {
+                font-size: clamp(1.2rem, 4vw, 2rem);
+                color: #fff;
+                text-shadow:
+                    0 0 10px #ff0,
+                    0 0 20px #ff0,
+                    0 0 40px #f80;
+                letter-spacing: 4px;
+                margin-bottom: 20px;
+            }
+
+            .main-content {
+                transition: margin-left 0.3s ease;
+            }
+
+            .grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                gap: 30px;
+                max-width: 1400px;
+                margin: 0 auto 40px;
+            }
+
+            .card-container {
+                height: 320px;
+            }
+
+            .card-inner {
+                position: relative;
+                width: 100%;
+                height: 100%;
+            }
+
+
+            .card-face {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                border-radius: 12px;
+                padding: 16px;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .card-front {
+                background: rgba(255, 255, 255, 0.05);
+                border: 3px solid rgba(255,255,255,0.15);
+                box-shadow: 0 0 10px rgba(255,255,255,0.05);
+                transition: transform 0.3s ease, border-color 0.3s ease;
+            }
+
+            .poke-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 8px;
+            }
+
+            .poke-name {
+                font-size: 0.7rem;
+                text-transform: uppercase;
+                text-shadow: 1px 1px 0 rgba(0,0,0,0.8);
+                max-width: 120px;
+                word-break: break-word;
+            }
+
+            .poke-id {
+                font-size: 0.55rem;
+                background: rgba(0,0,0,0.5);
+                padding: 4px 6px;
+                border-radius: 6px;
+            }
+
+            .vote-count {
+                text-align: center;
+                margin-bottom: 5px;
+            }
+
+            .vote-badge {
+                color: #ff0;
+                font-size: 0.6rem;
+                background: rgba(0,0,0,0.5);
+                padding: 5px 10px;
+                border-radius: 5px;
+                border: 1px solid #ff0;
+                display: inline-block;
+            }
+
+            .poke-sprite {
+                flex: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .poke-sprite img {
+                width: 80%;
+                image-rendering: pixelated;
+                filter: drop-shadow(3px 3px 0px rgba(0,0,0,0.7));
+            }
+
+            .detail-btn {
+                display: block;
+                width: 100%;
+                text-align: center;
+                padding: 8px 0;
+                background: transparent;
+                border: 2px solid #ff0;
+                color: #ff0;
+                font-family: 'Press Start 2P', monospace;
+                font-size: 0.5rem;
+                border-radius: 8px;
+                text-decoration: none;
+                transition: all 0.2s ease;
+            }
+
+            .detail-btn:hover {
+                background: #ff0;
+                color: #000;
+                box-shadow: 0 0 16px rgba(255,255,0,0.7);
+            }
+
+            /* Navbar Styles */
+            .navbar-retro {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px 25px;
+                background: rgba(0, 0, 0, 0.9);
+                backdrop-filter: blur(5px);
+                border-bottom: 3px solid #333;
+                z-index: 2000;
+            }
+
+            .nav-custom-btn {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 10px 16px;
+                font-size: 0.65rem;
+                border-radius: 8px;
+                text-decoration: none;
+                border: 2px solid #ff0;
+                font-family: 'Press Start 2P', monospace;
+                transition: all 0.3s ease;
+                background: rgba(0,0,0,0.8);
+                color: #ff0;
+                cursor: pointer;
+            }
+
+            .nav-custom-btn:hover {
+                background: #ff0;
+                color: #000;
+                box-shadow: 0 0 20px #ff0;
+            }
+
+            .logout-btn {
+                background: rgba(0,0,0,0.8);
+                border: 2px solid #dc3545;
+                color: #dc3545;
+                padding: 10px 16px;
+                font-size: 0.7rem;
+                border-radius: 8px;
+                cursor: pointer;
+                font-family: 'Press Start 2P', monospace;
+                transition: 0.3s;
+            }
+
+            .logout-btn:hover {
+                background: #dc3545;
+                color: white;
+            }
+
+            @media (max-width: 600px) {
+                .grid {
+                    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                }
+                .card-container {
+                    height: 280px;
+                }
+            }
+            /* Pantalla de Carga */
+            #loader-wrapper {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: #1b1b2f;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999; /* Por encima de todo */
+                transition: opacity 0.5s ease;
+            }
+
+            .loader-content {
+                text-align: center;
+            }
+
+            .loader-content p {
+                margin-top: 20px;
+                font-size: 0.8rem;
+                color: #ff0;
+                letter-spacing: 2px;
+                animation: blink 1s infinite;
+            }
+
+            /* Animación de la Pokéball */
+            .pokeball {
+                width: 60px;
+                height: 60px;
+                background: #fff;
+                border: 4px solid #000;
+                border-radius: 50%;
+                position: relative;
+                margin: 0 auto;
+                overflow: hidden;
+                animation: frames 0.8s linear infinite;
+            }
+
+            .pokeball::before {
+                content: '';
+                position: absolute;
+                background: #ee1515;
+                width: 100%;
+                height: 50%;
+                top: 0;
+                left: 0;
+                border-bottom: 4px solid #000;
+            }
+
+            .pokeball::after {
+                content: '';
+                position: absolute;
+                top: calc(50% - 10px);
+                left: calc(50% - 10px);
+                width: 20px;
+                height: 20px;
+                background: #fff;
+                border: 4px solid #000;
+                border-radius: 50%;
+                z-index: 10;
+            }
+
+            /* Keyframes para animaciones */
+            @keyframes frames {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+
+            @keyframes blink {
+                0%, 100% {
+                    opacity: 1;
+                }
+                50% {
+                    opacity: 0.3;
+                }
+            }
+
+            /* Clase para ocultar el loader */
+            .loader-hidden {
+                opacity: 0;
+                pointer-events: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="loader-wrapper">
+            <div class="loader-content">
+                <div class="pokeball"></div>
+                <p>CARGANDO...</p>
+            </div>
+        </div>
+
+        <nav class="navbar-retro">
+            <div sec:authorize="hasRole('Administrador')" style="display: flex; flex-direction: row; gap: 10px; align-items: center;">
+
+                <a th:href="@{/usuarios/admin}" 
+                   class="nav-custom-btn fav-btn-style"
+                   style="border-color:#e63946; color:#e63946; box-shadow:0 0 10px rgba(230,57,70,0.3);">
+                    &#x2699; ADMIN PANEL
+                </a>
+
+                <a th:href="@{/pokemon}" 
+                   class="nav-custom-btn">
+                    POKÉDEX
+                </a>
+
+            </div>
+
+            <span style="font-size:0.5rem; color:#aaa;" sec:authentication="name"></span>
+
+            <form th:action="@{/logout}" method="post" style="margin:0;">
+                <button type="submit" class="logout-btn">⏻ SALIR</button>
+            </form>
+        </nav>
+
+        <div class="main-content">
+            <div class="header">
+                <h1>▶ RANKING</h1>
+                <button id="sortBtn" class="nav-custom-btn" style="margin: 0 auto;" onclick="toggleSort()">
+                    <i class="fas fa-sort-amount-down"></i> ORDEN: MAYOR VOTO
+                </button>
+            </div> 
+
+            <div class="grid" id="pokemonGrid">
+                <div class="card-container" 
+                     th:each="entry : ${Favoritos}" 
+                     th:data-votes="${entry.value}">
+
+                    <div class="card-inner">
+                        <div class="card-face card-front">
+                            <div class="poke-header">
+                                <div class="poke-name" th:text="${@pokemonService.getPokemonByIdOrName(entry.key).Object.name}"></div>
+                                <div class="poke-id" th:text="'#' + ${entry.key}"></div>
+                            </div>
+
+                            <div class="vote-count">
+                                <span class="vote-badge">
+                                    <i class="fas fa-heart"></i> <span class="vote-val" th:text="${entry.value}">0</span>
+                                </span>
+                            </div>
+
+                            <div class="poke-sprite">
+                                <img th:src="${'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/' + entry.key + '.png'}" alt="pokemon">
+                            </div>
+
+                            <a class="detail-btn" th:href="@{/pokemon/{name}(name=${entry.key})}">
+                                VER DETALLE
+                            </a>                      
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            window.addEventListener('load', function () {
+                const loader = document.getElementById('loader-wrapper');              
+                setTimeout(() => {
+                    loader.classList.add('loader-hidden');
+                }, 500);
+            });
+            let descending = true;
+
+            function toggleSort() {
+                const grid = document.getElementById('pokemonGrid');
+                const cards = Array.from(grid.getElementsByClassName('card-container'));
+                const btn = document.getElementById('sortBtn');
+
+                descending = !descending;
+
+                cards.sort((a, b) => {
+                    const votesA = parseInt(a.getAttribute('data-votes'));
+                    const votesB = parseInt(b.getAttribute('data-votes'));
+
+                    return descending ? votesB - votesA : votesA - votesB;
+                });
+
+
+                if (descending) {
+                    btn.innerHTML = '<i class="fas fa-sort-amount-down"></i> ORDEN: MAYOR VOTO';
+                } else {
+                    btn.innerHTML = '<i class="fas fa-sort-amount-up"></i> ORDEN: MENOR VOTO';
+                }
+
+
+                cards.forEach(card => {
+
+                    card.style.opacity = '0';
+                    grid.appendChild(card);
+                    setTimeout(() => card.style.opacity = '1', 50);
+                });
+            }
+        </script>
+    </body>
+</html>

@@ -7,6 +7,7 @@ import ProgramacionNCapasNoviembre25.PokeAPI.ML.Result;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,11 +122,11 @@ public class FavoritoService {
     public Map<String, Long> obtenerConteos() {
 
         List<Object[]> resultados = iFavoritos.contarAgrupados();
-        Map<String, Long> mapa = new HashMap<>();
+        Map<String, Long> mapa = new LinkedHashMap<>();
 
         for (Object[] fila : resultados) {
             String pokemonId = (String) fila[0];
-            Long total = (Long) fila[1];
+            Long total = ((Number) fila[1]).longValue();
             mapa.put(pokemonId, total);
         }
 

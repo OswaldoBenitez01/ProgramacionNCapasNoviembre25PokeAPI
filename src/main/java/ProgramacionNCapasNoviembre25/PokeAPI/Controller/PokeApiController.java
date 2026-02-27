@@ -78,6 +78,17 @@ public class PokeApiController {
         model.addAttribute("UsuarioL", Logueado);
         return "pokemonfavoritos";
     }
+    
+    @GetMapping("/ranking")
+    public String pokemonRankin(Model model) {
+        Usuario Logueado = obtenerUsuarioLogueado();
+
+        Map resultFavoritosAll = favoritoService.obtenerConteos();
+        model.addAttribute("Favoritos", resultFavoritosAll);
+        model.addAttribute("UsuarioL", Logueado);
+        return "Ranking";
+    }
+
 
     @GetMapping("/{idOrName}")
     public String pokemonDetail(@PathVariable String idOrName, Model model) {
