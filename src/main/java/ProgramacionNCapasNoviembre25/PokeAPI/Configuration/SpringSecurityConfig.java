@@ -22,6 +22,8 @@ public class SpringSecurityConfig {
                 .requestMatchers("/usuarios/**", "/admin/**", "/pokemon/ranking").hasRole("Administrador")
                 .requestMatchers("/pokemon", "/pokemon**").authenticated()
                 .anyRequest().authenticated()
+                ).exceptionHandling(exception -> exception
+                .accessDeniedPage("/login")
                 )
                 .formLogin(form -> form
                 .loginPage("/login")
