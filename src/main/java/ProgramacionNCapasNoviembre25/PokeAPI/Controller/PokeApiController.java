@@ -64,7 +64,7 @@ public class PokeApiController {
         int totalPokemon = Integer.parseInt(result.ErrorMessage);
         
         model.addAttribute("conteos", conteos);
-        model.addAttribute("totalPages", (totalPokemon / limit));
+        model.addAttribute("totalPages", (int) Math.ceil((double) totalPokemon / limit));
 
         return "index";
     }
