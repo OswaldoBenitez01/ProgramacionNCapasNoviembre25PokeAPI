@@ -48,14 +48,14 @@ public class PokeApiController {
         Usuario logueado = obtenerUsuarioLogueado();
         int idUsuario = logueado.getIdUsuario();
 
-        model.addAttribute("Favoritos",     FavoritosPokemonId(idUsuario));
-        model.addAttribute("UsuarioL",      logueado);
-        model.addAttribute("result",        result);
+        model.addAttribute("Favoritos", FavoritosPokemonId(idUsuario));
+        model.addAttribute("UsuarioL", logueado);
+        model.addAttribute("result", result);
         model.addAttribute("currentOffset", offset);
-        model.addAttribute("limit",         limit);
-        model.addAttribute("currentType",   type);
+        model.addAttribute("limit", limit);
+        model.addAttribute("currentType", type);
         model.addAttribute("currentRegion", region);
-        model.addAttribute("currentQuery",  query);
+        model.addAttribute("currentQuery", query);
 
         Result tiposResult = pokemonService.getAllTypes();
         model.addAttribute("tipos", tiposResult.Objects);
@@ -81,15 +81,23 @@ public class PokeApiController {
     public String pokemonFav(Model model) {
         Usuario logueado = obtenerUsuarioLogueado();
         int idUsuario = logueado.getIdUsuario();
+        String rol = logueado.rol.getNombre();
+        if (!rol.equals("Usuario")) {
+            return "redirect:/pokemon";
+        }
         Result resultFavoritosAll = favoritoService.getAllByUsuario(idUsuario);
         model.addAttribute("Favoritos", resultFavoritosAll);
-        model.addAttribute("UsuarioL",  logueado);
+        model.addAttribute("UsuarioL", logueado);
         return "pokemonfavoritos";
     }
 
     @GetMapping("/ranking")
     public String pokemonRankin(Model model) {
         Usuario logueado = obtenerUsuarioLogueado();
+        String rol = logueado.rol.getNombre();
+        if (rol.equals("Usuario")) {
+            return "redirect:/pokemon";
+        }
         Map resultFavoritosAll = favoritoService.obtenerConteos();
         model.addAttribute("Favoritos", resultFavoritosAll);
         model.addAttribute("UsuarioL", logueado);
@@ -109,7 +117,6 @@ public class PokeApiController {
         }
         return "pokemon";
     }
-
 
     public Usuario obtenerUsuarioLogueado() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -147,31 +154,52 @@ public class PokeApiController {
                 .stream()
                 .map(t -> obtenerColorPorTipo(t.getType().getName()))
                 .toList();
-        if (colores.size() == 1) return colores.get(0);
+        if (colores.size() == 1) {
+            return colores.get(0);
+        }
         return "linear-gradient(135deg, " + colores.get(0) + ", " + colores.get(1) + ")";
     }
 
     public String obtenerColorPorTipo(String tipo) {
         switch (tipo.toLowerCase()) {
-            case "fire":     return "#F08030";
-            case "water":    return "#6890F0";
-            case "grass":    return "#78C850";
-            case "electric": return "#F8D030";
-            case "ice":      return "#98D8D8";
-            case "fighting": return "#C03028";
-            case "poison":   return "#A040A0";
-            case "ground":   return "#E0C068";
-            case "flying":   return "#A890F0";
-            case "psychic":  return "#F85888";
-            case "bug":      return "#A8B820";
-            case "rock":     return "#B8A038";
-            case "ghost":    return "#705898";
-            case "dragon":   return "#7038F8";
-            case "steel":    return "#B8B8D0";
-            case "fairy":    return "#EE99AC";
-            case "dark":     return "#705848";
-            case "normal":   return "#A8A878";
-            default:         return "#A8A77A";
+            case "fire":
+                return "#F08030";
+            case "water":
+                return "#6890F0";
+            case "grass":
+                return "#78C850";
+            case "electric":
+                return "#F8D030";
+            case "ice":
+                return "#98D8D8";
+            case "fighting":
+                return "#C03028";
+            case "poison":
+                return "#A040A0";
+            case "ground":
+                return "#E0C068";
+            case "flying":
+                return "#A890F0";
+            case "psychic":
+                return "#F85888";
+            case "bug":
+                return "#A8B820";
+            case "rock":
+                return "#B8A038";
+            case "ghost":
+                return "#705898";
+            case "dragon":
+                return "#7038F8";
+            case "steel":
+                return "#B8B8D0";
+            case "fairy":
+                return "#EE99AC";
+            case "dark":
+                return "#705848";
+            case "normal":
+                return "#A8A878";
+            default:
+                return "#A8A77A";
         }
     }
 }
