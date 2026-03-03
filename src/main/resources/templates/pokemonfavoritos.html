@@ -621,6 +621,39 @@
                     transform: scale(1.3);
                 }
             }
+            .btn-detail-front {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                background: rgba(0,0,0,0.65);
+                border: 1px solid rgba(255,255,255,0.3);
+                border-radius: 20px;
+                padding: 6px 14px;
+                font-family: 'Press Start 2P', monospace;
+                font-size: 0.42rem;
+                color: rgba(255,255,255,0.85);
+                text-decoration: none;
+                white-space: nowrap;
+                z-index: 2;
+                transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s;
+                letter-spacing: 1px;
+            }
+            .btn-detail-front:hover {
+                background: rgba(255,255,255,0.2);
+                border-color: #fff;
+                color: #fff;
+                box-shadow: 0 0 12px rgba(255,255,255,0.4);
+            }
+            .btn-group-front {
+                position: absolute;
+                bottom: 6px;
+                left: 50%;
+                transform: translateX(-50%);
+                display: flex;
+                gap: 8px;
+                z-index: 2;
+            }
+
             /* Pantalla de Carga */
             #loader-wrapper {
                 position: fixed;
@@ -773,8 +806,9 @@
                      th:each="fav : ${Favoritos.Object}">
 
                     <div class="card-face card-front" 
+                         th:with="pokemonCompleto=${@pokemonService.getPokemonByIdOrName(fav.pokemon).Object}"
+                         th:style="'background:' + ${@pokeApiController.obtenerTipo(pokemonCompleto)}">
 
-                         >
 
                         <div class="poke-header">
                             <div class="poke-name"
@@ -793,17 +827,19 @@
                                  onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png';">
                         </div>
 
-                        <a class="detail-btn"
-                           th:href="@{/pokemon/{name}(name=${fav.pokemon})}">
-                            VER DETALLE
-                        </a>
-                        <button type="button"
-                                class="btn-favorito"
-                                style="border-color:#dc3545; color:#dc3545;"
-                                th:attr="data-id=${fav.id}"
-                                onclick="eliminarFavorito(this)">
-                            ❌ Quitar
-                        </button>
+                        <div class="btn-group-front">
+                            <a class="btn-detail-front"
+                               th:href="@{/pokemon/{name}(name=${fav.pokemon})}">
+                                👁 VER DETALLE
+                            </a>
+
+                            <button type="button"
+                                    class="btn-detail-front btn-delete"
+                                    th:attr="data-id=${fav.id}"
+                                    onclick="eliminarFavorito(this)">
+                                ❌ Quitar
+                            </button>
+                        </div>
 
                     </div>
 
