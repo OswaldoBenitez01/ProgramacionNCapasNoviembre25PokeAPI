@@ -800,42 +800,38 @@
             <div class="header">
                 <h1>&#x25B6; FAVORITOS</h1>
             </div>    
-            <div class="grid" >
+
+            <div class="grid">
 
                 <div class="card-container"
-                     th:each="fav : ${Favoritos.Object}">
+                     th:each="fav : ${Favoritos}">
 
-                    <div class="card-face card-front" 
-                         th:with="pokemonCompleto=${@pokemonService.getPokemonByIdOrName(fav.pokemon).Object}"
-                         th:style="'background:' + ${@pokeApiController.obtenerTipo(pokemonCompleto)}">
-
+                    <div class="card-face card-front"
+                         th:style="'background:' + ${fav['color']}">
 
                         <div class="poke-header">
                             <div class="poke-name"
-                                 th:text=" ${@pokemonService.getPokemonByIdOrName(fav.pokemon).Object.name}">
+                                 th:text="${fav['pokemon'].name}">
                             </div>
 
-
                             <div class="poke-id"
-                                 th:text="'#'+${fav.pokemon}">
+                                 th:text="'#' + ${fav['pokemon'].id}">
                             </div>
                         </div>
 
                         <div class="poke-sprite">
-                            <img th:src="${'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/' + fav.pokemon + '.png'}"                                 
-                                 alt="pokemon"
-                                 onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png';">
+                            <img th:src="${fav['pokemon'].sprites.frontDefault}"
+                                 alt="pokemon">
                         </div>
 
                         <div class="btn-group-front">
                             <a class="btn-detail-front"
-                               th:href="@{/pokemon/{name}(name=${fav.pokemon})}">
+                               th:href="@{/pokemon/{name}(name=${fav['pokemon'].name})}">
                                 👁 VER DETALLE
                             </a>
-
                             <button type="button"
                                     class="btn-detail-front btn-delete"
-                                    th:attr="data-id=${fav.id}"
+                                    th:attr="data-id=${fav['idFavorito']}"
                                     onclick="eliminarFavorito(this)">
                                 ❌ Quitar
                             </button>

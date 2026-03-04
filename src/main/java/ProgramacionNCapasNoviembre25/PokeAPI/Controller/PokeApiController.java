@@ -8,6 +8,7 @@ import ProgramacionNCapasNoviembre25.PokeAPI.Service.FavoritoService;
 import ProgramacionNCapasNoviembre25.PokeAPI.Service.PokemonService;
 import ProgramacionNCapasNoviembre25.PokeAPI.Service.UsuarioService;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -86,7 +87,27 @@ public class PokeApiController {
             return "redirect:/pokemon";
         }
         Result resultFavoritosAll = favoritoService.getAllByUsuario(idUsuario);
-        model.addAttribute("Favoritos", resultFavoritosAll);
+
+        List<Map<String, Object>> favoritos = new ArrayList<>();
+
+        if (resultFavoritosAll.Correct) {
+            List<Favorito> lista = (List<Favorito>) resultFavoritosAll.Object;
+
+            for (Favorito fav : lista) {
+
+                Pokemon pokemon = obtenerPokemon(fav.getPokemon());
+                String color = obtenerTipo(pokemon);
+
+                Map<String, Object> data = new HashMap<>();
+                data.put("idFavorito", fav.getId());
+                data.put("pokemon", pokemon);
+                data.put("color", color);
+
+                favoritos.add(data);
+            }
+        }
+
+        model.addAttribute("Favoritos", favoritos);        
         model.addAttribute("UsuarioL", logueado);
         return "pokemonfavoritos";
     }
