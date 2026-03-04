@@ -93,8 +93,7 @@ public class PokeApiController {
         if (resultFavoritosAll.Correct) {
             List<Favorito> lista = (List<Favorito>) resultFavoritosAll.Object;
 
-            for (Favorito fav : lista) {
-
+            favoritos = lista.parallelStream().map(fav -> {
                 Pokemon pokemon = obtenerPokemon(fav.getPokemon());
                 String color = obtenerTipo(pokemon);
 
@@ -103,11 +102,11 @@ public class PokeApiController {
                 data.put("pokemon", pokemon);
                 data.put("color", color);
 
-                favoritos.add(data);
-            }
+                return data;
+            }).toList();
         }
 
-        model.addAttribute("Favoritos", favoritos);        
+        model.addAttribute("Favoritos", favoritos);
         model.addAttribute("UsuarioL", logueado);
         return "pokemonfavoritos";
     }
