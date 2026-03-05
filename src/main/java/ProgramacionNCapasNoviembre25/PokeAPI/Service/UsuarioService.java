@@ -53,11 +53,12 @@ public class UsuarioService {
             return "invalid";
         }
 
-        user.setEstatus(1);
+        user.setEstatus(1);     
+
         usuarioRepository.save(user);
         return "valid";
     }
-    
+
     public Result getById(Integer idUsuario) {
         Result result = new Result();
         try {
@@ -77,7 +78,7 @@ public class UsuarioService {
         return result;
 
     }
-    
+
     public Result getByUsername(String username) {
         Result result = new Result();
         try {
@@ -97,4 +98,32 @@ public class UsuarioService {
         return result;
 
     }
+
+    public Result updatePasswordByToken(String token, String newPassword) {
+        Result result = new Result();
+        try {
+
+            Usuario usuario = usuarioRepository.findByToken(token).orElse(null);
+
+            if (usuario != null) {
+                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+                String passwordEncriptada = encoder.encode(newPassword);
+
+                usuario.setContrasena(passwordEncriptada);
+
+                usuarioRepository.save(usuario);
+
+                result.Correct = true;
+            } else {
+                result.Correct = false;
+                result.ErrorMessage = "El token es inválido o ya ha sido utilizado.";
+            }
+        } catch (Exception ex) {
+            result.Correct = false;
+            result.ErrorMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+        return result;
+    }
+
 }

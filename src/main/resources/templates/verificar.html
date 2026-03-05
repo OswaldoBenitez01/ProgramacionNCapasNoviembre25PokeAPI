@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+        <style>
+            * {
+                font-family: 'Press Start 2P', monospace !important;
+                box-sizing: border-box;
+            }
+             body {
+                background-color: #1b1b2f;
+                background-image:
+                    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+                background-size: 40px 40px;
+                min-height: 100vh;
+                padding: 60px 20px;
+                color: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .container {
+                max-width: 480px;
+                width: 90%;
+                background: #111;
+                padding: 50px 40px;
+                box-shadow:
+                    inset 0 0 50px rgba(0,0,0,0.8),
+                    0 0 60px rgba(0, 123, 255, 0.2);
+                border: 2px solid #007bff;
+                border-radius: 15px;
+            }
+            .header {
+                text-align: center;
+                margin-bottom: 40px;
+            }
+            .header h1 {
+                font-size: 1.2rem;
+                color: #fff;
+                letter-spacing: 2px;
+                text-shadow: 0 0 10px #007bff;
+                line-height: 1.5;
+            }
+            .form-group {
+                margin-bottom: 25px;
+            }
+            .form-label {
+                display: block;
+                font-size: 0.6rem;
+                color: #aaa;
+                margin-bottom: 12px;
+                text-transform: uppercase;
+            }
+            .input-wrapper {
+                position: relative;
+                background: #000;
+                border: 2px solid #333;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                transition: all 0.3s;
+            }
+            .input-wrapper:focus-within {
+                border-color: #007bff;
+                box-shadow: 0 0 15px rgba(0, 123, 255, 0.4);
+            }
+            .input-icon {
+                padding: 0 15px;
+                color: #555;
+                font-size: 1.2rem;
+            }
+            .form-input {
+                background: transparent;
+                border: none;
+                color: #fff;
+                padding: 15px 10px;
+                width: 100%;
+                font-size: 0.8rem;
+                outline: none;
+            }
+            .btn-update {
+                width: 100%;
+                background: #007bff;
+                color: #fff;
+                border: none;
+                padding: 20px;
+                font-size: 0.75rem;
+                cursor: pointer;
+                border-radius: 8px;
+                box-shadow: 0 5px 0 #0056b3;
+                transition: all 0.1s;
+                margin-top: 10px;
+            }
+            .btn-update:active {
+                transform: translateY(4px);
+                box-shadow: 0 1px 0 #0056b3;
+            }
+            .footer {
+                text-align: center;
+                margin-top: 30px;
+                font-size: 0.5rem;
+                color: #444;
+            }
+            .btn-eye {
+                background: transparent;
+                border: none;
+                color: #555;
+                padding: 0 15px;
+                cursor: pointer;
+                transition: color 0.3s;
+                display: flex;
+                align-items: center;
+            }
+
+            .btn-eye:hover {
+                color: #007bff;
+            }
+
+            .input-wrapper {
+
+                display: flex;
+                justify-content: space-between;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>RESTABLECER CREDENCIALES</h1>
+            </div>
+
+            <form th:action="@{/reset-password}" method="post">
+                <input type="hidden" name="token" th:value="${token}" />
+
+                <div class="form-group">
+                    <label class="form-label">Nueva Contraseña</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon"><i class="bi bi-shield-lock"></i></span>
+                        <input type="password" name="password" class="form-input" 
+                               placeholder="********" required minlength="6">
+                        <button class="btn-eye" type="button" onclick="mostrarContrasena()" title="Mostrar/Ocultar">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Confirmar Contraseña</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon"><i class="bi bi-check-all"></i></span>
+                        <input type="password" class="form-input" 
+                               placeholder="********" required oninput="check(this)">
+                        <button class="btn-eye" type="button" onclick="mostrarContrasena()" title="Mostrar/Ocultar">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+
+                </div>
+
+                <button type="submit" class="btn-update">
+                    ACTUALIZAR DATOS
+                </button>
+            </form>
+
+        </div>
+
+        <script>
+
+            function check(input) {
+                const password = document.getElementsByName('password')[0].value;
+                if (input.value != password) {
+                    input.setCustomValidity('Las contraseñas no coinciden.');
+                } else {
+                    input.setCustomValidity('');
+                }
+            }
+
+            function mostrarContrasena() {
+
+                const btn = event.currentTarget;
+
+                const input = btn.parentElement.querySelector('input');
+
+                const icon = btn.querySelector('i');
+
+                if (input.type === "password") {
+                    input.type = "text";
+                    icon.classList.replace('bi-eye', 'bi-eye-slash');
+                } else {
+                    input.type = "password";
+                    icon.classList.replace('bi-eye-slash', 'bi-eye');
+                }
+            }
+
+            function check(input) {
+                const password = document.querySelector('input[name="password"]').value;
+                if (input.value !== password) {
+                    input.setCustomValidity('Las contraseñas no coinciden.');
+                } else {
+                    input.setCustomValidity('');
+                }
+            }
+        </script>
+    </body>
+</html>

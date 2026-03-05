@@ -21,4 +21,5 @@ public interface IUsuario extends JpaRepository<Usuario, Integer>{
     Optional<Usuario> findByToken(String token);
     List<Usuario> findAllByOrderByIdUsuarioAsc();
     Optional<Usuario> findByUsername(String username);
+     
 }

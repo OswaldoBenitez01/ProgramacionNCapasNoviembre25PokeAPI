@@ -17,7 +17,7 @@ public class SpringSecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/registro", "/verificar-email", "/login").permitAll()
+                .requestMatchers("/registro", "/verificar-email", "/login","/recuperacion","/reset-password").permitAll()
                 .requestMatchers("/pokemon", "/pokemon/{idOrName}").hasAnyRole("Administrador","Usuario")
                 .requestMatchers("/pokemon", "/pokemon/favoritos", "/pokemon/{idOrName}").hasRole("Usuario")
                 .requestMatchers("/usuarios/**", "/admin/**", "/pokemon/ranking").hasRole("Administrador")
