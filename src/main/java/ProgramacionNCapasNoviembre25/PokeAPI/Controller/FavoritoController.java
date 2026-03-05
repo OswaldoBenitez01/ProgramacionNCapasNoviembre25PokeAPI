@@ -69,4 +69,18 @@ public class FavoritoController {
 
         return result;
     }
+    
+    @DeleteMapping("/deleteAll/{idUsuario}")
+    @ResponseBody
+    public Result deleteAll(@PathVariable("idUsuario") int idUsuario) {
+        Result result = favoritoService.deleteAllFavorito(idUsuario);
+
+        if (result.Correct) {
+            result.Object = "Los registros favoritos se eliminaron de forma correcta";
+        } else {
+            result.Object = "No fue posible eliminar";
+        }
+
+        return result;
+    }
 }

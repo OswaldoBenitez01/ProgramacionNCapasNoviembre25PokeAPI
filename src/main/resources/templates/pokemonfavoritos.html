@@ -799,7 +799,17 @@
         <div class="main-content">
             <div class="header">
                 <h1>&#x25B6; FAVORITOS</h1>
-            </div>    
+            </div>  
+
+            <div class="grid">
+                <button type="button" 
+                        class="logout-btn" 
+                        th:attr="data-id=${UsuarioL.idUsuario}" 
+                        onclick="eliminarFavoritos(this)">
+                    ELIMINAR TODO
+                </button>
+
+            </div>
 
             <div class="grid">
 
@@ -894,6 +904,49 @@
 
                 });
             }
+
+            function eliminarFavoritos(btnAll) {
+
+                const UsuarioId = btnAll.getAttribute("data-id");
+
+                Swal.fire({
+                    title: "¿Eliminar todos los favoritos?",
+                    text: "Esta acción no se puede deshacer",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#dc3545",
+                    cancelButtonColor: "#aaa",
+                    confirmButtonText: "Sí, eliminar"
+                }).then((result) => {
+
+                    if (result.isConfirmed) {
+
+                        fetch("/favorito/deleteAll/" + UsuarioId, {
+                            method: "DELETE"
+                        })
+                                .then(response => response.json())
+                                .then(data => {
+
+                                    if (data.Correct) {
+                                        Swal.fire({
+                                            icon: "success",
+                                            title: "Eliminados",
+                                            timer: 1500,
+                                            showConfirmButton: false
+                                        }).then(() => {
+                                            location.reload();
+                                        });
+                                    } else {
+                                        Swal.fire("Error", data.Object, "error");
+                                    }
+
+                                });
+
+                    }
+
+                });
+            }
+
         </script>
 
     </body>

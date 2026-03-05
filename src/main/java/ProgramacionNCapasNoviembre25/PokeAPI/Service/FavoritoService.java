@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class FavoritoService {
@@ -117,6 +118,21 @@ public class FavoritoService {
             result.ex = ex;
         }
         return result;
+    }
+
+    @Transactional
+    public Result deleteAllFavorito(int idUsuario) {
+        Result result = new Result();
+        try {
+            iFavoritos.deleteByUsuarioIdUsuario(idUsuario);
+            result.Correct = true;
+        } catch (Exception ex) {
+            result.Correct = false;
+            result.ErrorMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+        return result;
+
     }
 
     public Map<String, Long> obtenerConteos() {
