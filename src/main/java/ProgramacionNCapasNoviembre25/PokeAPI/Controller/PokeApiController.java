@@ -8,6 +8,7 @@ import ProgramacionNCapasNoviembre25.PokeAPI.Service.FavoritoService;
 import ProgramacionNCapasNoviembre25.PokeAPI.Service.PokemonService;
 import ProgramacionNCapasNoviembre25.PokeAPI.Service.UsuarioService;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -132,10 +133,31 @@ public class PokeApiController {
             model.addAttribute("pokemon", pokemon);
             model.addAttribute("Color", obtenerTipo(pokemon));
             model.addAttribute("coloresTipos", obtenerColoresTipos(pokemon));
+
+            int totalStats = Arrays.stream(pokemon.getStats())
+                    .mapToInt(s -> s.getBaseStat())
+                    .sum();
+            model.addAttribute("totalStats", totalStats);
         } else {
             model.addAttribute("error", result.ErrorMessage);
         }
         return "pokemon";
+    }
+    
+    @GetMapping("/detalle/{idOrName}")
+    @ResponseBody
+    public Pokemon pokemonDetailJSON(@PathVariable String idOrName, Model model) {
+        Result result = pokemonService.getPokemonByIdOrName(idOrName);
+        Pokemon pokemon = new Pokemon();
+        if (result.Correct) {
+            pokemon = (Pokemon) result.Object;
+            model.addAttribute("pokemon", pokemon);
+            model.addAttribute("Color", obtenerTipo(pokemon));
+            model.addAttribute("coloresTipos", obtenerColoresTipos(pokemon));
+        } else {
+            model.addAttribute("error", result.ErrorMessage);
+        }
+        return pokemon;
     }
 
     public Usuario obtenerUsuarioLogueado() {

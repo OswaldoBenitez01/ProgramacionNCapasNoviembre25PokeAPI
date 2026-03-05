@@ -1,15 +1,18 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <head>
-        <title>Información del Pokémon</title>
+        <title th:text="${pokemon.name} + ' | Pokédex'">Pokédex</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.min.css">
-
         <style>
+            :root {
+                --pk-color: #78C850;
+                --pk-color2: #78C850;
+            }
             * {
                 box-sizing: border-box;
                 margin: 0;
@@ -18,281 +21,1027 @@
 
             body {
                 font-family: 'Press Start 2P', monospace;
-                background-color: #1b1b2f;
-                background-image:
-                    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-                background-size: 40px 40px;
+                background: #080810;
                 min-height: 100vh;
-                padding-top: 100px; /* Espacio para el navbar fijo */
-                padding-bottom: 30px;
+                overflow-x: hidden;
                 color: #fff;
             }
 
+            .bg-layer {
+                position: fixed;
+                inset: 0;
+                z-index: 0;
+                overflow: hidden;
+            }
+            .bg-artwork {
+                position: absolute;
+                inset: 0;
+                background-size: cover;
+                background-position: center;
+                filter: blur(70px) brightness(0.2) saturate(2);
+                transform: scale(1.15);
+                transition: background-image 0.8s ease;
+            }
+            .bg-grid {
+                position: absolute;
+                inset: 0;
+                background-image:
+                    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+                background-size: 40px 40px;
+            }
+            .bg-vignette {
+                position: absolute;
+                inset: 0;
+                background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.85) 100%);
+            }
 
             .navbar-retro {
                 position: fixed;
                 top: 0;
                 left: 0;
-                width: 100%;
+                right: 0;
+                height: 58px;
                 display: flex;
-                justify-content: space-between;
                 align-items: center;
-                padding: 15px 25px;
-                background: rgba(0, 0, 0, 0.85);
-                backdrop-filter: blur(5px);
-                border-bottom: 3px solid #333;
-                z-index: 2000;
+                justify-content: space-between;
+                padding: 0 24px;
+                background: rgba(8,8,16,0.85);
+                backdrop-filter: blur(16px);
+                border-bottom: 1px solid rgba(255,255,255,0.05);
+                z-index: 1000;
+            }
+            .nav-brand {
+                font-size: 0.5rem;
+                letter-spacing: 4px;
+                color: rgba(255,255,255,0.35);
+            }
+            .nav-brand span {
+                color: #fff;
+            }
+            .btn-retro {
+                font-family: 'Press Start 2P', monospace;
+                font-size: 0.45rem;
+                padding: 7px 13px;
+                border-radius: 6px;
+                cursor: pointer;
+                letter-spacing: 1px;
+                transition: all 0.2s;
+                text-decoration: none;
+                border: 1px solid;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .btn-ghost  {
+                background: transparent;
+                border-color: rgba(255,255,255,0.2);
+                color: rgba(255,255,255,0.55);
+            }
+            .btn-ghost:hover  {
+                background: rgba(255,255,255,0.07);
+                color: #fff;
+                border-color: rgba(255,255,255,0.4);
+            }
+            .btn-danger-r {
+                background: transparent;
+                border-color: rgba(220,53,69,0.45);
+                color: #dc3545;
+            }
+            .btn-danger-r:hover {
+                background: rgba(220,53,69,0.12);
+            }
+            .btn-fav    {
+                background: transparent;
+                border-color: rgba(241,196,15,0.45);
+                color: #f1c40f;
+            }
+            .btn-fav:hover    {
+                background: rgba(241,196,15,0.1);
             }
 
+            .page-layout {
+                position: relative;
+                z-index: 1;
+                min-height: 100vh;
+                display: grid;
+                grid-template-columns: 1fr 1.5fr;
+                padding-top: 58px;
+            }
+            @media (max-width: 860px) {
+                .page-layout {
+                    grid-template-columns: 1fr;
+                }
+                .panel-left  {
+                    position: relative;
+                    height: auto;
+                    padding: 28px 20px 12px;
+                }
+                .panel-right {
+                    max-height: none;
+                    padding: 12px 20px 50px;
+                }
+            }
 
-            .back-btn {
-                background: transparent;
-                border: 2px solid #fff;
+            .panel-left {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 36px 28px 28px;
+                position: sticky;
+                top: 58px;
+                height: calc(100vh - 58px);
+                border-right: 1px solid rgba(255,255,255,0.04);
+                gap: 16px;
+                overflow: hidden;
+            }
+
+            .pk-header {
+                align-self: flex-start;
+                width: 100%;
+            }
+            .pk-id-badge {
+                font-size: 0.42rem;
+                color: rgba(255,255,255,0.25);
+                letter-spacing: 4px;
+                margin-bottom: 8px;
+            }
+            .pk-name-hero {
+                font-size: clamp(0.9rem, 2.5vw, 1.6rem);
+                text-transform: uppercase;
+                letter-spacing: 3px;
+                line-height: 1.3;
+                text-shadow: 0 0 40px var(--pk-color);
+            }
+            .pk-types {
+                display: flex;
+                gap: 7px;
+                margin-top: 10px;
+            }
+            .type-pill {
+                font-size: 0.35rem;
+                padding: 5px 13px;
+                border-radius: 20px;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
                 color: #fff;
-                padding: 10px 14px;
-                font-size: 0.65rem;
-                border-radius: 8px;
+                border: 1px solid rgba(255,255,255,0.15);
+                font-weight: bold;
+            }
+
+            .pk-img-section {
+                position: relative;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 14px;
+                flex: 1;
+            }
+
+            .pk-img-wrapper {
+                position: relative;
+                width: 220px;
+                height: 220px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .pk-img-glow {
+                position: absolute;
+                inset: -20px;
+                border-radius: 50%;
+                background: radial-gradient(circle, var(--pk-color) 0%, transparent 65%);
+                opacity: 0.15;
+                animation: glow-pulse 3.5s ease-in-out infinite;
+            }
+            @keyframes glow-pulse {
+                0%,100% {
+                    transform: scale(1);
+                    opacity: 0.15;
+                }
+                50%      {
+                    transform: scale(1.25);
+                    opacity: 0.28;
+                }
+            }
+
+            .pk-spinner {
+                position: absolute;
+                inset: 0;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                z-index: 5;
+            }
+            .pk-spinner.active {
+                display: flex;
+            }
+            .spinner-ring {
+                width: 52px;
+                height: 52px;
+                border: 3px solid rgba(255,255,255,0.08);
+                border-top-color: var(--pk-color);
+                border-radius: 50%;
+                animation: spin 0.7s linear infinite;
+            }
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            #pokemonImg {
+                position: relative;
+                z-index: 2;
+                width: 190px;
+                height: 190px;
+                object-fit: contain;
+                image-rendering: pixelated;
+                filter: drop-shadow(0 10px 30px rgba(0,0,0,0.9))
+                    drop-shadow(0 0 20px var(--pk-color));
+                transition: opacity 0.25s ease, filter 0.25s ease;
+            }
+            #pokemonImg.fading {
+                opacity: 0;
+                filter: brightness(2) blur(4px);
+            }
+
+            .sprite-controls-grid {
+                width: 100%;
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 6px;
+            }
+            .ctrl-btn {
+                background: rgba(255,255,255,0.03);
+                border: 1px solid rgba(255,255,255,0.09);
+                border-radius: 10px;
+                padding: 10px 4px 8px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 5px;
                 cursor: pointer;
+                transition: all 0.2s;
+                color: rgba(255,255,255,0.45);
                 font-family: 'Press Start 2P', monospace;
+            }
+            .ctrl-btn i {
+                font-size: 1.1rem;
+            }
+            .ctrl-btn span {
+                font-size: 0.28rem;
+                letter-spacing: 0.5px;
+            }
+            .ctrl-btn:hover {
+                background: rgba(255,255,255,0.07);
+                color: rgba(255,255,255,0.85);
+                border-color: rgba(255,255,255,0.2);
+            }
+            .ctrl-btn.active-shiny  {
+                border-color: #f1c40f;
+                color: #f1c40f;
+                background: rgba(241,196,15,0.08);
+                box-shadow: 0 0 10px rgba(241,196,15,0.25);
+            }
+            .ctrl-btn.active-female {
+                border-color: #e84393;
+                color: #e84393;
+                background: rgba(232,67,147,0.08);
+            }
+            .ctrl-btn.active-gif    {
+                border-color: var(--pk-color);
+                color: var(--pk-color);
+                background: rgba(120,200,80,0.08);
+            }
+            .ctrl-btn.active-flip   {
+                border-color: #5dade2;
+                color: #5dade2;
+                background: rgba(93,173,226,0.08);
+            }
+
+            .pk-quick-stats {
+                width: 100%;
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1px;
+                background: rgba(255,255,255,0.04);
+                border-radius: 12px;
+                overflow: hidden;
+                border: 1px solid rgba(255,255,255,0.06);
+            }
+            .qs-item {
+                padding: 10px 6px;
+                text-align: center;
+                background: rgba(8,8,16,0.6);
+            }
+            .qs-label {
+                font-size: 0.28rem;
+                color: rgba(255,255,255,0.25);
+                display: block;
+                margin-bottom: 5px;
                 letter-spacing: 1px;
-                text-decoration: none;
-                transition: all 0.3s ease;
-                box-shadow: 0 0 8px rgba(255,255,255,0.2);
+            }
+            .qs-value {
+                font-size: 0.48rem;
+                color: #fff;
+            }
+
+            .panel-right {
+                padding: 32px 28px 40px 24px;
+                overflow-y: auto;
+                max-height: calc(100vh - 58px);
+                scrollbar-width: thin;
+                scrollbar-color: rgba(255,255,255,0.06) transparent;
+            }
+
+            .pk-tabs {
+                display: flex;
+                gap: 3px;
+                margin-bottom: 24px;
+                background: rgba(255,255,255,0.025);
+                border-radius: 10px;
+                padding: 4px;
+                border: 1px solid rgba(255,255,255,0.05);
+            }
+            .pk-tab {
+                flex: 1;
+                font-family: 'Press Start 2P', monospace;
+                font-size: 0.32rem;
+                padding: 10px 4px;
+                border: none;
+                border-radius: 7px;
+                cursor: pointer;
+                color: rgba(255,255,255,0.3);
+                background: transparent;
+                transition: all 0.2s;
+                letter-spacing: 0.5px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 5px;
+            }
+            .pk-tab i {
+                font-size: 0.7rem;
+            }
+            .pk-tab:hover {
+                color: rgba(255,255,255,0.6);
+                background: rgba(255,255,255,0.03);
+            }
+            .pk-tab.active {
+                color: #fff;
+                background: rgba(255,255,255,0.09);
+                box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+            }
+
+            .tab-panel {
+                display: none;
+                animation: fadeIn 0.25s ease;
+            }
+            .tab-panel.active {
+                display: block;
+            }
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(6px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .section-title {
+                font-size: 0.38rem;
+                letter-spacing: 2.5px;
+                color: rgba(255,255,255,0.2);
+                margin-bottom: 16px;
+                display: flex;
+                align-items: center;
+                gap: 9px;
+                text-transform: uppercase;
+            }
+            .section-title i {
+                color: var(--pk-color);
+                font-size: 0.75rem;
+            }
+            .section-title::after {
+                content: '';
+                flex: 1;
+                height: 1px;
+                background: rgba(255,255,255,0.04);
+            }
+
+            .stat-row {
+                display: grid;
+                grid-template-columns: 100px 1fr 38px;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 10px;
+            }
+            .stat-label {
+                font-size: 0.32rem;
+                text-transform: uppercase;
+                color: rgba(255,255,255,0.35);
+                letter-spacing: 1px;
+            }
+            .stat-track {
+                height: 6px;
+                background: rgba(255,255,255,0.05);
+                border-radius: 3px;
+                overflow: hidden;
+            }
+            .stat-fill {
+                height: 100%;
+                border-radius: 3px;
+                width: 0%;
+                background: linear-gradient(90deg, var(--pk-color), var(--pk-color2));
+                transition: width 1.3s cubic-bezier(0.4,0,0.2,1);
+            }
+            .stat-num {
+                font-size: 0.38rem;
+                color: rgba(255,255,255,0.7);
+                text-align: right;
+            }
+            .stat-total-row {
+                border-top: 1px solid rgba(255,255,255,0.05);
+                padding-top: 12px;
+                margin-top: 4px;
+            }
+            .stat-total-row .stat-label {
+                color: rgba(255,255,255,0.6);
+            }
+            .stat-total-row .stat-num   {
+                color: #fff;
+            }
+
+            .ability-card {
+                background: rgba(255,255,255,0.03);
+                border: 1px solid rgba(255,255,255,0.06);
+                border-radius: 12px;
+                padding: 14px 16px;
+                margin-bottom: 8px;
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                transition: all 0.2s;
+            }
+            .ability-card:hover {
+                background: rgba(255,255,255,0.06);
+                transform: translateX(3px);
+            }
+            .ability-icon {
+                width: 36px;
+                height: 36px;
+                border-radius: 9px;
+                background: rgba(255,255,255,0.05);
+                border: 1px solid rgba(255,255,255,0.07);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1rem;
+                flex-shrink: 0;
+                color: var(--pk-color);
+            }
+            .ability-name {
+                font-size: 0.37rem;
+                text-transform: capitalize;
+                color: #fff;
+                letter-spacing: 1px;
+            }
+            .ability-slot {
+                font-size: 0.27rem;
+                color: rgba(255,255,255,0.22);
+                margin-top: 5px;
+            }
+            .badge-hidden {
+                margin-left: auto;
+                font-size: 0.27rem;
+                background: rgba(241,196,15,0.1);
+                border: 1px solid rgba(241,196,15,0.35);
+                color: #f1c40f;
+                padding: 3px 8px;
+                border-radius: 4px;
+                white-space: nowrap;
+            }
+            .badge-normal-ab {
+                margin-left: auto;
+                font-size: 0.27rem;
+                background: rgba(255,255,255,0.03);
+                border: 1px solid rgba(255,255,255,0.07);
+                color: rgba(255,255,255,0.25);
+                padding: 3px 8px;
+                border-radius: 4px;
                 white-space: nowrap;
             }
 
-            .back-btn:hover {
-                background: #fff;
-                color: #000;
-                box-shadow: 0 0 16px rgba(255,255,255,0.6);
+            .moves-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 14px;
+            }
+            .moves-counter-badge {
+                font-size: 0.3rem;
+                background: rgba(255,255,255,0.05);
+                border: 1px solid rgba(255,255,255,0.08);
+                color: rgba(255,255,255,0.3);
+                padding: 3px 9px;
+                border-radius: 20px;
+            }
+            .moves-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 5px;
+                max-height: 400px;
+                overflow-y: auto;
+                scrollbar-width: thin;
+                scrollbar-color: rgba(255,255,255,0.05) transparent;
+            }
+            .move-chip {
+                background: rgba(255,255,255,0.03);
+                border: 1px solid rgba(255,255,255,0.06);
+                border-radius: 8px;
+                padding: 9px 11px;
+                font-size: 0.29rem;
+                text-transform: capitalize;
+                color: rgba(255,255,255,0.55);
+                letter-spacing: 0.5px;
+                transition: all 0.15s;
+                display: flex;
+                align-items: center;
+                gap: 7px;
+            }
+            .move-chip i {
+                color: var(--pk-color);
+                font-size: 0.5rem;
+                flex-shrink: 0;
+            }
+            .move-chip:hover {
+                background: rgba(255,255,255,0.07);
+                color: #fff;
+            }
+
+            .sprites-gallery {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
+            }
+            @media (max-width: 500px) {
+                .sprites-gallery {
+                    grid-template-columns: repeat(3, 1fr);
+                }
+            }
+            .sprite-thumb {
+                background: rgba(255,255,255,0.03);
+                border: 1px solid rgba(255,255,255,0.06);
+                border-radius: 11px;
+                padding: 12px 6px 8px;
+                text-align: center;
+                cursor: pointer;
+                transition: all 0.2s;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 6px;
+            }
+            .sprite-thumb:hover {
+                background: rgba(255,255,255,0.08);
+                border-color: var(--pk-color);
                 transform: translateY(-2px);
             }
-
-
-            .logout-btn {
-                background: rgba(0,0,0,0.8);
-                border: 2px solid #dc3545;
-                color: #dc3545;
-                padding: 10px 16px;
-                font-size: 0.7rem;
-                border-radius: 8px;
-                cursor: pointer;
-                font-family: 'Press Start 2P', monospace;
-                box-shadow: 0 0 10px rgba(220,53,69,0.3);
-                transition: 0.3s;
+            .sprite-thumb img {
+                width: 58px;
+                height: 58px;
+                object-fit: contain;
+                image-rendering: pixelated;
             }
-
-            .logout-btn:hover {
-                background: #dc3545;
-                color: white;
-                box-shadow: 0 0 15px rgba(220,53,69,0.5);
+            .sprite-thumb-label {
+                font-size: 0.26rem;
+                color: rgba(255,255,255,0.28);
+                letter-spacing: 0.5px;
             }
         </style>
     </head>
-
     <body>
 
+        <div class="bg-layer">
+            <div class="bg-artwork" id="bgArtwork"></div>
+            <div class="bg-grid"></div>
+            <div class="bg-vignette"></div>
+        </div>
+
         <nav class="navbar-retro">
-            <div class="back-btn" id="backBtn" title="Atrás">
-                ← ATRAS
-            </div>
-
-            <div>
-                <a sec:authorize="hasRole('Usuario')" th:href="@{/pokemon/favoritos}" 
-                   id="favBtn" 
-                   class="btn btn-outline-warning btn-sm d-flex align-items-center gap-2" 
-                   style="font-family: 'Press Start 2P', monospace; font-size: 0.65rem; padding: 8px 12px; border-width: 2px; text-decoration: none;">
-                    <i class="bi bi-heart-fill"></i> 
-                    <span class="d-none d-sm-inline">FAVORITOS</span>
+            <button id="backBtn" class="btn-retro btn-ghost">
+                <i class="bi bi-arrow-left"></i> ATRAS
+            </button>
+            <span class="nav-brand">/ <span>POKEDEX</span></span>
+            <div class="d-flex gap-2 align-items-center">
+                <a sec:authorize="hasRole('Usuario')"
+                   th:href="@{/pokemon/favoritos}"
+                   class="btn-retro btn-fav">
+                    <i class="bi bi-heart-fill"></i> FAVORITOS
                 </a>
+                <form th:action="@{/logout}" method="post" style="margin:0">
+                    <button type="submit" class="btn-retro btn-danger-r">
+                        <i class="bi bi-box-arrow-right"></i> SALIR
+                    </button>
+                </form>
             </div>
-
-            <form th:action="@{/logout}" method="post" style="margin: 0;">
-                <button type="submit" class="logout-btn">
-                    SALIR <i class="bi bi-box-arrow-right"></i>
-                </button>
-            </form>
         </nav>
 
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-12 col-md-8 col-lg-5">
-                    <div class="card shadow border-0 overflow-hidden" style="border-radius: 1.5rem;">
+        <div class="page-layout">
 
-                        <div class="card-header text-white text-center py-4" th:style="'background: ' + ${Color}">
-                            <div class="d-flex justify-content-between px-3 text-white-50 small fw-bold">
-                                <a href="http://localhost:8080/pokemon" style="color: white; text-decoration: none;">POKÉDEX</a>
-                                <span th:text="'#' + ${pokemon.id}">#25</span>
-                            </div>
-                            <h2 class="text-white text-capitalize mb-0 mt-2 display-6 fw-bold" th:text="${pokemon.name}">Nombre</h2>
+            <div class="panel-left">
+
+                <div class="pk-header">
+                    <div class="pk-id-badge" th:text="'No. ' + ${pokemon.id}">001</div>
+                    <h1 class="pk-name-hero" th:text="${pokemon.name}">BULBASAUR</h1>
+                    <div class="pk-types">
+                        <span th:each="type, i : ${pokemon.types}"
+                              th:text="${type.type.name}"
+                              th:style="'background:' + ${coloresTipos[i.index]} + '; box-shadow:0 0 10px ' + ${coloresTipos[i.index]} + '55'"
+                              class="type-pill">
+                        </span>
+                    </div>
+                </div>
+
+                <div class="pk-img-section">
+                    <div class="pk-img-wrapper">
+                        <div class="pk-img-glow"></div>
+                        <div class="pk-spinner" id="pkSpinner">
+                            <div class="spinner-ring"></div>
+                        </div>
+                        <img id="pokemonImg"
+                             th:src="${pokemon.sprites.other?.showdown?.frontDefault} ?: ${pokemon.sprites.frontDefault}"
+                             alt="pokemon"
+                             onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png'">
+                    </div>
+
+                    <div class="sprite-controls-grid">
+                        <button class="ctrl-btn" id="btnFlip" onclick="cambiarSprite()" title="Ver espalda">
+                            <i class="bi bi-arrow-repeat"></i>
+                            <span>VOLTEAR</span>
+                        </button>
+                        <button class="ctrl-btn" id="btnShiny" onclick="toggleShiny()" title="Shiny">
+                            <i class="bi bi-stars"></i>
+                            <span>SHINY</span>
+                        </button>
+                        <button class="ctrl-btn" id="btnGenero" onclick="toggleGenero()" title="Forma femenina">
+                            <i class="bi bi-gender-female"></i>
+                            <span>FEMALE</span>
+                        </button>
+                        <button class="ctrl-btn" id="btnGif" onclick="toggleGif()" title="GIF animado">
+                            <i class="bi bi-play-fill"></i>
+                            <span>ANIM</span>
+                        </button>
+                    </div>
+
+                    <button class="ctrl-btn" style="width:100%; flex-direction:row; padding:9px 14px;"
+                            onclick="Sonido()">
+                        <i class="bi bi-volume-up-fill"></i>
+                        <span>REPRODUCIR CRY</span>
+                    </button>
+                </div>
+
+                <div class="pk-quick-stats">
+                    <div class="qs-item">
+                        <span class="qs-label">PESO</span>
+                        <span class="qs-value" th:text="${pokemon.weight / 10.0} + 'kg'">—</span>
+                    </div>
+                    <div class="qs-item">
+                        <span class="qs-label">ALTURA</span>
+                        <span class="qs-value" th:text="${pokemon.height / 10.0} + 'm'">—</span>
+                    </div>
+                    <div class="qs-item">
+                        <span class="qs-label">EXP</span>
+                        <span class="qs-value" th:text="${pokemon.baseExperience}">—</span>
+                    </div>
+                    <div class="qs-item">
+                        <span class="qs-label">TOTAL</span>
+                        <span class="qs-value" th:text="${totalStats}">—</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="panel-right">
+
+                <div class="pk-tabs">
+                    <button class="pk-tab active" onclick="switchTab('stats', this)">
+                        <i class="bi bi-bar-chart-fill"></i> STATS
+                    </button>
+                    <button class="pk-tab" onclick="switchTab('skills', this)">
+                        <i class="bi bi-lightning-charge-fill"></i> SKILLS
+                    </button>
+                    <button class="pk-tab" onclick="switchTab('moves', this)">
+                        <i class="bi bi-crosshair"></i> MOVES
+                    </button>
+                    <button class="pk-tab" onclick="switchTab('galeria', this)">
+                        <i class="bi bi-images"></i> SPRITES
+                    </button>
+                </div>
+
+                <div id="tab-stats" class="tab-panel active">
+                    <p class="section-title"><i class="bi bi-bar-chart-fill"></i> BASE STATS</p>
+                    <div th:each="stat : ${pokemon.stats}" class="stat-row">
+                        <div class="stat-label" th:text="${stat.stat.name}">hp</div>
+                        <div class="stat-track">
+                            <div class="stat-fill" th:attr="data-width=${stat.baseStat * 100 / 255}"></div>
+                        </div>
+                        <div class="stat-num" th:text="${stat.baseStat}">0</div>
+                    </div>
+                    <div class="stat-row stat-total-row">
+                        <div class="stat-label">TOTAL</div>
+                        <div class="stat-track">
+                            <div class="stat-fill" th:attr="data-width=${totalStats * 100 / 720}"
+                                 style="background: rgba(255,255,255,0.5) !important;"></div>
+                        </div>
+                        <div class="stat-num" th:text="${totalStats}">0</div>
+                    </div>
+                </div>
+
+                <div id="tab-skills" class="tab-panel">
+                    <p class="section-title"><i class="bi bi-lightning-charge-fill"></i> HABILIDADES</p>
+                    <div th:each="ability : ${pokemon.abilities}" class="ability-card">
+                        <div class="ability-icon">
+                            <i th:if="${!ability.hidden}" class="bi bi-lightning-charge-fill"></i>
+                            <i th:if="${ability.hidden}"  class="bi bi-eye-fill"></i>
+                        </div>
+                        <div>
+                            <div class="ability-name" th:text="${ability.ability.name}">—</div>
+                            <div class="ability-slot" th:text="'Slot ' + ${ability.slot}">Slot 1</div>
+                        </div>
+                        <span th:if="${ability.hidden}"  class="badge-hidden">OCULTA</span>
+                        <span th:if="${!ability.hidden}" class="badge-normal-ab">NORMAL</span>
+                    </div>
+                </div>
+
+                <div id="tab-moves" class="tab-panel">
+                    <div class="moves-header">
+                        <p class="section-title" style="margin-bottom:0">
+                            <i class="bi bi-crosshair"></i> MOVIMIENTOS
+                        </p>
+                        <span class="moves-counter-badge" th:text="${pokemon.moves.length} + ' MOVES'"></span>
+                    </div>
+                    <div class="moves-grid">
+                        <div th:each="move : ${pokemon.moves}" class="move-chip">
+                            <i class="bi bi-caret-right-fill"></i>
+                            <span th:text="${move.move.name}"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-galeria" class="tab-panel">
+                    <p class="section-title"><i class="bi bi-images"></i> GALERIA DE SPRITES</p>
+                    <div class="sprites-gallery">
+
+                        <div th:if="${pokemon.sprites.other?.officialArtwork?.frontDefault != null}"
+                             class="sprite-thumb"
+                             th:attr="data-src=${pokemon.sprites.other.officialArtwork.frontDefault},data-pixel='false'"
+                             onclick="thumbClick(this)">
+                            <img th:src="${pokemon.sprites.other.officialArtwork.frontDefault}"
+                                 style="image-rendering: auto;" alt="artwork">
+                            <div class="sprite-thumb-label">OFICIAL</div>
                         </div>
 
-                        <div class="card-body bg-white text-center pt-0">
+                        <div th:if="${pokemon.sprites.other?.officialArtwork?.frontShiny != null}"
+                             class="sprite-thumb"
+                             th:attr="data-src=${pokemon.sprites.other.officialArtwork.frontShiny},data-pixel='false'"
+                             onclick="thumbClick(this)">
+                            <img th:src="${pokemon.sprites.other.officialArtwork.frontShiny}"
+                                 style="image-rendering: auto;" alt="shiny artwork">
+                            <div class="sprite-thumb-label">SHINY OFICIAL</div>
+                        </div>
 
-                            <div class="bg-white rounded-circle d-inline-block shadow-sm p-3" 
-                                 style="margin-top: -10px; width: 150px; height: 150px; border: 5px solid black;">
-                                <img id="pokemonImg" 
-                                     th:src="${pokemon.sprites.frontDefault}" 
-                                     class="img-fluid" 
-                                     style="cursor: pointer; transform: scale(1.2);"
-                                     onclick="cambiarSprite()" alt="pokemon"
-                                 onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png';">
-                            </div>
+                        <div th:if="${pokemon.sprites.other?.home?.frontDefault != null}"
+                             class="sprite-thumb"
+                             th:attr="data-src=${pokemon.sprites.other.home.frontDefault},data-pixel='false'"
+                             onclick="thumbClick(this)">
+                            <img th:src="${pokemon.sprites.other.home.frontDefault}"
+                                 style="image-rendering: auto;" alt="home">
+                            <div class="sprite-thumb-label">HOME</div>
+                        </div>
 
-                            <div class="d-flex justify-content-center gap-4 my-3">
-                                <i id="iconoShiny" class="bi bi-stars" onclick="toggleShiny()" style="cursor:pointer; font-size: 1.5rem; color: #333;" title="Modo Shiny"></i>
-                                <i id="iconoGenero" class="bi bi-gender-male fs-3" onclick="toggleGenero()" style="cursor:pointer; color: #0d6efd;" title="Género"></i>
-                                <i id="iconoSonido" class="bi bi-volume-up-fill fs-3 text-secondary" onclick="Sonido()" style="cursor:pointer;" title="Sonido"></i>
-                            </div>
+                        <div th:if="${pokemon.sprites.other?.dreamWorld?.frontDefault != null}"
+                             class="sprite-thumb"
+                             th:attr="data-src=${pokemon.sprites.other.dreamWorld.frontDefault},data-pixel='false'"
+                             onclick="thumbClick(this)">
+                            <img th:src="${pokemon.sprites.other.dreamWorld.frontDefault}"
+                                 style="image-rendering: auto;" alt="dream world">
+                            <div class="sprite-thumb-label">DREAM WORLD</div>
+                        </div>
 
-                            <div class="mb-4">
-                                <span th:each="type, iterStat : ${pokemon.types}"
-                                      th:text="${type.type.name}"
-                                      th:style="'background-color: ' + ${coloresTipos[iterStat.index]}"
-                                      class="badge rounded-pill text-white px-3 py-2 text-capitalize mx-1 shadow-sm">
-                                </span>
-                            </div>
+                        <div th:if="${pokemon.sprites.other?.showdown?.frontDefault != null}"
+                             class="sprite-thumb"
+                             th:attr="data-src=${pokemon.sprites.other.showdown.frontDefault},data-pixel='true'"
+                             onclick="thumbClick(this)">
+                            <img th:src="${pokemon.sprites.other.showdown.frontDefault}" alt="battle">
+                            <div class="sprite-thumb-label">BATTLE</div>
+                        </div>
 
-                            <div class="row g-0 py-2 bg-light rounded-4 mb-4">
-                                <div class="col-4 border-end">
-                                    <small class="text-muted d-block" style="font-size: 0.5rem;">Peso</small>
-                                    <span class="fw-bold text-dark" style="font-size: 0.7rem;" th:text="${pokemon.weight / 10.0} + ' kg'">6 kg</span>
-                                </div>
-                                <div class="col-4 border-end">
-                                    <small class="text-muted d-block" style="font-size: 0.5rem;">Altura</small>
-                                    <span class="fw-bold text-dark" style="font-size: 0.7rem;" th:text="${pokemon.height / 10.0} + ' m'">0.4 m</span>
-                                </div>
-                                <div class="col-4">
-                                    <small class="text-muted d-block" style="font-size: 0.5rem;">Base Exp</small>
-                                    <span class="fw-bold text-dark" style="font-size: 0.7rem;" th:text="${pokemon.baseExperience}">112</span>
-                                </div>
-                            </div>
+                        <div th:if="${pokemon.sprites.other?.showdown?.frontShiny != null}"
+                             class="sprite-thumb"
+                             th:attr="data-src=${pokemon.sprites.other.showdown.frontShiny},data-pixel='true'"
+                             onclick="thumbClick(this)">
+                            <img th:src="${pokemon.sprites.other.showdown.frontShiny}" alt="battle shiny">
+                            <div class="sprite-thumb-label">BATTLE SHINY</div>
+                        </div>
 
-                            <div class="text-start mb-4 px-2">
-                                <h6 class="fw-bold text-secondary mb-3" style="font-size: 0.6rem;"><i class="bi bi-bar-chart-fill"></i> ESTADÍSTICAS</h6>
-                                <div th:each="stat : ${pokemon.stats}" class="row align-items-center mb-2">
-                                    <div class="col-4 text-capitalize text-muted" style="font-size: 0.5rem;" th:text="${stat.stat.name}">hp</div>
-                                    <div class="col-6 p-0">
-                                        <div class="progress" style="height: 8px;">
-                                            <div class="progress-bar rounded-pill" 
-                                                 th:style="'width: ' + (${stat.baseStat} * 100 / 200) + '%; background-color: ' + ${Color}"
-                                                 th:aria-valuenow="${stat.baseStat}" aria-valuemin="0" aria-valuemax="255"></div>
-                                        </div>
-                                    </div>
-                                    <div class="col-2 text-end text-dark" style="font-size: 0.5rem;" th:text="${stat.baseStat}">50</div>
-                                </div>
-                            </div>
+                        <div th:if="${pokemon.sprites.frontDefault != null}"
+                             class="sprite-thumb"
+                             th:attr="data-src=${pokemon.sprites.frontDefault},data-pixel='true'"
+                             onclick="thumbClick(this)">
+                            <img th:src="${pokemon.sprites.frontDefault}" alt="front">
+                            <div class="sprite-thumb-label">FRONT</div>
+                        </div>
 
-                            <div class="row text-start g-3 px-2 pb-3">
-                                <div class="col-6">
-                                    <h6 class="fw-bold text-secondary text-uppercase" style="font-size: 0.5rem;">Habilidades</h6>
-                                    <div class="d-flex flex-wrap gap-1">
-                                        <span th:each="ability : ${pokemon.abilities}" 
-                                              th:text="${ability.ability.name}"
-                                              class="badge bg-light text-dark border fw-normal text-capitalize w-100 py-2" style="font-size: 0.5rem;">
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <h6 class="fw-bold text-secondary text-uppercase" style="font-size: 0.5rem;">Movimientos</h6>
-                                    <div class="overflow-auto border rounded-3 p-2 bg-light" style="max-height: 80px;">
-                                        <span th:each="move : ${pokemon.moves}" 
-                                              th:text="${move.move.name}"
-                                              class="d-block text-dark text-capitalize mb-1 border-bottom pb-1" style="font-size: 0.45rem;">
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> 
-                    </div> 
-                </div> 
-            </div> 
+                        <div th:if="${pokemon.sprites.backDefault != null}"
+                             class="sprite-thumb"
+                             th:attr="data-src=${pokemon.sprites.backDefault},data-pixel='true'"
+                             onclick="thumbClick(this)">
+                            <img th:src="${pokemon.sprites.backDefault}" alt="back">
+                            <div class="sprite-thumb-label">BACK</div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
         </div>
 
         <script th:inline="javascript">
-            // [Tus funciones de audio, sprites, shiny y genero se mantienen igual]
-            const audio = /*[[${pokemon.cries.latest}]]*/ ''
-            const pokemonAudio = new Audio(audio);
+            const tipoColor1 = /*[[${coloresTipos[0]}]]*/ '#78C850';
+            const tipoColor2 = /*[[${coloresTipos.size() > 1 ? coloresTipos[1] : coloresTipos[0]}]]*/ '#78C850';
+
+            function solidFrom(c) {
+                if (!c)
+                    return '#78C850';
+                const m = c.match(/#[a-fA-F0-9]{6}/);
+                return m ? m[0] : c;
+            }
+            const c1 = solidFrom(tipoColor1);
+            const c2 = solidFrom(tipoColor2);
+
+            document.documentElement.style.setProperty('--pk-color', c1);
+            document.documentElement.style.setProperty('--pk-color2', c2);
+
+            document.querySelectorAll('.stat-fill:not([style*="important"])').forEach(bar => {
+                bar.style.background = `linear-gradient(90deg, ${c1}, ${c2})`;
+            });
+
+            const audioUrl = /*[[${pokemon.cries.latest}]]*/ '';
+            const pokemonAudio = new Audio(audioUrl);
             function Sonido() {
                 pokemonAudio.currentTime = 0;
-                pokemonAudio.play().catch(error => console.error("Error audio:", error));
+                pokemonAudio.play().catch(e => console.warn('Audio bloqueado:', e));
             }
 
-            const sprites = {
-                front: /*[[${pokemon.sprites.frontDefault}]]*/ '',
-                back: /*[[${pokemon.sprites.backDefault}]]*/ '',
-                frontShiny: /*[[${pokemon.sprites.frontShiny}]]*/ '',
-                backShiny: /*[[${pokemon.sprites.backShiny}]]*/ '',
-                frontFem: /*[[${pokemon.sprites.frontFemale}]]*/ '',
-                backFem: /*[[${pokemon.sprites.backFemale}]]*/ '',
-                frontShinyFem: /*[[${pokemon.sprites.frontShinyFemale}]]*/ '',
-                backShinyFem: /*[[${pokemon.sprites.backShinyFemale}]]*/ ''
+            const SP = {
+                front: /*[[${pokemon.sprites.frontDefault}                         ?: '']]*/ '',
+                back: /*[[${pokemon.sprites.backDefault}                          ?: '']]*/ '',
+                frontShiny: /*[[${pokemon.sprites.frontShiny}                           ?: '']]*/ '',
+                backShiny: /*[[${pokemon.sprites.backShiny}                            ?: '']]*/ '',
+                frontFem: /*[[${pokemon.sprites.frontFemale}                          ?: '']]*/ '',
+                backFem: /*[[${pokemon.sprites.backFemale}                           ?: '']]*/ '',
+                frontShinyFem: /*[[${pokemon.sprites.frontShinyFemale}                     ?: '']]*/ '',
+                backShinyFem: /*[[${pokemon.sprites.backShinyFemale}                      ?: '']]*/ '',
+                gifFront: /*[[${pokemon.sprites.other?.showdown?.frontDefault}        ?: '']]*/ '',
+                gifBack: /*[[${pokemon.sprites.other?.showdown?.backDefault}         ?: '']]*/ '',
+                gifShiny: /*[[${pokemon.sprites.other?.showdown?.frontShiny}          ?: '']]*/ '',
+                gifShinyBack: /*[[${pokemon.sprites.other?.showdown?.backShiny}           ?: '']]*/ '',
+                artwork: /*[[${pokemon.sprites.other?.officialArtwork?.frontDefault} ?: '']]*/ ''
             };
 
-            let esShiny = false;
-            let mostrandoFront = true;
-            let esFemenino = false;
+            if (SP.artwork)
+                document.getElementById('bgArtwork').style.backgroundImage = `url(${SP.artwork})`;
 
-            function checkGeneroHabilitado() {
-                const iconoG = document.getElementById('iconoGenero');
-                if (!sprites.frontFem)
-                    iconoG.style.display = 'none';
+            let esShiny = false, mostrandoFront = true, esFemenino = false, usandoGif = true;
+
+            function resolverSprite() {
+                if (usandoGif && SP.gifFront) {
+                    if (esShiny && SP.gifShiny)
+                        return mostrandoFront ? SP.gifShiny : (SP.gifShinyBack || SP.gifShiny);
+                    return mostrandoFront ? SP.gifFront : (SP.gifBack || SP.gifFront);
+                }
+                if (esFemenino && SP.frontFem) {
+                    if (esShiny && SP.frontShinyFem)
+                        return mostrandoFront ? SP.frontShinyFem : (SP.backShinyFem || SP.frontShinyFem);
+                    return mostrandoFront ? SP.frontFem : (SP.backFem || SP.frontFem);
+                }
+                if (esShiny && SP.frontShiny)
+                    return mostrandoFront ? SP.frontShiny : (SP.backShiny || SP.frontShiny);
+                return mostrandoFront ? SP.front : (SP.back || SP.front);
             }
 
-            function actualizarImagen() {
+            function aplicarSprite() {
                 const img = document.getElementById('pokemonImg');
-                let seleccionada = '';
-                if (esFemenino && sprites.frontFem) {
-                    if (esShiny && sprites.frontShinyFem)
-                        seleccionada = mostrandoFront ? sprites.frontShinyFem : (sprites.backShinyFem || sprites.frontShinyFem);
-                    else
-                        seleccionada = mostrandoFront ? sprites.frontFem : (sprites.backFem || sprites.frontFem);
-                } else {
-                    if (esShiny)
-                        seleccionada = mostrandoFront ? sprites.frontShiny : (sprites.backShiny || sprites.frontShiny);
-                    else
-                        seleccionada = mostrandoFront ? sprites.front : (sprites.back || sprites.front);
-                }
-                if (seleccionada)
-                    img.src = seleccionada;
+                const spinner = document.getElementById('pkSpinner');
+                const src = resolverSprite();
+                if (!src)
+                    return;
+
+                img.classList.add('fading');
+                spinner.classList.add('active');
+
+                setTimeout(() => {
+                    const tmp = new Image();
+                    tmp.onload = () => {
+                        img.src = src;
+                        img.style.imageRendering = (usandoGif || src.includes('pixel') || src.endsWith('.png') && src.includes('sprites/pokemon/')) ? 'pixelated' : 'auto';
+                        img.classList.remove('fading');
+                        spinner.classList.remove('active');
+                    };
+                    tmp.onerror = () => {
+                        img.classList.remove('fading');
+                        spinner.classList.remove('active');
+                    };
+                    tmp.src = src;
+                }, 200);
             }
 
             function cambiarSprite() {
                 mostrandoFront = !mostrandoFront;
-                actualizarImagen();
+                document.getElementById('btnFlip').classList.toggle('active-flip', !mostrandoFront);
+                aplicarSprite();
             }
 
             function toggleShiny() {
-                if (esShiny || sprites.frontShiny) {
-                    esShiny = !esShiny;
-                    actualizarImagen();
-                    document.getElementById('iconoShiny').style.color = esShiny ? '#f1c40f' : '#333';
-                }
+                if (!SP.frontShiny && !SP.gifShiny)
+                    return;
+                esShiny = !esShiny;
+                document.getElementById('btnShiny').classList.toggle('active-shiny', esShiny);
+                aplicarSprite();
             }
 
             function toggleGenero() {
-                if (sprites.frontFem) {
-                    esFemenino = !esFemenino;
-                    actualizarImagen();
-                    const icono = document.getElementById('iconoGenero');
-                    if (esFemenino) {
-                        icono.className = 'bi bi-gender-female';
-                        icono.style.color = '#e84393';
-                    } else {
-                        icono.className = 'bi bi-gender-male';
-                        icono.style.color = '#3498db';
-                    }
-                }
+                if (!SP.frontFem)
+                    return;
+                esFemenino = !esFemenino;
+                document.getElementById('btnGenero').classList.toggle('active-female', esFemenino);
+                aplicarSprite();
             }
 
-            checkGeneroHabilitado();
+            function toggleGif() {
+                usandoGif = !usandoGif;
+                document.getElementById('btnGif').classList.toggle('active-gif', usandoGif);
+                aplicarSprite();
+            }
 
-            document.getElementById('backBtn').addEventListener('click', function () {
-                if (window.history.length > 1)
-                    window.history.back();
-                else
-                    window.location.href = '/';
+            function thumbClick(el) {
+                const src = el.dataset.src;
+                const pixel = el.dataset.pixel === 'true';
+                usandoGif = false;
+                document.getElementById('btnGif').classList.remove('active-gif');
+                const img = document.getElementById('pokemonImg');
+                const spinner = document.getElementById('pkSpinner');
+                img.classList.add('fading');
+                spinner.classList.add('active');
+                setTimeout(() => {
+                    const tmp = new Image();
+                    tmp.onload = () => {
+                        img.src = src;
+                        img.style.imageRendering = pixel ? 'pixelated' : 'auto';
+                        img.classList.remove('fading');
+                        spinner.classList.remove('active');
+                    };
+                    tmp.src = src;
+                }, 200);
+            }
+
+            if (!SP.frontFem)
+                document.getElementById('btnGenero').style.display = 'none';
+            if (!SP.gifFront)
+                document.getElementById('btnGif').style.display = 'none';
+            if (!SP.frontShiny && !SP.gifShiny)
+                document.getElementById('btnShiny').style.display = 'none';
+
+            if (SP.gifFront)
+                document.getElementById('btnGif').classList.add('active-gif');
+
+            function switchTab(name, btn) {
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                document.querySelectorAll('.pk-tab').forEach(b => b.classList.remove('active'));
+                document.getElementById('tab-' + name).classList.add('active');
+                btn.classList.add('active');
+                if (name === 'stats')
+                    animarBarras();
+            }
+
+            function animarBarras() {
+                document.querySelectorAll('.stat-fill').forEach(bar => {
+                    bar.style.width = '0%';
+                    requestAnimationFrame(() => requestAnimationFrame(() => {
+                            bar.style.width = (bar.dataset.width || 0) + '%';
+                        }));
+                });
+            }
+            window.addEventListener('load', () => setTimeout(animarBarras, 400));
+
+            document.getElementById('backBtn').addEventListener('click', () => {
+                window.history.length > 1 ? window.history.back() : window.location.href = '/';
             });
         </script>
     </body>

@@ -7,16 +7,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PokemonAbility {
     @JsonProperty("is_hidden")
-    private Boolean isHidden;
+    private Boolean hidden;
     private Integer slot;
     private NamedResource ability;
 
-    public Boolean getIsHidden() {
-        return isHidden;
+    public Boolean getHidden() {
+        return hidden;
     }
 
-    public void setIsHidden(Boolean isHidden) {
-        this.isHidden = isHidden;
+    public void setHidden(Boolean hidden) {
+        this.hidden = hidden;
     }
 
     public Integer getSlot() {
@@ -34,6 +34,4 @@ public class PokemonAbility {
     public void setAbility(NamedResource ability) {
         this.ability = ability;
     }
-    
-    
 }
