@@ -244,13 +244,25 @@
 
             <form th:action="@{/registro}" th:object="${usuario}" method="post" class="needs-validation" novalidate>
                 <div class="form-group">
-                    <label class="form-label" for="nombre">NOMBRE</label>
-                    <div class="input-group input-group-custom">
-                        <span class="input-group-text-custom">
-                            <i class="bi bi-person-fill"></i>
-                        </span>
-                        <input type="text" class="form-control-custom" id="nombre" th:field="*{nombre}" 
-                               placeholder="Pikachu" onkeypress="SoloLetras(event, this)" required>
+                    <div class="form-group">
+                        <label class="form-label" for="nombre">NOMBRE</label>
+
+                        <div class="input-group input-group-custom">
+                            <span class="input-group-text-custom">
+                                <i class="bi bi-person-fill"></i>
+                            </span>
+
+                            <input type="text"
+                                   class="form-control-custom"
+                                   id="nombre"
+                                   th:field="*{nombre}"
+                                   placeholder="Pikachu"
+                                   onkeypress="SoloLetras(event, this)"
+                                   required>
+
+                        </div>
+
+                        <span class="error-msg text-danger"></span>
                     </div>
                 </div>
 
@@ -263,6 +275,7 @@
                         <input type="text" class="form-control-custom" id="apellidoPaterno" name="apellidoPaterno" 
                                placeholder="Pika" onkeypress="SoloLetras(event, this)" required>
                     </div>
+                    <span class="error-msg text-danger"></span>
                 </div>
 
                 <div class="form-group">
@@ -274,6 +287,7 @@
                         <input type="text" class="form-control-custom" id="apellidoMaterno" name="apellidoMaterno" 
                                placeholder="Chu" onkeypress="SoloLetras(event, this)" required>
                     </div>
+                    <span class="error-msg text-danger"></span>
                 </div>
 
                 <div class="form-group">
@@ -310,10 +324,12 @@
                             <i class="bi bi-eye" id="eyeIcon"></i>
                         </button>
                     </div>
+
+                    <span class="error-pass text-danger"></span>
                 </div>
 
                 <div class="d-grid">
-                    <button type="submit" class="btn-custom btn-register">
+                    <button type="submit" class="btn-custom btn-register" id="btnRegistro" disabled>
                         <i class="bi bi-check-circle-fill me-2"></i>
                         Registrarse
                     </button>
@@ -330,23 +346,21 @@
         <script>
                             function SoloLetras(event, input) {
                                 let key = event.key;
-                                let RegExp = /[a-zA-Z]+/;
-                                if (RegExp.test(key)) {
+                                let regex = /^[a-zA-ZÁÉÍÓÚáéíóúñÑ\s]$/;
+                                if (regex.test(key)) {
                                     $(input).removeClass("error").addClass("correct");
-                                    $(input).siblings(".error-msg").text("");
+                                    $(input).closest(".form-group").find(".error-msg").text("");
                                 } else {
                                     $(input).removeClass("correct").addClass("error");
-                                    $(input).siblings(".error-msg").text("Solo se permiten letras");
+                                    $(input).closest(".form-group").find(".error-msg").text("Solo se permiten letras");
                                     event.preventDefault();
                                 }
+
                             }
-                            
-                            
 
                             function mostrarContrasena() {
                                 var passwordInput = document.getElementById("contrasena");
                                 var eyeIcon = document.getElementById("eyeIcon");
-
                                 if (passwordInput.type === "password") {
                                     passwordInput.type = "text";
                                     eyeIcon.classList.remove("bi-eye");
@@ -358,6 +372,42 @@
                                 }
                             }
 
+                            function validarFormulario() {
+
+                                let nombre = document.getElementById("nombre").value.trim();
+                                let apellidoP = document.getElementById("apellidoPaterno").value.trim();
+                                let apellidoM = document.getElementById("apellidoMaterno").value.trim();
+                                let username = document.getElementById("username").value.trim();
+                                let correo = document.getElementById("correo").value.trim();
+                                let pass = document.getElementById("contrasena").value;
+
+                                let boton = document.getElementById("btnRegistro");
+                                let errorPass = document.querySelector(".error-pass");
+
+                                let regexLetras = /^[a-zA-ZÁÉÍÓÚáéíóúñÑ\s]+$/;
+                                let regexPass = /^(?=.*[A-Z])(?=.*\d)[^\s]{8,}$/;
+                                let regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                                if (!regexPass.test(pass)) {
+                                    errorPass.textContent = "8 caracteres, 1 mayúscula y 1 número";
+                                } else {
+                                    errorPass.textContent = "";
+                                }
+
+                                if (
+                                        regexLetras.test(nombre) &&
+                                        regexLetras.test(apellidoP) &&
+                                        regexLetras.test(apellidoM) &&
+                                        username.length >= 4 &&
+                                        regexCorreo.test(correo) &&
+                                        regexPass.test(pass)
+                                        ) {
+                                    boton.disabled = false;
+                                } else {
+                                    boton.disabled = true;
+                                }
+
+                            }
                             (function () {
                                 'use strict'
                                 var forms = document.querySelectorAll('.needs-validation')
@@ -372,6 +422,19 @@
                                             }, false)
                                         })
                             })()
+
+                            document.addEventListener("DOMContentLoaded", function () {
+
+                                const inputs = document.querySelectorAll("#nombre, #apellidoPaterno, #apellidoMaterno, #username, #correo, #contrasena");
+                                const boton = document.getElementById("btnRegistro");
+
+                                inputs.forEach(input => {
+                                    input.addEventListener("input", validarFormulario);
+                                });
+
+                                boton.disabled = true;
+
+                            });
         </script>
     </body>
 </html>
