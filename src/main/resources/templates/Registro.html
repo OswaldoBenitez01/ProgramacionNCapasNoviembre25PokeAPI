@@ -307,8 +307,15 @@
                         <span class="input-group-text-custom">
                             <i class="bi bi-envelope-fill"></i>
                         </span>
-                        <input type="email" class="form-control-custom" id="correo" th:field="*{correo}" 
-                               placeholder="pikachu@paldea.com" required>
+                        <input 
+                            type="email" 
+                            class="form-control-custom" 
+                            id="correo" 
+                            th:field="*{correo}" 
+                            placeholder="pikachu@paldea.com"
+                            pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                            title="Ingrese un correo válido (ej: usuario@dominio.com)"
+                            required>
                     </div>
                 </div>
 
@@ -346,7 +353,20 @@
         <script>
                             function SoloLetras(event, input) {
                                 let key = event.key;
+                                let valor = input.value;
+
                                 let regex = /^[a-zA-ZÁÉÍÓÚáéíóúñÑ\s]$/;
+
+                                if (key === " " && valor.length === 0) {
+                                    event.preventDefault();
+                                    return;
+                                }
+
+                                if (key === " " && valor.includes(" ")) {
+                                    event.preventDefault();
+                                    return;
+                                }
+
                                 if (regex.test(key)) {
                                     $(input).removeClass("error").addClass("correct");
                                     $(input).closest(".form-group").find(".error-msg").text("");
@@ -355,7 +375,6 @@
                                     $(input).closest(".form-group").find(".error-msg").text("Solo se permiten letras");
                                     event.preventDefault();
                                 }
-
                             }
 
                             function mostrarContrasena() {
