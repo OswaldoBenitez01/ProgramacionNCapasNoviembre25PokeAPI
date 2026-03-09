@@ -12,6 +12,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -92,9 +95,14 @@ public class PokeApiController {
         List<Map<String, Object>> favoritos = new ArrayList<>();
 
         if (resultFavoritosAll.Correct) {
+
             List<Favorito> lista = (List<Favorito>) resultFavoritosAll.Object;
 
-            favoritos = lista.parallelStream().map(fav -> {
+            ExecutorService executor = Executors.newFixedThreadPool(6);
+
+            List<CompletableFuture<Map<String, Object>>> futures = lista.stream()
+                    .map(fav -> CompletableFuture.supplyAsync(() -> {
+
                 Pokemon pokemon = obtenerPokemon(fav.getPokemon());
                 String color = obtenerTipo(pokemon);
 
@@ -104,7 +112,15 @@ public class PokeApiController {
                 data.put("color", color);
 
                 return data;
-            }).toList();
+
+            }, executor))
+                    .toList();
+
+            favoritos = futures.stream()
+                    .map(CompletableFuture::join)
+                    .toList();
+
+            executor.shutdown();
         }
 
         model.addAttribute("Favoritos", favoritos);
@@ -143,7 +159,7 @@ public class PokeApiController {
         }
         return "pokemon";
     }
-    
+
     @GetMapping("/detalle/{idOrName}")
     @ResponseBody
     public Pokemon pokemonDetailJSON(@PathVariable String idOrName, Model model) {

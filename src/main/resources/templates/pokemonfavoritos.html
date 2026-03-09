@@ -742,6 +742,8 @@
                 opacity: 0;
                 pointer-events: none;
             }
+
+
         </style>
     </head>
     <body>
@@ -799,7 +801,7 @@
         <div class="main-content">
             <div class="header">
                 <h1>&#x25B6; FAVORITOS</h1>
-            </div>  
+            </div> 
 
             <div class="grid">
                 <button type="button" 
@@ -811,13 +813,13 @@
 
             </div>
 
-            <div class="grid">
+            <div id="favoritos-container" class="grid">
 
-                <div class="card-container"
-                     th:each="fav : ${Favoritos}">
+                <div class="card-container poke-card-item" th:each="fav : ${Favoritos}">
 
                     <div class="card-face card-front"
                          th:style="'background:' + ${fav['color']}">
+
 
                         <div class="poke-header">
                             <div class="poke-name"
@@ -849,10 +851,18 @@
 
                     </div>
 
-                </div>
+                </div>               
 
             </div>
+            <div class="pagination-wrapper text-center">
+                <button id="prevBtn" class="page-btn" onclick="changePage(-1)">◀ ANT.</button>
 
+                <div class="page-info" id="pageInfo">
+                    PÁGINA 1 DE 1
+                </div>
+
+                <button id="nextBtn" class="page-btn" onclick="changePage(1)">SIG. ▶</button>
+            </div>
         </div>
 
 
@@ -947,6 +957,63 @@
                 });
             }
 
+            let currentPage = 1;
+            const itemsPerPage = 15;
+
+            function displayPage(page) {
+
+                const cards = document.querySelectorAll('.poke-card-item');
+                const totalPages = Math.ceil(cards.length / itemsPerPage);
+
+
+                if (page < 1)
+                    page = 1;
+                if (page > totalPages && totalPages > 0)
+                    page = totalPages;
+                currentPage = page;
+
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+
+                cards.forEach((card, index) => {
+                    if (index >= startIndex && index < endIndex) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+
+                const infoSpan = document.getElementById('pageInfo');
+                if (infoSpan) {
+                    infoSpan.innerText = `PÁGINA ${currentPage} DE ${totalPages || 1}`;
+                }
+
+
+                const prevBtn = document.getElementById('prevBtn');
+                const nextBtn = document.getElementById('nextBtn');
+
+                if (prevBtn && nextBtn) {
+                    prevBtn.disabled = (currentPage === 1);
+                    nextBtn.disabled = (currentPage === totalPages || totalPages === 0);
+
+                    prevBtn.style.opacity = (currentPage === 1) ? "0.3" : "1";
+                    prevBtn.style.cursor = (currentPage === 1) ? "not-allowed" : "pointer";
+
+                    nextBtn.style.opacity = (currentPage === totalPages || totalPages === 0) ? "0.3" : "1";
+                    nextBtn.style.cursor = (currentPage === totalPages || totalPages === 0) ? "not-allowed" : "pointer";
+                }
+            }
+
+            function changePage(step) {
+                displayPage(currentPage + step);
+                window.scrollTo({top: 0, behavior: 'smooth'});
+            }
+
+
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(() => displayPage(1), 100);
+            });
         </script>
 
     </body>

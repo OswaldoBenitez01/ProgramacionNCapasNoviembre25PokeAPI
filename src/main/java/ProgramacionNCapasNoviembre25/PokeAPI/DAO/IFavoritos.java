@@ -13,6 +13,8 @@ public interface IFavoritos extends JpaRepository<Favorito, Integer> {
 
     @Query("SELECT f FROM Favorito f WHERE f.usuario.idUsuario = :idUsuario")
     List<Favorito> findByUsuarioIdUsuario(@Param("idUsuario") Integer idUsuario);
+    
+    List<Favorito> findByUsuarioIdUsuarioOrderByPokemon(Integer idUsuario);
 
     @Query("SELECT f FROM Favorito f JOIN FETCH f.usuario WHERE f.usuario.idUsuario = :idUsuario")
     List<Favorito> findByUsuarioIdFetchUsuario(@Param("idUsuario") Integer idUsuario);

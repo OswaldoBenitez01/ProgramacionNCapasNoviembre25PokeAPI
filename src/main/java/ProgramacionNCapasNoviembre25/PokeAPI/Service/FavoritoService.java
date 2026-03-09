@@ -65,8 +65,7 @@ public class FavoritoService {
     public Result getAllByUsuario(Integer idUsuario) {
         Result result = new Result();
         try {
-            List<Favorito> favoritos = iFavoritos.findByUsuarioIdUsuario(idUsuario);
-            favoritos.sort(Comparator.comparing(Favorito::getPokemon));
+            List<Favorito> favoritos = iFavoritos.findByUsuarioIdUsuarioOrderByPokemon(idUsuario);
             if (favoritos != null && !favoritos.isEmpty()) {
                 result.Object = favoritos;
                 result.Correct = true;
