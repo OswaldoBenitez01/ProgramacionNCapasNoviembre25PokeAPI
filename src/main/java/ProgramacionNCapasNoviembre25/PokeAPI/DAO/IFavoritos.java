@@ -13,7 +13,7 @@ public interface IFavoritos extends JpaRepository<Favorito, Integer> {
 
     @Query("SELECT f FROM Favorito f WHERE f.usuario.idUsuario = :idUsuario")
     List<Favorito> findByUsuarioIdUsuario(@Param("idUsuario") Integer idUsuario);
-    
+
     List<Favorito> findByUsuarioIdUsuarioOrderByPokemon(Integer idUsuario);
 
     @Query("SELECT f FROM Favorito f JOIN FETCH f.usuario WHERE f.usuario.idUsuario = :idUsuario")
@@ -22,10 +22,11 @@ public interface IFavoritos extends JpaRepository<Favorito, Integer> {
     List<Favorito> findByUsuarioIdUsuarioAndPokemon(Integer idUsuario, String pokemon);
 
     @Query("""
-       SELECT f.pokemon, COUNT(f) as total
+       SELECT f.pokemon, COUNT(f)
        FROM Favorito f
        GROUP BY f.pokemon
-       ORDER BY total DESC
+       HAVING COUNT(f) > 1
+       ORDER BY COUNT(f) DESC
        """)
     List<Object[]> contarAgrupados();
 
