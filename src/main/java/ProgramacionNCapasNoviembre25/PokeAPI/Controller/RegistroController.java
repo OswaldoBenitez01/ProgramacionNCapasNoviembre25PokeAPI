@@ -130,7 +130,7 @@ public class RegistroController {
             redirectAttributes.addFlashAttribute("success", "¡Tu contraseña ha sido actualizada con éxito, Entrenador!");
             return "redirect:/login";
         } else {
-            // 3. Si hubo error (token expirado o inválido), lo regresamos al formulario con error
+            
             return "redirect:/reset-password?token=" + token + "&error=true";
         }
     }
